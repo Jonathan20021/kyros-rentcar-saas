@@ -1,0 +1,15 @@
+# Prevent execution of any uploaded scripts (defense-in-depth).
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>
+php_flag engine off
+
+# Only allow images / pdf to be served; deny scripts.
+<FilesMatch "\.(php|phtml|php3|php4|php5|php7|phar|pl|py|cgi|sh|asp|aspx)$">
+    Require all denied
+</FilesMatch>
+
+Options -Indexes

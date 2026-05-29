@@ -1,0 +1,13 @@
+/vendor/
+/storage/logs/*.log
+/storage/contracts/*
+/storage/invoices/*
+/storage/documents/*
+/storage/temp/*
+/public/assets/uploads/*
+!/public/assets/uploads/.htaccess
+!**/.gitkeep
+.env
+*.local.php
+Thumbs.db
+.DS_Store

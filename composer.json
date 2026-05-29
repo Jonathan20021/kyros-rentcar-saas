@@ -1,0 +1,23 @@
+{
+  "name": "kyros/rent-car-saas",
+  "description": "Kyros Rent Car - SaaS multi-tenant para administracion de rent cars (PHP puro + MySQL + Tailwind).",
+  "type": "project",
+  "license": "proprietary",
+  "require": {
+    "php": ">=8.0",
+    "ext-pdo": "*",
+    "ext-json": "*",
+    "ext-fileinfo": "*",
+    "ext-mbstring": "*"
+  },
+  "suggest": {
+    "phpmailer/phpmailer": "Envio de correos via SMTP",
+    "dompdf/dompdf": "Generacion de contratos, facturas y recibos en PDF"
+  },
+  "autoload": {
+    "psr-4": { "App\\": "app/" }
+  },
+  "config": {
+    "optimize-autoloader": true
+  }
+}

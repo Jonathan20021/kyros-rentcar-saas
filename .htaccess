@@ -1,0 +1,9 @@
+# Redirect all traffic into the public/ directory (keeps app/config/storage private).
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(\.htaccess|public/) - [L]
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Block direct access to sensitive folders just in case.
+RedirectMatch 403 ^/.*/(app|config|storage|database)/.*$
