@@ -101,7 +101,7 @@ $publicPromos = $publicPromos ?? [];
       <div class="bg-white rounded-2xl border hairline shadow-card p-6 sticky top-20">
         <div class="flex items-center gap-3 pb-4 border-b border-slate-100">
           <div class="w-16 h-12 rounded-lg bg-slate-100 overflow-hidden">
-            <?php if (!empty($vehicle['main_image'])): ?><img src="<?= e($vehicle['main_image']) ?>" class="w-full h-full object-cover"><?php endif; ?>
+            <?php if (!empty($vehicle['main_image'])): ?><img src="<?= e(media($vehicle['main_image'])) ?>" class="w-full h-full object-cover"><?php endif; ?>
           </div>
           <div>
             <p class="font-semibold text-slate-900 text-sm"><?= e($vehicle['brand'].' '.$vehicle['model']) ?></p>

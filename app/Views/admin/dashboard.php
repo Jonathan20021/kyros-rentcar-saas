@@ -18,9 +18,13 @@ $hired = $rs['converted'] + $rs['in_progress'];
 $pend  = $rs['pending'] + $rs['confirmed'];
 $canc  = $rs['cancelled'] + $rs['rejected'];
 ?>
-<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 sm:mb-6">
-  <div>
-    <h1 class="font-display text-[22px] sm:text-[26px] font-extrabold text-navy dark:text-white tracking-tight">Buen día, <?= e($first) ?></h1>
+<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-5 sm:mb-6">
+  <div class="min-w-0">
+    <div class="flex items-center gap-2 mb-1.5">
+      <span class="inline-block h-1 w-8 rounded-full grad-bg"></span>
+      <span class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400"><?= ucfirst(date('l')) ?></span>
+    </div>
+    <h1 class="font-display text-[22px] sm:text-[28px] font-extrabold text-navy dark:text-white tracking-tight leading-tight">Buen día, <?= e($first) ?></h1>
     <p class="text-[13px] text-slate-500 mt-1 truncate"><?= e($tenant['name'] ?? '') ?> · <?= strftime_es() ?></p>
   </div>
   <div class="flex flex-wrap gap-2">
@@ -41,7 +45,7 @@ $canc  = $rs['cancelled'] + $rs['rejected'];
     <!-- KPI row -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
       <?php foreach ($kpis as $k): ?>
-      <div class="card p-4 sm:p-5 reveal">
+      <div class="card p-4 sm:p-5 reveal hover:-translate-y-0.5 hover:shadow-lift transition-all duration-200">
         <div class="flex items-center justify-between gap-1">
           <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl grid place-items-center shrink-0 <?= $k['tint'] ?>"><i data-lucide="<?= $k['icon'] ?>" class="w-4 h-4 sm:w-5 sm:h-5"></i></div>
           <?= $k['pill'] ?>
@@ -98,8 +102,9 @@ $canc  = $rs['cancelled'] + $rs['rejected'];
     </div>
   </div>
 
-  <!-- RIGHT rail -->
-  <div class="space-y-5">
+  <!-- RIGHT rail — at md/lg displays as 2-column grid below the main column,
+       at xl+ becomes the actual rail. -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-4 sm:gap-5">
     <!-- Quick availability -->
     <div class="card p-5 reveal">
       <h2 class="font-display font-bold text-navy mb-3">Disponibilidad rápida</h2>
@@ -228,8 +233,10 @@ View::push('scripts', '<script>
   var st=document.getElementById("statusChart");
   if(st) new Chart(st,{type:"doughnut",data:{labels:["Activas","Pendientes","Canceladas"],datasets:[{data:['.($hired).','.($pend).','.($canc).'],backgroundColor:[navy,brand,"#E2E8F0"],borderWidth:0,hoverOffset:6}]},options:{cutout:"72%",plugins:{legend:{display:false},tooltip:{backgroundColor:navy,padding:10,cornerRadius:10}}}});
   var bk=document.getElementById("bookingsChart");
-  if(bk){ var peak='.$peak.'; var cols='.json_encode($bookValues).'.map(function(_,i){return i===peak?brand:navy;});
-    new Chart(bk,{type:"bar",data:{labels:'.json_encode($bookLabels).',datasets:[{data:'.json_encode($bookValues).',backgroundColor:cols,borderRadius:7,maxBarThickness:26}]},options:{plugins:{legend:{display:false},tooltip:{backgroundColor:navy,padding:10,cornerRadius:10,displayColors:false}},scales:{y:{beginAtZero:true,grid:{color:"#EEF1F6"},border:{display:false},ticks:{padding:8}},x:{grid:{display:false},border:{display:false}}}}});
+  if(bk){ var peak='.$peak.'; var vals='.json_encode($bookValues).'; var cols=vals.map(function(_,i){return i===peak?brand:navy;});
+    new Chart(bk,{type:"bar",data:{labels:'.json_encode($bookLabels).',datasets:[{data:vals,backgroundColor:cols,borderRadius:7,maxBarThickness:28}]},
+      plugins:[{id:"countOnBar",afterDatasetsDraw:function(c){var ctx=c.ctx;ctx.save();ctx.font="600 11px Inter";ctx.fillStyle="#475569";ctx.textAlign="center";c.data.datasets[0].data.forEach(function(v,i){if(v<=0)return;var b=c.getDatasetMeta(0).data[i];ctx.fillText(v, b.x, b.y - 6);});ctx.restore();}}],
+      options:{plugins:{legend:{display:false},tooltip:{backgroundColor:navy,padding:10,cornerRadius:10,displayColors:false}},scales:{y:{beginAtZero:true,grid:{color:"#EEF1F6"},border:{display:false},ticks:{padding:8}},x:{grid:{display:false},border:{display:false}}}}});
   }
 })();
 </script>');

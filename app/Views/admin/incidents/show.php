@@ -90,8 +90,8 @@ $evidence = $i['evidence_files'] ? (json_decode($i['evidence_files'], true) ?: [
         <h2 class="font-display font-bold text-navy dark:text-white mb-4">Evidencia</h2>
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <?php foreach ($evidence as $url): ?>
-            <a href="<?= e($url) ?>" target="_blank" class="block rounded-xl overflow-hidden border hairline hover:opacity-90">
-              <img src="<?= e($url) ?>" class="w-full h-32 object-cover">
+            <a href="<?= e(media($url)) ?>" target="_blank" class="block rounded-xl overflow-hidden border hairline hover:opacity-90">
+              <img src="<?= e(media($url)) ?>" class="w-full h-32 object-cover">
             </a>
           <?php endforeach; ?>
         </div>

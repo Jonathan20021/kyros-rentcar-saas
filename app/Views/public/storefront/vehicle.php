@@ -26,7 +26,7 @@ $primary = $tenant['primary_color'];
       <div class="flex gap-2.5 mt-3">
         <?php foreach ($gallery as $g): ?>
           <button type="button" @click="main=<?= json_encode($g) ?>" class="w-24 h-16 rounded-xl overflow-hidden border-2 bg-paper" :class="main===<?= json_encode($g) ?>?'border-ink':'border-transparent'">
-            <img src="<?= e($g) ?>" class="w-full h-full object-contain p-1">
+            <img src="<?= e(media($g)) ?>" class="w-full h-full object-contain p-1">
           </button>
         <?php endforeach; ?>
       </div>

@@ -200,6 +200,22 @@ if (!function_exists('initials')) {
     }
 }
 
+if (!function_exists('media')) {
+    /**
+     * Build a browser-loadable URL for a stored upload path.
+     * - Returns '' if $path is empty/null
+     * - Returns the path unchanged if it's already absolute (http(s)://)
+     * - Otherwise prepends the app base_path so /assets/... works under XAMPP
+     *   sub-folder installs (e.g. /kyros-rentcar-saas/public/assets/...).
+     */
+    function media(?string $path): string
+    {
+        if (!$path) return '';
+        if (preg_match('#^https?://#i', $path)) return $path;
+        return url($path);
+    }
+}
+
 if (!function_exists('plan_has')) {
     /** Does the current tenant's plan include the given feature key? */
     function plan_has(string $feature): bool

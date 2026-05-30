@@ -121,7 +121,7 @@ $inputCls = 'fld';
           <label class="block text-sm font-medium mb-1.5">Imagen principal</label>
           <input type="file" name="main_image" accept="image/*" class="<?= $inputCls ?>">
           <?php if ($isEdit && !empty($vehicle['main_image'])): ?>
-            <img src="<?= e($vehicle['main_image']) ?>" class="mt-2 w-32 h-20 object-cover rounded-lg">
+            <img src="<?= e(media($vehicle['main_image'])) ?>" class="mt-2 w-32 h-20 object-cover rounded-lg">
           <?php endif; ?>
         </div>
         <div>
@@ -132,7 +132,7 @@ $inputCls = 'fld';
       <?php if (!empty($images)): ?>
       <div class="flex flex-wrap gap-2 mt-3">
         <?php foreach ($images as $img): ?>
-          <img src="<?= e($img['path']) ?>" class="w-20 h-16 object-cover rounded-lg border border-slate-200">
+          <img src="<?= e(media($img['path'])) ?>" class="w-20 h-16 object-cover rounded-lg border border-slate-200">
         <?php endforeach; ?>
       </div>
       <?php endif; ?>

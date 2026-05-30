@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#B45309"/>
+      <stop offset="100%" stop-color="#7C2D12"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#EF4444"/>
+      <stop offset="100%" stop-color="#991B1B"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <circle cx="650" cy="120" r="180" fill="#F59E0B" opacity="0.20"/>
+  <circle cx="150" cy="420" r="120" fill="#FCD34D" opacity="0.13"/>
+  <ellipse cx="400" cy="410" rx="320" ry="14" fill="#000" opacity="0.35"/>
+  <!-- Compact hatchback — short, rounded -->
+  <path d="M 180 365 L 220 280 Q 250 255 310 250 L 480 250 Q 530 255 560 295 L 620 365 Z" fill="url(#body)"/>
+  <path d="M 240 290 Q 265 265 310 260 L 470 260 Q 500 265 520 295 L 520 355 L 240 355 Z" fill="url(#glass)" opacity="0.85"/>
+  <path d="M 380 265 L 380 355" stroke="#1E293B" stroke-width="2"/>
+  <rect x="170" y="355" width="460" height="32" rx="12" fill="#0F172A"/>
+  <!-- Wheels (smaller, stubby) -->
+  <circle cx="260" cy="395" r="34" fill="#000"/>
+  <circle cx="260" cy="395" r="20" fill="#475569"/>
+  <circle cx="260" cy="395" r="9" fill="#E2E8F0"/>
+  <circle cx="540" cy="395" r="34" fill="#000"/>
+  <circle cx="540" cy="395" r="20" fill="#475569"/>
+  <circle cx="540" cy="395" r="9" fill="#E2E8F0"/>
+  <ellipse cx="195" cy="335" rx="12" ry="7" fill="#FEF3C7"/>
+  <ellipse cx="605" cy="335" rx="12" ry="7" fill="#FEE2E2"/>
+  <text x="40" y="60" font-family="Helvetica,Arial,sans-serif" font-size="14" font-weight="700" letter-spacing="3" fill="#FFFFFF" opacity="0.55">ECONÓMICO</text>
+  <text x="40" y="95" font-family="Helvetica,Arial,sans-serif" font-size="34" font-weight="700" fill="#FFFFFF">Demo</text>
+</svg>

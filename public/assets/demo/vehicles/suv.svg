@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#065F46"/>
+      <stop offset="100%" stop-color="#022C22"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#94A3B8"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <circle cx="650" cy="120" r="180" fill="#10B981" opacity="0.18"/>
+  <circle cx="150" cy="420" r="120" fill="#34D399" opacity="0.13"/>
+  <ellipse cx="400" cy="410" rx="340" ry="14" fill="#000" opacity="0.35"/>
+  <!-- SUV body — taller, more squared -->
+  <path d="M 130 360 L 170 250 Q 200 220 270 215 L 530 215 Q 600 220 630 250 L 670 360 Z" fill="url(#body)"/>
+  <path d="M 210 260 Q 230 235 280 230 L 520 230 Q 570 235 590 260 L 590 345 L 210 345 Z" fill="url(#glass)" opacity="0.85"/>
+  <path d="M 360 232 L 360 345" stroke="#1E293B" stroke-width="2"/>
+  <path d="M 440 232 L 440 345" stroke="#1E293B" stroke-width="2"/>
+  <rect x="120" y="355" width="560" height="32" rx="12" fill="#0F172A"/>
+  <!-- Roof rails -->
+  <rect x="200" y="208" width="400" height="6" rx="3" fill="#0F172A"/>
+  <!-- Wheels -->
+  <circle cx="230" cy="395" r="42" fill="#000"/>
+  <circle cx="230" cy="395" r="28" fill="#475569"/>
+  <circle cx="230" cy="395" r="12" fill="#CBD5E1"/>
+  <circle cx="570" cy="395" r="42" fill="#000"/>
+  <circle cx="570" cy="395" r="28" fill="#475569"/>
+  <circle cx="570" cy="395" r="12" fill="#CBD5E1"/>
+  <ellipse cx="145" cy="320" rx="16" ry="9" fill="#FEF3C7"/>
+  <ellipse cx="655" cy="320" rx="16" ry="9" fill="#FEE2E2"/>
+  <text x="40" y="60" font-family="Helvetica,Arial,sans-serif" font-size="14" font-weight="700" letter-spacing="3" fill="#FFFFFF" opacity="0.55">SUV</text>
+  <text x="40" y="95" font-family="Helvetica,Arial,sans-serif" font-size="34" font-weight="700" fill="#FFFFFF">Demo</text>
+</svg>

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0E7490"/>
+      <stop offset="100%" stop-color="#083344"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#06B6D4"/>
+      <stop offset="100%" stop-color="#0E7490"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <circle cx="650" cy="120" r="180" fill="#22D3EE" opacity="0.18"/>
+  <circle cx="150" cy="420" r="120" fill="#67E8F9" opacity="0.13"/>
+  <ellipse cx="400" cy="410" rx="330" ry="14" fill="#000" opacity="0.35"/>
+  <!-- Compact sedan -->
+  <path d="M 160 365 L 210 275 Q 245 245 320 240 L 480 240 Q 540 245 575 285 L 640 365 Z" fill="url(#body)"/>
+  <path d="M 235 285 Q 260 260 320 255 L 470 255 Q 510 260 530 290 L 530 358 L 235 358 Z" fill="url(#glass)" opacity="0.85"/>
+  <path d="M 380 260 L 380 358" stroke="#0F172A" stroke-width="2"/>
+  <rect x="150" y="355" width="500" height="32" rx="12" fill="#0F172A"/>
+  <circle cx="250" cy="395" r="36" fill="#000"/>
+  <circle cx="250" cy="395" r="22" fill="#475569"/>
+  <circle cx="250" cy="395" r="10" fill="#E2E8F0"/>
+  <circle cx="550" cy="395" r="36" fill="#000"/>
+  <circle cx="550" cy="395" r="22" fill="#475569"/>
+  <circle cx="550" cy="395" r="10" fill="#E2E8F0"/>
+  <ellipse cx="175" cy="335" rx="13" ry="7" fill="#FEF3C7"/>
+  <ellipse cx="625" cy="335" rx="13" ry="7" fill="#FEE2E2"/>
+  <text x="40" y="60" font-family="Helvetica,Arial,sans-serif" font-size="14" font-weight="700" letter-spacing="3" fill="#FFFFFF" opacity="0.55">COMPACTO</text>
+  <text x="40" y="95" font-family="Helvetica,Arial,sans-serif" font-size="34" font-weight="700" fill="#FFFFFF">Demo</text>
+</svg>

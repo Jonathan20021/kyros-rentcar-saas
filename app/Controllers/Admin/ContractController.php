@@ -40,18 +40,49 @@ class ContractController extends AdminController
         return $c;
     }
 
-    /** Store a canvas signature (base64 PNG) on the contract. */
+    /** Store a canvas signature (SVG preferred, PNG accepted) on the contract. */
     public function sign(Request $request, string $id): void
     {
         $tid = $this->tenantId();
         Contract::findOrFail((int) $id, $tid);
-        $dataUrl = (string) $request->input('signature', '');
-        $path = \App\Services\FileUploader::saveDataUrlPng($dataUrl, 'signatures');
+        $payload = (string) $request->input('signature', '');
+        $path = null;
+        if (stripos(ltrim($payload), '<svg') === 0) {
+            $path = \App\Services\FileUploader::saveSignatureSvg($payload, 'signatures');
+        } elseif (str_starts_with($payload, 'data:image/png')) {
+            $path = \App\Services\FileUploader::saveDataUrlPng($payload, 'signatures');
+        }
         if (!$path) { Session::flash('error', 'Firma inválida. Inténtalo de nuevo.'); $this->redirect('/admin/contracts/show/'.$id); }
         Contract::update((int) $id, $tid, ['customer_signature' => $path]);
         ActivityLog::record('updated', 'contracts', (int) $id, 'Firma del cliente registrada');
         Session::flash('success', 'Firma guardada.');
         $this->redirect('/admin/contracts/show/'.$id);
+    }
+
+    /** Generate (or return existing) a public share token for the contract. */
+    public function share(Request $request, string $id): void
+    {
+        $tid = $this->tenantId();
+        $contract = Contract::findOrFail((int) $id, $tid);
+        $token = Contract::ensureShareToken((int) $id, $tid);
+        if (!$token) {
+            Session::flash('error', 'No se pudo generar el enlace de firma.');
+            $this->redirect('/admin/contracts/show/' . $id);
+        }
+        ActivityLog::record('shared', 'contracts', (int) $id, 'Enlace público generado para ' . $contract['contract_number']);
+        Session::flash('success', 'Enlace generado. Cópialo y compártelo con el cliente.');
+        $this->redirect('/admin/contracts/show/' . $id . '?share=1');
+    }
+
+    /** Revoke the share token (old link stops working immediately). */
+    public function revokeShare(Request $request, string $id): void
+    {
+        $tid = $this->tenantId();
+        $contract = Contract::findOrFail((int) $id, $tid);
+        Contract::revokeShareToken((int) $id, $tid);
+        ActivityLog::record('updated', 'contracts', (int) $id, 'Enlace público revocado para ' . $contract['contract_number']);
+        Session::flash('success', 'Enlace revocado. El cliente ya no podrá acceder con el enlace anterior.');
+        $this->redirect('/admin/contracts/show/' . $id);
     }
 
     protected function savePhotos(int $tid, int $contractId, string $field, string $phase): void
@@ -78,11 +109,9 @@ class ContractController extends AdminController
     public function pdf(Request $request, string $id): void
     {
         $c = $this->load((int) $id);
-        $this->view('admin/contracts/pdf', [
-            'title'   => 'Contrato '.$c['contract_number'],
-            'c'       => $c,
-            'backUrl' => url('/admin/contracts/show/'.$id),
-        ], 'print');
+        $html = \App\Core\View::renderPartial('admin/contracts/pdf_dompdf', ['c' => $c]);
+        $pdf  = \App\Services\PdfService::render($html);
+        \App\Services\PdfService::stream($pdf, 'Contrato-' . $c['contract_number'] . '.pdf');
     }
 
     public function closeForm(Request $request, string $id): void

@@ -10,6 +10,15 @@ define('APP_PATH', ROOT_PATH . DIRECTORY_SEPARATOR . 'app');
 define('CONFIG_PATH', ROOT_PATH . DIRECTORY_SEPARATOR . 'config');
 
 // ---------------------------------------------------------------------
+// Composer autoload (dompdf, future deps). Optional — falls through to the
+// PSR-4 mini-loader below for App\ classes when vendor/ is not present.
+// ---------------------------------------------------------------------
+$composerAutoload = ROOT_PATH . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+if (is_file($composerAutoload)) {
+    require $composerAutoload;
+}
+
+// ---------------------------------------------------------------------
 // PSR-4-ish autoloader: App\ => /app/
 // ---------------------------------------------------------------------
 spl_autoload_register(function (string $class): void {

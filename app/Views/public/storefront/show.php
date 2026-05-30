@@ -16,7 +16,7 @@ $qs = fn(array $extra=[]) => url('/r/'.$tenant['slug']).'?'.http_build_query(arr
 <section class="relative overflow-hidden border-b hairline">
   <div class="absolute inset-0">
     <?php if ($cover): ?>
-      <img src="<?= e($cover) ?>" class="w-full h-full object-cover" alt=""><div class="absolute inset-0 bg-ink/55"></div>
+      <img src="<?= e(media($cover)) ?>" class="w-full h-full object-cover" alt=""><div class="absolute inset-0 bg-ink/55"></div>
     <?php else: ?>
       <div class="w-full h-full" style="background:linear-gradient(120deg,<?= e($primary) ?>,<?= e($tenant['secondary_color']) ?>)"></div>
       <div class="absolute inset-0 grid-bg opacity-[0.15]"></div>
@@ -194,7 +194,7 @@ $qs = fn(array $extra=[]) => url('/r/'.$tenant['slug']).'?'.http_build_query(arr
             </div>
             <a href="<?= $detail ?>" class="block aspect-[16/10] grid place-items-center px-3 py-1">
               <?php if (!empty($v['main_image'])): ?>
-                <img src="<?= e($v['main_image']) ?>" alt="<?= e($v['brand']) ?>" class="w-full h-full object-contain group-hover:scale-[1.04] transition duration-300">
+                <img src="<?= e(media($v['main_image'])) ?>" alt="<?= e($v['brand']) ?>" class="w-full h-full object-contain group-hover:scale-[1.04] transition duration-300">
               <?php else: ?>
                 <div class="w-full h-full grid place-items-center text-slate-200"><i data-lucide="car" class="w-16 h-16"></i></div>
               <?php endif; ?>

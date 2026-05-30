@@ -8,7 +8,9 @@
     "ext-pdo": "*",
     "ext-json": "*",
     "ext-fileinfo": "*",
-    "ext-mbstring": "*"
+    "ext-mbstring": "*",
+    "dompdf/dompdf": "^3.1",
+    "chillerlan/php-qrcode": "^5.0"
   },
   "suggest": {
     "phpmailer/phpmailer": "Envio de correos via SMTP",

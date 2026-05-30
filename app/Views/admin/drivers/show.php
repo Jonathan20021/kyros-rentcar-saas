@@ -18,7 +18,7 @@ if (!empty($d['license_expiration'])) {
         <div class="h-24 -mx-6 -mt-6 mb-4 bg-gradient-to-br from-brand/20 to-brand2/15 dark:from-brand/30 dark:to-navy rounded-t-2xl"></div>
         <div class="w-24 h-24 -mt-16 rounded-2xl bg-white dark:bg-slate-900 border-4 border-white dark:border-slate-900 shadow-card overflow-hidden grid place-items-center">
           <?php if (!empty($d['photo'])): ?>
-            <img src="<?= e($d['photo']) ?>" class="w-full h-full object-cover">
+            <img src="<?= e(media($d['photo'])) ?>" class="w-full h-full object-cover">
           <?php else: ?>
             <span class="text-2xl font-bold text-slate-400"><?= e(initials($fullName ?: 'D')) ?></span>
           <?php endif; ?>

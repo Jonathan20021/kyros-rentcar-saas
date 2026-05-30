@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1E40AF"/>
+      <stop offset="100%" stop-color="#0F2F8A"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC"/>
+      <stop offset="100%" stop-color="#94A3B8"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <circle cx="650" cy="120" r="180" fill="#3B82F6" opacity="0.18"/>
+  <circle cx="150" cy="420" r="120" fill="#60A5FA" opacity="0.13"/>
+  <ellipse cx="400" cy="410" rx="340" ry="14" fill="#000" opacity="0.35"/>
+  <!-- Van: tall box body -->
+  <path d="M 130 360 L 170 220 Q 200 200 270 198 L 660 198 L 660 360 Z" fill="url(#body)"/>
+  <!-- Windshield + side windows -->
+  <path d="M 200 215 Q 220 205 270 205 L 320 205 L 320 270 L 200 270 Z" fill="url(#glass)" opacity="0.85"/>
+  <rect x="340" y="220" width="80" height="50" rx="3" fill="url(#glass)" opacity="0.85"/>
+  <rect x="440" y="220" width="80" height="50" rx="3" fill="url(#glass)" opacity="0.85"/>
+  <rect x="540" y="220" width="80" height="50" rx="3" fill="url(#glass)" opacity="0.85"/>
+  <!-- Door lines -->
+  <line x1="430" y1="290" x2="430" y2="360" stroke="#475569" stroke-width="2"/>
+  <line x1="540" y1="290" x2="540" y2="360" stroke="#475569" stroke-width="2"/>
+  <!-- Body bottom -->
+  <rect x="120" y="355" width="540" height="32" rx="12" fill="#0F172A"/>
+  <!-- Wheels -->
+  <circle cx="230" cy="395" r="40" fill="#000"/>
+  <circle cx="230" cy="395" r="26" fill="#475569"/>
+  <circle cx="230" cy="395" r="12" fill="#CBD5E1"/>
+  <circle cx="570" cy="395" r="40" fill="#000"/>
+  <circle cx="570" cy="395" r="26" fill="#475569"/>
+  <circle cx="570" cy="395" r="12" fill="#CBD5E1"/>
+  <ellipse cx="145" cy="320" rx="14" ry="8" fill="#FEF3C7"/>
+  <ellipse cx="655" cy="320" rx="14" ry="8" fill="#FEE2E2"/>
+  <text x="40" y="60" font-family="Helvetica,Arial,sans-serif" font-size="14" font-weight="700" letter-spacing="3" fill="#FFFFFF" opacity="0.55">VAN</text>
+  <text x="40" y="95" font-family="Helvetica,Arial,sans-serif" font-size="34" font-weight="700" fill="#FFFFFF">Demo</text>
+</svg>

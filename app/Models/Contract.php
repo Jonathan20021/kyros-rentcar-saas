@@ -52,4 +52,54 @@ class Contract extends Model
         );
         return sprintf('CTR-%s-%04d', $year, $max + 1);
     }
+
+    /**
+     * Ensure the contract has a share_token. If one already exists, returns it;
+     * otherwise generates a 128-bit random hex string, persists it, and returns it.
+     * The token IS the auth on the public viewing page.
+     */
+    public static function ensureShareToken(int $id, int $tenantId): ?string
+    {
+        $row = Database::selectOne(
+            "SELECT share_token FROM contracts WHERE id = :id AND tenant_id = :t AND deleted_at IS NULL LIMIT 1",
+            ['id' => $id, 't' => $tenantId]
+        );
+        if (!$row) return null;
+        if (!empty($row['share_token'])) return $row['share_token'];
+        // Generate unique token (16 bytes = 32 hex chars + 8 bytes salt for uniqueness)
+        do {
+            $tok = bin2hex(random_bytes(20));   // 40 hex chars
+            $exists = Database::scalar("SELECT 1 FROM contracts WHERE share_token = :s LIMIT 1", ['s' => $tok]);
+        } while ($exists);
+        Database::execute(
+            "UPDATE contracts SET share_token = :s, share_created_at = NOW()
+               WHERE id = :id AND tenant_id = :t",
+            ['s' => $tok, 'id' => $id, 't' => $tenantId]
+        );
+        return $tok;
+    }
+
+    /** Revoke the current token (typed wrong, leaked, etc.). */
+    public static function revokeShareToken(int $id, int $tenantId): void
+    {
+        Database::execute(
+            "UPDATE contracts SET share_token = NULL, share_created_at = NULL WHERE id = :id AND tenant_id = :t",
+            ['id' => $id, 't' => $tenantId]
+        );
+    }
+
+    /**
+     * Resolve a contract by its share_token alone — no tenant context needed because
+     * the token IS the secret. The returned row carries its OWN tenant_id which is
+     * what every downstream query must use.
+     */
+    public static function findByShareToken(string $token): ?array
+    {
+        if (!preg_match('/^[a-f0-9]{32,80}$/i', $token)) return null;
+        return Database::selectOne(
+            "SELECT * FROM contracts
+               WHERE share_token = :t AND deleted_at IS NULL LIMIT 1",
+            ['t' => $token]
+        );
+    }
 }

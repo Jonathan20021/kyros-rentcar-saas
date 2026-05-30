@@ -22,7 +22,7 @@ $publicUrl = rtrim(\App\Core\Config::get('app.url'),'/').'/r/'.$tenant['slug'];
     <?php endforeach; ?>
   </div>
 
-  <form method="POST" action="<?= url('/admin/settings') ?>" enctype="multipart/form-data" class="space-y-5">
+  <form method="POST" action="<?= url('/admin/settings') ?>" enctype="multipart/form-data" class="space-y-5" id="settingsForm">
     <?= csrf_field() ?>
 
     <!-- General -->
@@ -46,10 +46,19 @@ $publicUrl = rtrim(\App\Core\Config::get('app.url'),'/').'/r/'.$tenant['slug'];
       <div class="grid sm:grid-cols-2 gap-4">
         <div><label class="block text-sm font-medium mb-1.5">Color primario</label><input type="color" name="primary_color" value="<?= sval($tenant,'primary_color','#F23645') ?>" class="w-full h-11 rounded-xl border hairline cursor-pointer"></div>
         <div><label class="block text-sm font-medium mb-1.5">Color secundario</label><input type="color" name="secondary_color" value="<?= sval($tenant,'secondary_color','#1C2433') ?>" class="w-full h-11 rounded-xl border hairline cursor-pointer"></div>
-        <div><label class="block text-sm font-medium mb-1.5">Logo</label><input type="file" name="logo" accept="image/*" class="fld"><?php if(!empty($tenant['logo'])): ?><img src="<?= e($tenant['logo']) ?>" class="mt-2 h-10"><?php endif; ?></div>
-        <div><label class="block text-sm font-medium mb-1.5">Imagen de portada</label><input type="file" name="cover_image" accept="image/*" class="fld"><?php if(!empty($tenant['cover_image'])): ?><img src="<?= e($tenant['cover_image']) ?>" class="mt-2 h-16 w-full object-cover rounded-lg"><?php endif; ?></div>
+        <div>
+          <label class="block text-sm font-medium mb-1.5">Logo</label>
+          <input type="file" name="logo" accept="image/svg+xml,image/png,image/jpeg,image/webp" class="fld">
+          <p class="text-[11px] text-slate-400 mt-1">SVG recomendado para máxima nitidez en contratos PDF.</p>
+          <?php if(!empty($tenant['logo'])): ?><img src="<?= e(media($tenant['logo'])) ?>" class="mt-2 h-10"><?php endif; ?>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1.5">Imagen de portada</label>
+          <input type="file" name="cover_image" accept="image/png,image/jpeg,image/webp" class="fld">
+          <?php if(!empty($tenant['cover_image'])): ?><img src="<?= e(media($tenant['cover_image'])) ?>" class="mt-2 h-16 w-full object-cover rounded-lg"><?php endif; ?>
+        </div>
       </div>
-      <p class="text-xs text-slate-400 mt-3">Estos colores se aplican a tu página pública de reservas.</p>
+      <p class="text-xs text-slate-400 mt-3">Estos colores y logo se aplican en tu página pública de reservas y en los contratos PDF.</p>
     </div>
 
     <!-- Billing -->
@@ -67,3 +76,90 @@ $publicUrl = rtrim(\App\Core\Config::get('app.url'),'/').'/r/'.$tenant['slug'];
     </div>
   </form>
 </div>
+<?php \App\Core\View::push('scripts', '<script>
+/**
+ * Before the settings form submits, raster image inputs (PNG/WEBP/GIF/BMP)
+ * are re-encoded as JPEG via Canvas. dompdf cannot render PNG/WEBP without
+ * the GD extension, but JPEG renders natively via addJpegFromFile — so we
+ * normalize the upload at the browser layer where Canvas is always present.
+ * SVG and JPEG pass through unchanged.
+ */
+(function(){
+  var form = document.getElementById("settingsForm");
+  if (!form) return;
+  var rasterInputs = form.querySelectorAll("input[type=\"file\"][name=\"logo\"], input[type=\"file\"][name=\"cover_image\"]");
+  if (!rasterInputs.length) return;
+
+  function needsConvert(file){
+    return /^image\/(png|webp|gif|bmp)$/i.test(file.type);
+  }
+
+  function fileToJpegFile(file, quality){
+    return new Promise(function(resolve, reject){
+      var reader = new FileReader();
+      reader.onload = function(e){
+        var img = new Image();
+        img.onload = function(){
+          var cw = img.naturalWidth, ch = img.naturalHeight;
+          // Cap dimensions so the JPEG stays reasonable for a logo / cover.
+          var MAX = 1600;
+          if (cw > MAX || ch > MAX){
+            var s = Math.min(MAX/cw, MAX/ch);
+            cw = Math.round(cw*s); ch = Math.round(ch*s);
+          }
+          var canvas = document.createElement("canvas");
+          canvas.width = cw; canvas.height = ch;
+          var ctx = canvas.getContext("2d");
+          // White background — JPEGs have no alpha, so flatten transparency.
+          ctx.fillStyle = "#FFFFFF";
+          ctx.fillRect(0,0,cw,ch);
+          ctx.drawImage(img, 0, 0, cw, ch);
+          canvas.toBlob(function(blob){
+            if (!blob) return reject(new Error("toBlob failed"));
+            var newName = (file.name||"image").replace(/\.[a-z0-9]+$/i, "") + ".jpg";
+            try {
+              resolve(new File([blob], newName, { type: "image/jpeg" }));
+            } catch (e) {
+              // Safari fallback: blob with a name shim
+              blob.name = newName;
+              resolve(blob);
+            }
+          }, "image/jpeg", quality || 0.92);
+        };
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  var converting = false;
+  form.addEventListener("submit", function(ev){
+    if (converting) return; // already in flight from a previous click
+    var tasks = [];
+    rasterInputs.forEach(function(inp){
+      if (!inp.files || !inp.files.length) return;
+      var f = inp.files[0];
+      if (needsConvert(f)) {
+        tasks.push(fileToJpegFile(f, 0.92).then(function(jpg){
+          var dt = new DataTransfer();
+          dt.items.add(jpg);
+          inp.files = dt.files;
+        }));
+      }
+    });
+    if (!tasks.length) return;
+    ev.preventDefault();
+    converting = true;
+    Promise.all(tasks).then(function(){
+      form.submit();
+    }).catch(function(err){
+      converting = false;
+      console.error("Logo conversion failed:", err);
+      // Fall back to letting the original file through.
+      form.submit();
+    });
+  });
+})();
+</script>'); ?>

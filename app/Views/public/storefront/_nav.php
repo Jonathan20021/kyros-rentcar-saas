@@ -3,7 +3,7 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 h-[68px] flex items-center justify-between">
     <a href="<?= url('/r/' . $tenant['slug']) ?>" class="flex items-center gap-3">
       <?php if (!empty($tenant['logo'])): ?>
-        <img src="<?= e($tenant['logo']) ?>" alt="<?= e($tenant['name']) ?>" class="h-9 w-auto">
+        <img src="<?= e(media($tenant['logo'])) ?>" alt="<?= e($tenant['name']) ?>" class="h-9 w-auto">
       <?php else: ?>
         <div class="w-10 h-10 rounded-2xl grid place-items-center text-white font-black text-lg" style="background:linear-gradient(135deg,<?= e($tenant['primary_color']) ?>,<?= e($tenant['secondary_color']) ?>)"><?= e(mb_substr($tenant['name'],0,1)) ?></div>
       <?php endif; ?>

@@ -33,6 +33,11 @@ $router->get('/r/{slug}/reserva/confirmacion', 'PublicSite\\StorefrontController
 $router->get('/r/{slug}/disponibilidad', 'PublicSite\\StorefrontController@availability');
 $router->get('/r/{slug}/promo', 'PublicSite\\StorefrontController@promoCheck');
 
+// Public contract share — token = secret, no auth needed.
+$router->get('/contrato/{token}', 'PublicSite\\ContractShareController@show');
+$router->get('/contrato/{token}/pdf', 'PublicSite\\ContractShareController@pdf');
+$router->post('/contrato/{token}/firmar', 'PublicSite\\ContractShareController@sign');
+
 // ---------------------------------------------------------------------
 // Authentication
 // ---------------------------------------------------------------------
@@ -114,6 +119,8 @@ $router->get('/admin/contracts/pdf/{id}', 'Admin\\ContractController@pdf', [$aut
 $router->get('/admin/contracts/close/{id}', 'Admin\\ContractController@closeForm', [$auth, $tenant, $feat('contracts'), $perm('contracts.edit')]);
 $router->post('/admin/contracts/close/{id}', 'Admin\\ContractController@close', [$auth, $tenant, $feat('contracts'), $perm('contracts.edit')]);
 $router->post('/admin/contracts/sign/{id}', 'Admin\\ContractController@sign', [$auth, $tenant, $feat('contracts'), $perm('contracts.edit')]);
+$router->post('/admin/contracts/share/{id}', 'Admin\\ContractController@share', [$auth, $tenant, $feat('contracts'), $perm('contracts.edit')]);
+$router->post('/admin/contracts/share-revoke/{id}', 'Admin\\ContractController@revokeShare', [$auth, $tenant, $feat('contracts'), $perm('contracts.edit')]);
 
 // Payments — Business+
 $router->get('/admin/payments', 'Admin\\PaymentController@index', [$auth, $tenant, $feat('payments'), $perm('payments.view')]);

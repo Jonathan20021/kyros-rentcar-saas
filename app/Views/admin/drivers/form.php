@@ -65,7 +65,7 @@ $val = fn(string $k, $d = '') => e($isEdit ? ($driver[$k] ?? $d) : $d);
           <label class="block text-sm font-medium mb-1.5">Foto</label>
           <?php if ($isEdit && !empty($driver['photo'])): ?>
             <div class="mb-2 flex items-center gap-3">
-              <img src="<?= e($driver['photo']) ?>" class="w-16 h-16 rounded-xl object-cover border hairline">
+              <img src="<?= e(media($driver['photo'])) ?>" class="w-16 h-16 rounded-xl object-cover border hairline">
               <span class="text-xs text-slate-400">Foto actual (sube otra para reemplazar)</span>
             </div>
           <?php endif; ?>

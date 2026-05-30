@@ -61,7 +61,11 @@ $superGroups = [
   ]],
 ];
 $groups = $panel === 'super' ? $superGroups : $adminGroups;
-$brandSub = $panel === 'super' ? 'Super Admin' : ($tenant['name'] ?? 'Rent Car');
+$tenantName = $tenant['name'] ?? 'Rent Car';
+$brandMain  = $panel === 'super' ? 'Kyros Rent Car' : $tenantName;
+$brandSub   = $panel === 'super' ? 'Super Admin' : 'por Kyros Rent Car';
+$brandInitial = $panel === 'super' ? 'K' : mb_strtoupper(mb_substr(trim($tenantName), 0, 1) ?: 'K');
+$brandLogo  = $panel === 'admin' ? ($tenant['logo'] ?? null) : null;
 $planName = $tenant['plan_name'] ?? null;
 ?>
 <!DOCTYPE html>
@@ -76,33 +80,52 @@ $planName = $tenant['plan_name'] ?? null;
 <div class="flex min-h-screen">
 
   <!-- Sidebar -->
-  <aside class="fixed lg:sticky top-0 z-40 h-screen w-[260px] shrink-0 bg-white dark:bg-slate-900 border-r hairline flex flex-col transition-transform duration-200"
-         :class="open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
-    <div class="h-16 flex items-center gap-2.5 px-5 border-b hairline">
-      <div class="w-9 h-9 rounded-xl grid place-items-center text-white font-black shadow-sm" style="background:var(--grad)">K</div>
-      <div class="leading-tight min-w-0">
-        <p class="font-display font-extrabold text-[15px] text-ink dark:text-white">Kyros Rent Car</p>
-        <p class="text-[11px] text-slate-400 truncate"><?= e($brandSub) ?></p>
+  <aside class="fixed lg:sticky top-0 z-40 h-screen w-[260px] shrink-0 bg-white dark:bg-slate-900 border-r hairline flex flex-col transition-[transform,width] duration-200 ease-out"
+         :class="[
+           open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
+           collapsed ? 'lg:w-[76px]' : 'lg:w-[260px]'
+         ]">
+    <div class="h-16 flex items-center gap-2.5 px-5 border-b hairline relative"
+         :class="collapsed ? 'lg:justify-center lg:px-3' : ''">
+      <?php if ($brandLogo): ?>
+        <div class="w-9 h-9 rounded-xl overflow-hidden bg-white border hairline shrink-0 grid place-items-center">
+          <img src="<?= e(media($brandLogo)) ?>" alt="" class="max-w-full max-h-full object-contain">
+        </div>
+      <?php else: ?>
+        <div class="w-9 h-9 rounded-xl grid place-items-center text-white font-black shadow-sm shrink-0" style="background:var(--grad)"><?= e($brandInitial) ?></div>
+      <?php endif; ?>
+      <div class="leading-tight min-w-0" :class="collapsed ? 'lg:hidden' : ''">
+        <p class="font-display font-extrabold text-[15px] text-ink dark:text-white truncate" title="<?= e($brandMain) ?>"><?= e($brandMain) ?></p>
+        <p class="text-[10.5px] text-slate-400 truncate"><?= e($brandSub) ?></p>
       </div>
+      <!-- Collapse toggle — only on desktop, floats on the right edge -->
+      <button type="button" @click="toggleCollapsed()"
+              class="hidden lg:grid absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white dark:bg-slate-800 border hairline shadow-sm place-items-center text-slate-400 hover:text-brand hover:border-brand/40 transition z-10"
+              :title="collapsed ? 'Expandir menú' : 'Colapsar menú'" aria-label="Toggle sidebar">
+        <i data-lucide="chevron-left" class="w-3.5 h-3.5 transition-transform" :class="collapsed ? 'rotate-180' : ''"></i>
+      </button>
     </div>
 
-    <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-5">
+    <nav class="flex-1 overflow-y-auto overflow-x-hidden py-4 px-3 space-y-5">
       <?php foreach ($groups as $g): ?>
       <div>
-        <p class="px-3 mb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400"><?= e($g['title']) ?></p>
+        <p class="px-3 mb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400"
+           :class="collapsed ? 'lg:hidden' : ''"><?= e($g['title']) ?></p>
         <div class="space-y-0.5">
         <?php foreach ($g['items'] as $item):
           $on = $active === $item['key'];
           $locked = $panel === 'admin' && !empty($item['feature']) && !plan_has($item['feature']);
+          $tooltip = $locked ? ('Disponible en plan ' . plan_upgrade_required($item['feature'])) : $item['label'];
         ?>
           <a href="<?= $locked ? url('/admin/upgrade?feature=' . urlencode($item['feature'])) : e($item['url']) ?>"
-             class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[14px] font-medium transition
+             class="group relative flex items-center gap-3 rounded-xl text-[14px] font-medium transition
                     <?= $on ? 'text-brand bg-brand/[0.08] font-semibold' : ($locked ? 'text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/40' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-ink dark:hover:text-white') ?>"
-             <?php if ($locked): ?>title="Disponible en plan <?= e(plan_upgrade_required($item['feature'])) ?>"<?php endif; ?>>
-            <?php if ($on): ?><span class="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 rounded-r-full grad-bg"></span><?php endif; ?>
-            <i data-lucide="<?= e($item['icon']) ?>" class="w-[18px] h-[18px] <?= $on ? 'text-brand' : ($locked ? 'text-slate-300' : 'text-slate-400 group-hover:text-ink dark:group-hover:text-white') ?>"></i>
-            <span class="flex-1 truncate"><?= e($item['label']) ?></span>
-            <?php if ($locked): ?><i data-lucide="lock" class="w-3.5 h-3.5 text-slate-300"></i><?php endif; ?>
+             :class="collapsed ? 'lg:justify-center lg:px-0 lg:py-3 px-3 py-2.5' : 'px-3 py-2.5'"
+             :title="collapsed ? '<?= e(addslashes($tooltip)) ?>' : ''">
+            <?php if ($on): ?><span class="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 rounded-r-full grad-bg" :class="collapsed ? 'lg:hidden' : ''"></span><?php endif; ?>
+            <i data-lucide="<?= e($item['icon']) ?>" class="w-[18px] h-[18px] shrink-0 <?= $on ? 'text-brand' : ($locked ? 'text-slate-300' : 'text-slate-400 group-hover:text-ink dark:group-hover:text-white') ?>"></i>
+            <span class="flex-1 truncate" :class="collapsed ? 'lg:hidden' : ''"><?= e($item['label']) ?></span>
+            <?php if ($locked): ?><i data-lucide="lock" class="w-3.5 h-3.5 text-slate-300 shrink-0" :class="collapsed ? 'lg:hidden' : ''"></i><?php endif; ?>
           </a>
         <?php endforeach; ?>
         </div>
@@ -112,28 +135,41 @@ $planName = $tenant['plan_name'] ?? null;
 
     <!-- Promo card -->
     <?php if ($panel !== 'super'): ?>
-    <div class="px-3">
-      <div class="relative overflow-hidden rounded-2xl p-4 text-white" style="background:linear-gradient(150deg,var(--brand),color-mix(in srgb,var(--brand) 55%, #7a0f1c))">
-        <div class="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-white/15 blur-xl"></div>
-        <div class="relative">
-          <div class="w-8 h-8 rounded-lg bg-white/20 grid place-items-center mb-2.5"><i data-lucide="rocket" class="w-4 h-4"></i></div>
-          <p class="font-display font-bold text-[13px] leading-snug">Optimiza tu operación y vende más</p>
-          <a href="<?= url('/admin/reports') ?>" class="inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-lg bg-white text-[12px] font-semibold" style="color:var(--brand)">Ver reportes <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></a>
-        </div>
-      </div>
+    <div class="px-3" :class="collapsed ? 'lg:hidden' : ''">
+      <a href="<?= url('/admin/reports') ?>"
+         class="group relative overflow-hidden flex items-center gap-2.5 rounded-xl px-3 py-2 text-white"
+         style="background:linear-gradient(135deg,var(--brand),color-mix(in srgb,var(--brand) 55%, #7a0f1c))">
+        <div class="w-7 h-7 rounded-lg bg-white/20 grid place-items-center shrink-0"><i data-lucide="rocket" class="w-3.5 h-3.5"></i></div>
+        <p class="font-display font-bold text-[12px] leading-tight truncate flex-1">Ver reportes</p>
+        <i data-lucide="arrow-right" class="w-3.5 h-3.5 opacity-80 group-hover:translate-x-0.5 transition"></i>
+      </a>
+    </div>
+    <!-- Collapsed promo: icon-only -->
+    <div class="px-3 hidden" :class="collapsed ? 'lg:block' : 'lg:hidden'">
+      <a href="<?= url('/admin/reports') ?>" title="Ver reportes"
+         class="flex items-center justify-center w-full h-10 rounded-xl text-white"
+         style="background:linear-gradient(135deg,var(--brand),color-mix(in srgb,var(--brand) 55%, #7a0f1c))">
+        <i data-lucide="rocket" class="w-4 h-4"></i>
+      </a>
     </div>
     <?php endif; ?>
 
     <div class="p-3 border-t hairline mt-3">
       <?php if ($panel !== 'super'): ?>
       <a href="<?= url('/r/' . ($tenant['slug'] ?? '')) ?>" target="_blank"
-         class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-ink dark:hover:text-white transition">
-        <i data-lucide="external-link" class="w-[18px] h-[18px]"></i> Ver página pública
+         class="flex items-center gap-3 rounded-xl text-[13px] text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-ink dark:hover:text-white transition"
+         :class="collapsed ? 'lg:justify-center lg:px-0 lg:py-2.5 px-3 py-2.5' : 'px-3 py-2.5'"
+         :title="collapsed ? 'Ver página pública' : ''">
+        <i data-lucide="external-link" class="w-[18px] h-[18px] shrink-0"></i>
+        <span :class="collapsed ? 'lg:hidden' : ''">Ver página pública</span>
       </a>
       <?php endif; ?>
       <form method="POST" action="<?= url('/logout') ?>"><?= csrf_field() ?>
-        <button class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] text-slate-500 hover:bg-red-50 hover:text-red-600 transition">
-          <i data-lucide="log-out" class="w-[18px] h-[18px]"></i> Cerrar sesion
+        <button class="w-full flex items-center gap-3 rounded-xl text-[13px] text-slate-500 hover:bg-red-50 hover:text-red-600 transition"
+                :class="collapsed ? 'lg:justify-center lg:px-0 lg:py-2.5 px-3 py-2.5' : 'px-3 py-2.5'"
+                :title="collapsed ? 'Cerrar sesión' : ''">
+          <i data-lucide="log-out" class="w-[18px] h-[18px] shrink-0"></i>
+          <span :class="collapsed ? 'lg:hidden' : ''">Cerrar sesion</span>
         </button>
       </form>
     </div>
@@ -477,9 +513,12 @@ $planName = $tenant['plan_name'] ?? null;
   ];
   function shell(){
     return {
-      open:false, dark: localStorage.getItem('kyros-dark')==='1',
+      open:false,
+      dark: localStorage.getItem('kyros-dark')==='1',
+      collapsed: localStorage.getItem('kyros-sidebar-collapsed')==='1',
       init(){ this.$nextTick(()=>window.lucide&&lucide.createIcons()); },
       toggleDark(){ this.dark=!this.dark; localStorage.setItem('kyros-dark', this.dark?'1':'0'); this.$nextTick(()=>window.lucide&&lucide.createIcons()); },
+      toggleCollapsed(){ this.collapsed=!this.collapsed; localStorage.setItem('kyros-sidebar-collapsed', this.collapsed?'1':'0'); this.$nextTick(()=>window.lucide&&lucide.createIcons()); },
     }
   }
   function confirmModal(){

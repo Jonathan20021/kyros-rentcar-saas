@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7C2D12"/>
+      <stop offset="100%" stop-color="#3F1208"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#E2E8F0"/>
+      <stop offset="100%" stop-color="#94A3B8"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <circle cx="650" cy="120" r="180" fill="#F97316" opacity="0.18"/>
+  <circle cx="150" cy="420" r="120" fill="#FB923C" opacity="0.13"/>
+  <ellipse cx="400" cy="410" rx="340" ry="14" fill="#000" opacity="0.35"/>
+  <!-- Pickup: cabin (left) + bed (right) -->
+  <path d="M 130 360 L 170 260 Q 200 230 270 225 L 420 225 L 420 290 L 660 290 L 660 360 Z" fill="url(#body)"/>
+  <!-- Cabin glass -->
+  <path d="M 210 270 Q 235 240 285 235 L 410 235 L 410 290 L 210 290 Z" fill="url(#glass)" opacity="0.85"/>
+  <!-- Truck bed sides -->
+  <rect x="420" y="270" width="240" height="20" fill="#334155"/>
+  <!-- Wheel arches -->
+  <rect x="120" y="355" width="540" height="32" rx="12" fill="#0F172A"/>
+  <!-- Roof rails / antenna -->
+  <rect x="200" y="220" width="220" height="6" rx="3" fill="#0F172A"/>
+  <line x1="380" y1="220" x2="380" y2="190" stroke="#0F172A" stroke-width="3"/>
+  <!-- Wheels (oversized) -->
+  <circle cx="220" cy="395" r="46" fill="#000"/>
+  <circle cx="220" cy="395" r="30" fill="#475569"/>
+  <circle cx="220" cy="395" r="14" fill="#CBD5E1"/>
+  <circle cx="560" cy="395" r="46" fill="#000"/>
+  <circle cx="560" cy="395" r="30" fill="#475569"/>
+  <circle cx="560" cy="395" r="14" fill="#CBD5E1"/>
+  <ellipse cx="145" cy="325" rx="16" ry="9" fill="#FEF3C7"/>
+  <ellipse cx="655" cy="325" rx="16" ry="9" fill="#FEE2E2"/>
+  <text x="40" y="60" font-family="Helvetica,Arial,sans-serif" font-size="14" font-weight="700" letter-spacing="3" fill="#FFFFFF" opacity="0.55">PICKUP</text>
+  <text x="40" y="95" font-family="Helvetica,Arial,sans-serif" font-size="34" font-weight="700" fill="#FFFFFF">Demo</text>
+</svg>

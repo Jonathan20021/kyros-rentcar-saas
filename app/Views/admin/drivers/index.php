@@ -84,7 +84,7 @@ $kpis = [
     <div class="px-5 pt-0 pb-5 relative">
       <div class="w-20 h-20 -mt-12 rounded-2xl bg-white dark:bg-slate-900 border-4 border-white dark:border-slate-900 shadow-card overflow-hidden grid place-items-center">
         <?php if (!empty($d['photo'])): ?>
-          <img src="<?= e($d['photo']) ?>" class="w-full h-full object-cover">
+          <img src="<?= e(media($d['photo'])) ?>" class="w-full h-full object-cover">
         <?php else: ?>
           <span class="text-xl font-bold text-slate-400"><?= e(initials($fullName ?: 'D')) ?></span>
         <?php endif; ?>

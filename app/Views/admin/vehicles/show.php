@@ -28,7 +28,7 @@
       <?php if (count($gallery) > 1): ?>
       <div class="flex gap-2 mt-3">
         <?php foreach ($gallery as $g): ?>
-          <button type="button" @click="main=<?= json_encode($g) ?>" class="w-20 h-14 rounded-lg overflow-hidden border-2 bg-paper" :class="main===<?= json_encode($g) ?>?'border-brand':'border-transparent'"><img src="<?= e($g) ?>" class="w-full h-full object-contain p-1"></button>
+          <button type="button" @click="main=<?= json_encode($g) ?>" class="w-20 h-14 rounded-lg overflow-hidden border-2 bg-paper" :class="main===<?= json_encode($g) ?>?'border-brand':'border-transparent'"><img src="<?= e(media($g)) ?>" class="w-full h-full object-contain p-1"></button>
         <?php endforeach; ?>
       </div>
       <?php endif; ?>

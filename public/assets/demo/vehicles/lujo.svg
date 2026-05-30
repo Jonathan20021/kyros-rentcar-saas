@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1F2937"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FCD34D"/>
+      <stop offset="100%" stop-color="#B45309"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <circle cx="650" cy="120" r="200" fill="url(#gold)" opacity="0.10"/>
+  <circle cx="150" cy="420" r="120" fill="#FCD34D" opacity="0.08"/>
+  <!-- Gold accent line -->
+  <line x1="40" y1="450" x2="760" y2="450" stroke="url(#gold)" stroke-width="2" opacity="0.6"/>
+  <ellipse cx="400" cy="410" rx="340" ry="14" fill="#000" opacity="0.55"/>
+  <!-- Luxury sedan: lower, sleeker -->
+  <path d="M 130 365 L 190 295 Q 230 255 320 250 L 480 250 Q 550 255 600 295 L 670 365 Z" fill="url(#body)"/>
+  <path d="M 220 305 Q 250 275 320 270 L 460 270 Q 510 275 540 305 L 540 360 L 220 360 Z" fill="url(#glass)" opacity="0.9"/>
+  <path d="M 380 275 L 380 360" stroke="#1F2937" stroke-width="2"/>
+  <rect x="120" y="358" width="560" height="30" rx="14" fill="#000"/>
+  <!-- Gold accent strip -->
+  <rect x="135" y="356" width="530" height="2" fill="url(#gold)" opacity="0.7"/>
+  <!-- Wheels with gold rims -->
+  <circle cx="240" cy="395" r="38" fill="#000"/>
+  <circle cx="240" cy="395" r="24" fill="url(#gold)" opacity="0.85"/>
+  <circle cx="240" cy="395" r="12" fill="#000"/>
+  <circle cx="560" cy="395" r="38" fill="#000"/>
+  <circle cx="560" cy="395" r="24" fill="url(#gold)" opacity="0.85"/>
+  <circle cx="560" cy="395" r="12" fill="#000"/>
+  <ellipse cx="150" cy="340" rx="14" ry="7" fill="#FCD34D"/>
+  <ellipse cx="650" cy="340" rx="14" ry="7" fill="#FEE2E2"/>
+  <text x="40" y="60" font-family="Helvetica,Arial,sans-serif" font-size="13" font-weight="700" letter-spacing="4" fill="url(#gold)" opacity="0.85">PREMIUM</text>
+  <text x="40" y="100" font-family="Helvetica,Arial,sans-serif" font-size="36" font-weight="700" fill="#FFFFFF">Lujo</text>
+</svg>

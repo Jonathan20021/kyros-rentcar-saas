@@ -25,6 +25,24 @@ class ActivityLog
         );
     }
 
+    /** Record an event without an authenticated user (public / system context). */
+    public static function recordSystem(?int $tenantId, string $action, ?string $module = null, ?int $entityId = null, ?string $description = null): void
+    {
+        Database::execute(
+            "INSERT INTO activity_logs (tenant_id, user_id, action, module, entity_id, description, ip_address, user_agent)
+             VALUES (:tenant_id, NULL, :action, :module, :entity_id, :description, :ip, :ua)",
+            [
+                'tenant_id'   => $tenantId,
+                'action'      => $action,
+                'module'      => $module,
+                'entity_id'   => $entityId,
+                'description' => $description,
+                'ip'          => $_SERVER['REMOTE_ADDR'] ?? null,
+                'ua'          => substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 255),
+            ]
+        );
+    }
+
     public static function recent(int $limit = 50): array
     {
         $limit = max(1, min($limit, 200));

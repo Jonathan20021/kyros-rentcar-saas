@@ -26,9 +26,10 @@ return [
     // File uploads
     'upload_max_bytes'   => 5 * 1024 * 1024,   // 5 MB
     'upload_allowed_mime'=> [
-        'image/jpeg' => 'jpg',
-        'image/png'  => 'png',
-        'image/webp' => 'webp',
+        'image/jpeg'    => 'jpg',
+        'image/png'     => 'png',
+        'image/webp'    => 'webp',
+        'image/svg+xml' => 'svg',
         'application/pdf' => 'pdf',
     ],
 

@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#0c1a4a"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC"/>
+      <stop offset="100%" stop-color="#CBD5E1"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <circle cx="650" cy="120" r="180" fill="#3b82f6" opacity="0.18"/>
+  <circle cx="150" cy="420" r="120" fill="#60a5fa" opacity="0.15"/>
+  <!-- Road -->
+  <ellipse cx="400" cy="410" rx="340" ry="14" fill="#000" opacity="0.35"/>
+  <!-- Sedan body -->
+  <path d="M 140 360 L 200 290 Q 240 250 320 245 L 480 245 Q 540 250 580 290 L 660 360 Z" fill="url(#body)"/>
+  <path d="M 230 300 Q 260 270 320 265 L 460 265 Q 510 270 540 300 L 540 350 L 230 350 Z" fill="url(#glass)" opacity="0.85"/>
+  <path d="M 360 270 L 360 350" stroke="#475569" stroke-width="2"/>
+  <rect x="130" y="350" width="540" height="34" rx="14" fill="#F1F5F9"/>
+  <!-- Door line -->
+  <path d="M 380 295 L 380 350" stroke="#94A3B8" stroke-width="1.5"/>
+  <!-- Wheels -->
+  <circle cx="240" cy="395" r="36" fill="#0F172A"/>
+  <circle cx="240" cy="395" r="22" fill="#475569"/>
+  <circle cx="240" cy="395" r="10" fill="#E2E8F0"/>
+  <circle cx="560" cy="395" r="36" fill="#0F172A"/>
+  <circle cx="560" cy="395" r="22" fill="#475569"/>
+  <circle cx="560" cy="395" r="10" fill="#E2E8F0"/>
+  <!-- Headlights -->
+  <ellipse cx="155" cy="335" rx="14" ry="8" fill="#FDE68A"/>
+  <ellipse cx="645" cy="335" rx="14" ry="8" fill="#FEE2E2"/>
+  <!-- Label -->
+  <text x="40" y="60" font-family="Helvetica,Arial,sans-serif" font-size="14" font-weight="700" letter-spacing="3" fill="#FFFFFF" opacity="0.55">SEDÁN</text>
+  <text x="40" y="95" font-family="Helvetica,Arial,sans-serif" font-size="34" font-weight="700" fill="#FFFFFF">Demo</text>
+</svg>
