@@ -15,7 +15,7 @@ class CashClosingController extends AdminController
     {
         $tid = $this->tenantId();
         $this->renderAdmin('admin/cashbox/index', [
-            'title'    => 'Cierre de caja · Kyros',
+            'title'    => 'Cierre de caja · Kyros Rent Car',
             'active'   => 'cashbox',
             'closings' => CashClosing::listForTenant($tid),
             'todayDone'=> CashClosing::existsForDate($tid, date('Y-m-d')),
@@ -29,7 +29,7 @@ class CashClosingController extends AdminController
         $date = $request->str('date') ?: date('Y-m-d');
         if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) { $date = date('Y-m-d'); }
         $this->renderAdmin('admin/cashbox/create', [
-            'title'     => 'Nuevo cierre · Kyros',
+            'title'     => 'Nuevo cierre · Kyros Rent Car',
             'active'    => 'cashbox',
             'date'      => $date,
             'movements' => CashClosing::computeForDate($tid, $date),

@@ -17,7 +17,7 @@ class InvoiceController extends AdminController
         $tid = $this->tenantId();
         $filters = ['status' => $request->str('status')];
         $this->renderAdmin('admin/invoices/index', [
-            'title'    => 'Facturas · Kyros',
+            'title'    => 'Facturas · Kyros Rent Car',
             'active'   => 'invoices',
             'invoices' => Invoice::listForTenant($tid, $filters),
             'monthTotal' => Invoice::monthTotal($tid),
@@ -48,7 +48,7 @@ class InvoiceController extends AdminController
             }
         }
         $this->renderAdmin('admin/invoices/form', [
-            'title'     => 'Nueva factura · Kyros',
+            'title'     => 'Nueva factura · Kyros Rent Car',
             'active'    => 'invoices',
             'customers' => Customer::listForTenant($tid),
             'taxRate'   => (float) $tenant['tax_rate'],

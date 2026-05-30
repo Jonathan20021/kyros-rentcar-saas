@@ -43,7 +43,7 @@ $flashes = $_flashes ?? [];
     <div class="relative w-full max-w-md">
       <a href="<?= url('/') ?>" class="lg:hidden flex items-center gap-2.5 mb-8">
         <div class="w-10 h-10 rounded-xl grad-bg grid place-items-center font-black">K</div>
-        <span class="font-display font-extrabold text-xl">Kyros</span>
+        <span class="font-display font-extrabold text-xl">Kyros Rent Car</span>
       </a>
       <?= $content ?>
     </div>

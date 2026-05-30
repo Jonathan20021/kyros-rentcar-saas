@@ -18,7 +18,7 @@ class ReservationController extends AdminController
         $tid = $this->tenantId();
         $filters = ['status' => $request->str('status'), 'search' => $request->str('search')];
         $this->renderAdmin('admin/reservations/index', [
-            'title'        => 'Reservas · Kyros',
+            'title'        => 'Reservas · Kyros Rent Car',
             'active'       => 'reservations',
             'reservations' => Reservation::listForTenant($tid, $filters),
             'filters'      => $filters,
@@ -30,7 +30,7 @@ class ReservationController extends AdminController
     public function calendar(Request $request): void
     {
         $this->renderAdmin('admin/reservations/calendar', [
-            'title'  => 'Calendario · Kyros',
+            'title'  => 'Calendario · Kyros Rent Car',
             'active' => 'reservations',
             'breadcrumbs' => [['label'=>'Reservas','url'=>url('/admin/reservations')],['label'=>'Calendario']],
         ]);
@@ -46,7 +46,7 @@ class ReservationController extends AdminController
     {
         $tid = $this->tenantId();
         $this->renderAdmin('admin/reservations/form', [
-            'title'      => 'Nueva reserva · Kyros',
+            'title'      => 'Nueva reserva · Kyros Rent Car',
             'active'     => 'reservations',
             'customers'  => Customer::listForTenant($tid),
             'vehicles'   => Vehicle::listForTenant($tid, ['status' => '']),
@@ -301,7 +301,7 @@ class ReservationController extends AdminController
                     . '<tr><td style="color:#6b7280;padding:3px 0">Período</td><td style="font-weight:600;text-align:right">'.format_date($r['start_datetime']).' → '.format_date($r['end_datetime']).'</td></tr>'
                     . '<tr><td style="color:#6b7280;padding:3px 0">Total</td><td style="font-weight:700;text-align:right">'.money($r['total_amount']).'</td></tr></table>'
                     . '<p>Conserva este correo como comprobante. ¡Buen viaje!</p>';
-                \App\Services\Mailer::send($to, 'Contrato '.$num.' · '.($tenant['name']??'Kyros'),
+                \App\Services\Mailer::send($to, 'Contrato '.$num.' · '.($tenant['name']??'Kyros Rent Car'),
                     \App\Services\Mailer::layout('Contrato generado', $body, $tenant), $tenant['email'] ?? null);
             }
         } catch (\Throwable $e) { \App\Core\Logger::error('contract mail: '.$e->getMessage()); }
@@ -357,7 +357,7 @@ class ReservationController extends AdminController
                         . '<tr><td style="color:#6b7280;padding:3px 0">Período</td><td style="font-weight:600;text-align:right">'.format_date($reservation['start_datetime']).' → '.format_date($reservation['end_datetime']).'</td></tr>'
                         . '<tr><td style="color:#6b7280;padding:3px 0">Total</td><td style="font-weight:700;text-align:right">'.money($reservation['total_amount']).'</td></tr></table>'
                         . '<p>Te esperamos. ¡Gracias por elegirnos!</p>';
-                    \App\Services\Mailer::send($to, 'Reserva confirmada · '.($tenant['name']??'Kyros'),
+                    \App\Services\Mailer::send($to, 'Reserva confirmada · '.($tenant['name']??'Kyros Rent Car'),
                         \App\Services\Mailer::layout('Reserva confirmada ✓', $body, $tenant), $tenant['email'] ?? null);
                 } catch (\Throwable $e) { \App\Core\Logger::error('confirm mail: '.$e->getMessage()); }
             }

@@ -21,7 +21,7 @@ class ApiController extends AdminController
         $root = preg_replace('#/public/?$#', '', rtrim(Config::get('app.url'), '/'));
         $base = $root . '/api/v1';
         $this->renderAdmin('admin/api/index', [
-            'title'   => 'API & Integraciones · Kyros',
+            'title'   => 'API & Integraciones · Kyros Rent Car',
             'active'  => 'api',
             'keys'    => ApiKey::listForTenant($tid),
             'apiBase' => $base,

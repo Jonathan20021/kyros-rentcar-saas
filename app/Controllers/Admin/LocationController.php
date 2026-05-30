@@ -13,7 +13,7 @@ class LocationController extends AdminController
     {
         $tid = $this->tenantId();
         $this->renderAdmin('admin/locations/index', [
-            'title'     => 'Sucursales · Kyros',
+            'title'     => 'Sucursales · Kyros Rent Car',
             'active'    => 'locations',
             'locations' => Location::listWithCounts($tid),
             'breadcrumbs' => [['label'=>'Dashboard','url'=>url('/admin/dashboard')],['label'=>'Sucursales']],
@@ -34,7 +34,7 @@ class LocationController extends AdminController
     protected function form(?array $location): void
     {
         $this->renderAdmin('admin/locations/form', [
-            'title'    => ($location ? 'Editar' : 'Nueva') . ' sucursal · Kyros',
+            'title'    => ($location ? 'Editar' : 'Nueva') . ' sucursal · Kyros Rent Car',
             'active'   => 'locations',
             'location' => $location,
             'breadcrumbs' => [['label'=>'Sucursales','url'=>url('/admin/locations')],['label'=>$location ? 'Editar' : 'Nueva']],

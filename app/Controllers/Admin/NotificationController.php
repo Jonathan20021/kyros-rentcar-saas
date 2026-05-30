@@ -12,7 +12,7 @@ class NotificationController extends AdminController
         $tid = $this->tenantId();
         $onlyUnread = $request->str('filter') === 'unread';
         $this->renderAdmin('admin/notifications/index', [
-            'title'   => 'Notificaciones · Kyros',
+            'title'   => 'Notificaciones · Kyros Rent Car',
             'active'  => '',
             'items'   => Notification::allForTenant($tid, $onlyUnread),
             'unread'  => Notification::unreadCount($tid),

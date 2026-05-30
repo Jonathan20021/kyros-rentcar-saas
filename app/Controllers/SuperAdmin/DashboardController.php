@@ -39,7 +39,7 @@ class DashboardController extends Controller
         );
 
         $this->view('superadmin/dashboard', [
-            'title'   => 'Super Admin · Kyros',
+            'title'   => 'Super Admin · Kyros Rent Car',
             'panel'   => 'super',
             'active'  => 'dashboard',
             'stats'   => $stats,

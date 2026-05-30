@@ -142,7 +142,7 @@ class AuthController extends Controller
     public function showRegister(Request $request): void
     {
         if (Auth::check()) { $this->redirect('/dashboard'); }
-        $this->view('auth/register', ['title' => 'Crear mi rent car · Kyros'], 'auth');
+        $this->view('auth/register', ['title' => 'Crear mi rent car · Kyros Rent Car'], 'auth');
     }
 
     public function register(Request $request): void
@@ -238,7 +238,7 @@ class AuthController extends Controller
     // ---- FORGOT / RESET -------------------------------------------------
     public function showForgot(Request $request): void
     {
-        $this->view('auth/forgot', ['title' => 'Recuperar contrasena · Kyros'], 'auth');
+        $this->view('auth/forgot', ['title' => 'Recuperar contrasena · Kyros Rent Car'], 'auth');
     }
 
     public function forgot(Request $request): void
@@ -259,7 +259,7 @@ class AuthController extends Controller
             try {
                 $body = '<p>Recibimos una solicitud para restablecer tu contraseña.</p>'
                     . '<p>El enlace expira en 1 hora. Si no fuiste tú, ignora este correo.</p>';
-                \App\Services\Mailer::send($email, 'Restablece tu contraseña · Kyros',
+                \App\Services\Mailer::send($email, 'Restablece tu contraseña · Kyros Rent Car',
                     \App\Services\Mailer::layout('Restablecer contraseña', $body, null, ['label'=>'Crear nueva contraseña','url'=>$link]));
             } catch (\Throwable $e) { \App\Core\Logger::error('reset mail: ' . $e->getMessage()); }
         }
@@ -269,7 +269,7 @@ class AuthController extends Controller
 
     public function showReset(Request $request, string $token): void
     {
-        $this->view('auth/reset', ['title' => 'Nueva contrasena · Kyros', 'token' => $token], 'auth');
+        $this->view('auth/reset', ['title' => 'Nueva contrasena · Kyros Rent Car', 'token' => $token], 'auth');
     }
 
     public function reset(Request $request): void

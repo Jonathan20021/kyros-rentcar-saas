@@ -19,7 +19,7 @@ class PaymentController extends AdminController
         $tid = $this->tenantId();
         $filters = ['status' => $request->str('status')];
         $this->renderAdmin('admin/payments/index', [
-            'title'    => 'Pagos · Kyros',
+            'title'    => 'Pagos · Kyros Rent Car',
             'active'   => 'payments',
             'payments' => Payment::listForTenant($tid, $filters),
             'filters'  => $filters,
@@ -38,7 +38,7 @@ class PaymentController extends AdminController
             ['id'=>$contractId,'t'=>$tid]
         ) : null;
         $this->renderAdmin('admin/payments/form', [
-            'title'    => 'Registrar pago · Kyros',
+            'title'    => 'Registrar pago · Kyros Rent Car',
             'active'   => 'payments',
             'contract' => $contract,
             'contracts'=> Database::select("SELECT ct.id, ct.contract_number, ct.balance_due, CONCAT(c.first_name,' ',c.last_name) AS customer_name FROM contracts ct JOIN customers c ON c.id=ct.customer_id WHERE ct.tenant_id=:t AND ct.deleted_at IS NULL AND ct.status IN ('active','overdue','finished') ORDER BY ct.created_at DESC", ['t'=>$tid]),

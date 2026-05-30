@@ -18,7 +18,7 @@ class ContractController extends AdminController
         $tid = $this->tenantId();
         $filters = ['status' => $request->str('status')];
         $this->renderAdmin('admin/contracts/index', [
-            'title'     => 'Contratos · Kyros',
+            'title'     => 'Contratos · Kyros Rent Car',
             'active'    => 'contracts',
             'contracts' => Contract::listForTenant($tid, $filters),
             'filters'   => $filters,

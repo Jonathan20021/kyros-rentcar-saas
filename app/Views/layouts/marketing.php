@@ -27,7 +27,7 @@ $flashes = $_flashes ?? [];
          :class="scrolled ? 'bg-[#141E30]/85 backdrop-blur-xl border border-white/[0.08] shadow-soft' : ''">
       <a href="<?= url('/') ?>" class="flex items-center gap-2.5">
         <div class="w-8 h-8 rounded-lg grad-bg grid place-items-center font-black text-white text-sm">K</div>
-        <span class="font-display font-extrabold text-[17px] tracking-tight">Kyros</span>
+        <span class="font-display font-extrabold text-[17px] tracking-tight">Kyros Rent Car</span>
       </a>
       <nav class="hidden md:flex items-center gap-1 text-[14px] font-medium">
         <a href="#features" :class="sec==='features'?'text-white bg-white/10':'text-white/55 hover:text-white'" class="px-3 py-1.5 rounded-lg transition">Plataforma</a>
@@ -46,35 +46,67 @@ $flashes = $_flashes ?? [];
 <?= $content ?>
 
 <!-- Footer -->
-<footer class="relative border-t border-white/10 mt-10">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-14 grid md:grid-cols-4 gap-10">
-    <div class="md:col-span-2">
+<footer class="relative border-t border-white/[0.07] bg-[#0B1120] mt-10">
+  <div class="max-w-7xl mx-auto px-5 sm:px-6 py-16 grid md:grid-cols-12 gap-10">
+    <!-- Brand block -->
+    <div class="md:col-span-5">
       <div class="flex items-center gap-2.5 mb-4">
-        <div class="w-9 h-9 rounded-xl grad-bg grid place-items-center font-black">K</div>
-        <span class="font-display font-extrabold text-lg">Kyros Rent Car</span>
+        <div class="w-10 h-10 rounded-xl grad-bg grid place-items-center font-black text-white">K</div>
+        <span class="font-display font-extrabold text-xl tracking-tight">Kyros Rent Car</span>
       </div>
-      <p class="text-white/50 text-sm max-w-sm">La plataforma de clase mundial para administrar tu rent car: flotilla, reservas, contratos, pagos y tu pagina publica.</p>
+      <p class="text-white/55 text-[14.5px] max-w-sm leading-relaxed">El sistema operativo de tu rent car. Flotilla, reservas, contratos, pagos y página pública — en una plataforma.</p>
+
+      <!-- Status -->
+      <a href="#" class="inline-flex items-center gap-2 mt-6 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[12.5px] text-emerald-400 hover:bg-emerald-500/15 transition">
+        <span class="relative w-2 h-2 rounded-full bg-emerald-400">
+          <span class="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-60"></span>
+        </span>
+        Todos los sistemas operativos
+      </a>
     </div>
-    <div>
-      <p class="font-semibold text-sm mb-3">Producto</p>
-      <ul class="space-y-2 text-sm text-white/50">
-        <li><a href="#features" class="hover:text-white">Plataforma</a></li>
-        <li><a href="#planes" class="hover:text-white">Planes</a></li>
-        <li><a href="<?= url('/r/kyros-rent-car') ?>" class="hover:text-white">Demo en vivo</a></li>
+
+    <div class="md:col-span-2">
+      <p class="font-semibold text-[13px] text-white/85 mb-4 uppercase tracking-wider">Producto</p>
+      <ul class="space-y-2.5 text-[14px] text-white/55">
+        <li><a href="#features" class="hover:text-white transition">Plataforma</a></li>
+        <li><a href="#showcase" class="hover:text-white transition">Recorrido</a></li>
+        <li><a href="#planes" class="hover:text-white transition">Planes</a></li>
+        <li><a href="<?= url('/r/kyros-rent-car') ?>" class="hover:text-white transition flex items-center gap-1">Demo en vivo <i data-lucide="external-link" class="w-3 h-3"></i></a></li>
       </ul>
     </div>
-    <div>
-      <p class="font-semibold text-sm mb-3">Cuenta</p>
-      <ul class="space-y-2 text-sm text-white/50">
-        <li><a href="<?= url('/login') ?>" class="hover:text-white">Iniciar sesion</a></li>
-        <li><a href="<?= url('/register') ?>" class="hover:text-white">Crear rent car</a></li>
+
+    <div class="md:col-span-2">
+      <p class="font-semibold text-[13px] text-white/85 mb-4 uppercase tracking-wider">Cuenta</p>
+      <ul class="space-y-2.5 text-[14px] text-white/55">
+        <li><a href="<?= url('/login') ?>" class="hover:text-white transition">Iniciar sesión</a></li>
+        <li><a href="<?= url('/login#demo') ?>" class="hover:text-white transition">Probar demo · 5h</a></li>
+        <li><a href="<?= url('/register') ?>" class="hover:text-white transition">Crear rent car</a></li>
       </ul>
+    </div>
+
+    <div class="md:col-span-3">
+      <p class="font-semibold text-[13px] text-white/85 mb-4 uppercase tracking-wider">Contacto</p>
+      <ul class="space-y-2.5 text-[14px] text-white/55">
+        <li class="flex items-start gap-2"><i data-lucide="mail" class="w-3.5 h-3.5 mt-1 shrink-0"></i><a href="mailto:soporte@kyrosrd.com" class="hover:text-white transition">soporte@kyrosrd.com</a></li>
+        <li class="flex items-start gap-2"><i data-lucide="map-pin" class="w-3.5 h-3.5 mt-1 shrink-0"></i>Santo Domingo, RD</li>
+      </ul>
+      <div class="flex items-center gap-2 mt-5">
+        <a href="#" class="w-9 h-9 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.07] grid place-items-center text-white/55 hover:text-white transition"><i data-lucide="twitter" class="w-4 h-4"></i></a>
+        <a href="#" class="w-9 h-9 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.07] grid place-items-center text-white/55 hover:text-white transition"><i data-lucide="instagram" class="w-4 h-4"></i></a>
+        <a href="#" class="w-9 h-9 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.07] grid place-items-center text-white/55 hover:text-white transition"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
+      </div>
     </div>
   </div>
-  <div class="border-t border-white/10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-white/40">
-      <p>&copy; <?= date('Y') ?> Kyros Rent Car. Todos los derechos reservados.</p>
-      <p>Hecho con precision para rent cars de clase mundial.</p>
+
+  <!-- Bottom bar -->
+  <div class="border-t border-white/[0.06]">
+    <div class="max-w-7xl mx-auto px-5 sm:px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-[12.5px] text-white/45">
+      <p>&copy; <?= date('Y') ?> Kyros Rent Car · Todos los derechos reservados.</p>
+      <div class="flex items-center gap-5">
+        <a href="#" class="hover:text-white transition">Términos</a>
+        <a href="#" class="hover:text-white transition">Privacidad</a>
+        <a href="#" class="hover:text-white transition">Seguridad</a>
+      </div>
     </div>
   </div>
 </footer>

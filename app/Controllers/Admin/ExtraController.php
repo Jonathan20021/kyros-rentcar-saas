@@ -13,7 +13,7 @@ class ExtraController extends AdminController
         $tid = $this->tenantId();
         $editId = $request->int('edit');
         $this->renderAdmin('admin/extras/index', [
-            'title'   => 'Servicios adicionales · Kyros',
+            'title'   => 'Servicios adicionales · Kyros Rent Car',
             'active'  => 'extras',
             'extras'  => Extra::listWithUsage($tid),
             'editing' => $editId ? Extra::find($editId, $tid) : null,

@@ -69,7 +69,7 @@ out('==================================================');
 out('Accede a: ' . (require __DIR__ . '/config/app.php')['url']);
 out('');
 out('Credenciales demo:');
-out('  Super Admin: admin@kyrosrentcar.com / Admin123*');
+out('  Super Admin: admin@kyrosrd.com / Admin123*');
 out('  Rent Car:    owner@demo.com         / Demo123*');
 out('');
 out('IMPORTANTE: cambia estas credenciales en produccion.');

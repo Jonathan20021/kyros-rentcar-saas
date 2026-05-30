@@ -12,7 +12,7 @@ class SettingController extends AdminController
     public function index(Request $request): void
     {
         $this->renderAdmin('admin/settings/index', [
-            'title'  => 'Configuracion · Kyros',
+            'title'  => 'Configuracion · Kyros Rent Car',
             'active' => 'settings',
             'tenant' => Tenant::find($this->tenantId(), null),
             'breadcrumbs' => [['label'=>'Dashboard','url'=>url('/admin/dashboard')],['label'=>'Configuracion']],

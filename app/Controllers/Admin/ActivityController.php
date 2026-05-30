@@ -55,7 +55,7 @@ class ActivityController extends AdminController
         ) ?? ['total'=>0,'last_24h'=>0,'today'=>0,'unique_users'=>0];
 
         $this->renderAdmin('admin/activity/index', [
-            'title'       => 'Actividad · Kyros',
+            'title'       => 'Actividad · Kyros Rent Car',
             'active'      => 'activity',
             'entries'     => $entries,
             'modules'     => $modules,

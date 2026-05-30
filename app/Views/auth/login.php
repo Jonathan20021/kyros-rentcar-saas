@@ -49,7 +49,7 @@
 
     <div class="mt-8 glass rounded-2xl p-4 text-xs text-white/55">
       <p class="font-semibold text-white/75 mb-1.5 flex items-center gap-1.5"><i data-lucide="key-round" class="w-3.5 h-3.5"></i> Credenciales demo (cuenta persistente)</p>
-      <p>Super Admin: <b class="text-white/85 font-mono">admin@kyrosrentcar.com</b> / Admin123*</p>
+      <p>Super Admin: <b class="text-white/85 font-mono">admin@kyrosrd.com</b> / Admin123*</p>
       <p>Rent Car: <b class="text-white/85 font-mono">owner@demo.com</b> / Demo123*</p>
     </div>
   </div>

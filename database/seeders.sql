@@ -93,11 +93,11 @@ WHERE `slug` IN ('dashboard.view','reservations.view','contracts.view');
 
 -- ---------------------------------------------------------------------
 -- SUPER ADMIN USER  (tenant_id NULL)
---   email: admin@kyrosrentcar.com  /  password: Admin123*
+--   email: admin@kyrosrd.com  /  password: Admin123*
 -- ---------------------------------------------------------------------
-DELETE FROM `users` WHERE `email` = 'admin@kyrosrentcar.com' AND `tenant_id` IS NULL;
+DELETE FROM `users` WHERE `email` = 'admin@kyrosrd.com' AND `tenant_id` IS NULL;
 INSERT INTO `users` (`tenant_id`,`role_id`,`name`,`email`,`password`,`status`,`email_verified_at`) VALUES
-(NULL, 1, 'Kyros Super Admin', 'admin@kyrosrentcar.com',
+(NULL, 1, 'Kyros Super Admin', 'admin@kyrosrd.com',
  '$2y$10$cDR1fa8onuQwoQ4Ixd1vMerykz2J.HHe2H30kCuLbFJqPq9XzsOTu', 'active', NOW());
 
 SET FOREIGN_KEY_CHECKS = 1;

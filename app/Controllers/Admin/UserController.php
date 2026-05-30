@@ -23,7 +23,7 @@ class UserController extends AdminController
         $tid = $this->tenantId();
         $tenant = Tenant::withPlan($tid);
         $this->renderAdmin('admin/users/index', [
-            'title'   => 'Equipo · Kyros',
+            'title'   => 'Equipo · Kyros Rent Car',
             'active'  => 'users',
             'users'   => User::forTenant($tid),
             'count'   => User::countForTenant($tid),
@@ -40,7 +40,7 @@ class UserController extends AdminController
             $this->redirect('/admin/users');
         }
         $this->renderAdmin('admin/users/form', [
-            'title'  => 'Invitar usuario · Kyros',
+            'title'  => 'Invitar usuario · Kyros Rent Car',
             'active' => 'users',
             'user'   => null,
             'roles'  => $this->roles(),
@@ -111,7 +111,7 @@ class UserController extends AdminController
     {
         $user = $this->findTenantUser((int) $id);
         $this->renderAdmin('admin/users/form', [
-            'title'  => 'Editar usuario · Kyros',
+            'title'  => 'Editar usuario · Kyros Rent Car',
             'active' => 'users',
             'user'   => $user,
             'roles'  => $this->roles(),

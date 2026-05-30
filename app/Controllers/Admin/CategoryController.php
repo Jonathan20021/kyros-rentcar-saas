@@ -13,7 +13,7 @@ class CategoryController extends AdminController
         $tid = $this->tenantId();
         $editId = $request->int('edit');
         $this->renderAdmin('admin/categories/index', [
-            'title'      => 'Categorías · Kyros',
+            'title'      => 'Categorías · Kyros Rent Car',
             'active'     => 'categories',
             'categories' => VehicleCategory::listWithCounts($tid),
             'editing'    => $editId ? VehicleCategory::find($editId, $tid) : null,

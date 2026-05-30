@@ -107,7 +107,7 @@ http://localhost/kyros-rentcar-saas/public/
 
 | Rol | Email | Contraseña |
 |-----|-------|-----------|
-| Super Admin Kyros | `admin@kyrosrentcar.com` | `Admin123*` |
+| Super Admin Kyros Rent Car | `admin@kyrosrd.com` | `Admin123*` |
 | Dueño Rent Car (demo) | `owner@demo.com` | `Demo123*` |
 
 Página pública demo: `http://localhost/kyros-rentcar-saas/public/r/kyros-rent-car`

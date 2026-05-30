@@ -151,7 +151,7 @@ class DashboardController extends AdminController
     protected function tenantName(): string
     {
         $t = \App\Models\Tenant::find($this->tenantId(), null);
-        return $t['name'] ?? 'Kyros';
+        return $t['name'] ?? 'Kyros Rent Car';
     }
 
     /** JSON endpoint for dashboard charts (used by Fetch). */

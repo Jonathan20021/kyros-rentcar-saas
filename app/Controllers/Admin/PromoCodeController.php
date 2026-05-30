@@ -16,7 +16,7 @@ class PromoCodeController extends AdminController
             'search' => $request->str('search'),
         ];
         $this->renderAdmin('admin/promos/index', [
-            'title'   => 'Códigos promocionales · Kyros',
+            'title'   => 'Códigos promocionales · Kyros Rent Car',
             'active'  => 'promos',
             'promos'  => PromoCode::listForTenant($tid, $filters),
             'filters' => $filters,
@@ -27,7 +27,7 @@ class PromoCodeController extends AdminController
     public function create(Request $request): void
     {
         $this->renderAdmin('admin/promos/form', [
-            'title'  => 'Nuevo código · Kyros',
+            'title'  => 'Nuevo código · Kyros Rent Car',
             'active' => 'promos',
             'promo'  => null,
             'breadcrumbs' => [['label'=>'Promociones','url'=>url('/admin/promos')],['label'=>'Nuevo']],
@@ -39,7 +39,7 @@ class PromoCodeController extends AdminController
         $tid = $this->tenantId();
         $promo = PromoCode::findOrFail((int) $id, $tid);
         $this->renderAdmin('admin/promos/form', [
-            'title'  => 'Editar código · Kyros',
+            'title'  => 'Editar código · Kyros Rent Car',
             'active' => 'promos',
             'promo'  => $promo,
             'breadcrumbs' => [['label'=>'Promociones','url'=>url('/admin/promos')],['label'=>$promo['code']]],

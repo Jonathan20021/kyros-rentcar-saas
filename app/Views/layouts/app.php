@@ -67,7 +67,7 @@ $planName = $tenant['plan_name'] ?? null;
 <!DOCTYPE html>
 <html lang="es" :class="{ 'dark': dark }" x-data="shell()" x-init="init()" x-cloak>
 <head>
-<?= View::renderPartial('layouts/_assets', ['title' => $title ?? 'Kyros', 'accent' => $accent]) ?>
+<?= View::renderPartial('layouts/_assets', ['title' => $title ?? 'Kyros Rent Car', 'accent' => $accent]) ?>
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -81,7 +81,7 @@ $planName = $tenant['plan_name'] ?? null;
     <div class="h-16 flex items-center gap-2.5 px-5 border-b hairline">
       <div class="w-9 h-9 rounded-xl grid place-items-center text-white font-black shadow-sm" style="background:var(--grad)">K</div>
       <div class="leading-tight min-w-0">
-        <p class="font-display font-extrabold text-[15px] text-ink dark:text-white">Kyros</p>
+        <p class="font-display font-extrabold text-[15px] text-ink dark:text-white">Kyros Rent Car</p>
         <p class="text-[11px] text-slate-400 truncate"><?= e($brandSub) ?></p>
       </div>
     </div>

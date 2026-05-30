@@ -25,7 +25,7 @@ class ExpenseController extends AdminController
         $monthExpense = Expense::totalThisMonth($tid);
         $monthIncome  = Payment::incomeThisMonth($tid);
         $this->renderAdmin('admin/expenses/index', [
-            'title'    => 'Gastos · Kyros',
+            'title'    => 'Gastos · Kyros Rent Car',
             'active'   => 'expenses',
             'expenses' => Expense::listForTenant($tid, $filters),
             'filters'  => $filters,
@@ -52,7 +52,7 @@ class ExpenseController extends AdminController
     {
         $tid = $this->tenantId();
         $this->renderAdmin('admin/expenses/form', [
-            'title'     => ($expense ? 'Editar' : 'Nuevo') . ' gasto · Kyros',
+            'title'     => ($expense ? 'Editar' : 'Nuevo') . ' gasto · Kyros Rent Car',
             'active'    => 'expenses',
             'expense'   => $expense,
             'locations' => Location::activeForTenant($tid),

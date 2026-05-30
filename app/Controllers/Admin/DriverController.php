@@ -18,7 +18,7 @@ class DriverController extends AdminController
             'search' => $request->str('search'),
         ];
         $this->renderAdmin('admin/drivers/index', [
-            'title'        => 'Choferes · Kyros',
+            'title'        => 'Choferes · Kyros Rent Car',
             'active'       => 'drivers',
             'drivers'      => Driver::listForTenant($tid, $filters),
             'statusCounts' => Driver::statusCounts($tid),
@@ -45,7 +45,7 @@ class DriverController extends AdminController
             'earned'  => (float) Database::scalar("SELECT COALESCE(SUM(driver_cost),0) FROM contracts WHERE tenant_id=:t AND driver_id=:d AND deleted_at IS NULL", ['t'=>$tid,'d'=>$driver['id']]),
         ];
         $this->renderAdmin('admin/drivers/show', [
-            'title'  => trim($driver['first_name'].' '.$driver['last_name']).' · Kyros',
+            'title'  => trim($driver['first_name'].' '.$driver['last_name']).' · Kyros Rent Car',
             'active' => 'drivers',
             'driver' => $driver,
             'recentTrips' => $recentTrips,
@@ -57,7 +57,7 @@ class DriverController extends AdminController
     public function create(Request $request): void
     {
         $this->renderAdmin('admin/drivers/form', [
-            'title'  => 'Nuevo chofer · Kyros',
+            'title'  => 'Nuevo chofer · Kyros Rent Car',
             'active' => 'drivers',
             'driver' => null,
             'breadcrumbs' => [['label'=>'Choferes','url'=>url('/admin/drivers')],['label'=>'Nuevo']],
@@ -69,7 +69,7 @@ class DriverController extends AdminController
         $tid = $this->tenantId();
         $driver = Driver::findOrFail((int) $id, $tid);
         $this->renderAdmin('admin/drivers/form', [
-            'title'  => 'Editar chofer · Kyros',
+            'title'  => 'Editar chofer · Kyros Rent Car',
             'active' => 'drivers',
             'driver' => $driver,
             'breadcrumbs' => [['label'=>'Choferes','url'=>url('/admin/drivers')],['label'=>'Editar']],

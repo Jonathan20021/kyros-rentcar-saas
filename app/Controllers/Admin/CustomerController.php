@@ -36,7 +36,7 @@ class CustomerController extends AdminController
             'balance'      => (float) Database::scalar("SELECT COALESCE(SUM(balance_due),0) FROM contracts WHERE tenant_id=:t AND customer_id=:c AND deleted_at IS NULL", ['t'=>$tid,'c'=>(int)$id]),
         ];
         $this->renderAdmin('admin/customers/show', [
-            'title'    => trim($customer['first_name'].' '.$customer['last_name']).' · Kyros',
+            'title'    => trim($customer['first_name'].' '.$customer['last_name']).' · Kyros Rent Car',
             'active'   => 'customers',
             'customer' => $customer,
             'reservations' => $reservations,
@@ -52,7 +52,7 @@ class CustomerController extends AdminController
         $tid = $this->tenantId();
         $filters = ['status' => $request->str('status'), 'search' => $request->str('search')];
         $this->renderAdmin('admin/customers/index', [
-            'title'     => 'Clientes · Kyros',
+            'title'     => 'Clientes · Kyros Rent Car',
             'active'    => 'customers',
             'customers' => Customer::listForTenant($tid, $filters),
             'filters'   => $filters,
@@ -63,7 +63,7 @@ class CustomerController extends AdminController
     public function create(Request $request): void
     {
         $this->renderAdmin('admin/customers/form', [
-            'title'    => 'Nuevo cliente · Kyros',
+            'title'    => 'Nuevo cliente · Kyros Rent Car',
             'active'   => 'customers',
             'customer' => null,
             'breadcrumbs' => [['label'=>'Clientes','url'=>url('/admin/customers')],['label'=>'Nuevo']],
@@ -90,7 +90,7 @@ class CustomerController extends AdminController
         $tid = $this->tenantId();
         $customer = Customer::findOrFail((int) $id, $tid);
         $this->renderAdmin('admin/customers/form', [
-            'title'    => 'Editar cliente · Kyros',
+            'title'    => 'Editar cliente · Kyros Rent Car',
             'active'   => 'customers',
             'customer' => $customer,
             'breadcrumbs' => [['label'=>'Clientes','url'=>url('/admin/customers')],['label'=>'Editar']],

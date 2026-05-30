@@ -17,7 +17,7 @@ class IncidentController extends AdminController
         $tid = $this->tenantId();
         $filters = ['status' => $request->str('status'), 'type' => $request->str('type')];
         $this->renderAdmin('admin/incidents/index', [
-            'title'    => 'Incidencias · Kyros',
+            'title'    => 'Incidencias · Kyros Rent Car',
             'active'   => 'incidents',
             'incidents'=> Incident::listForTenant($tid, $filters),
             'counts'   => Incident::statusCounts($tid),
@@ -30,7 +30,7 @@ class IncidentController extends AdminController
     {
         $tid = $this->tenantId();
         $this->renderAdmin('admin/incidents/form', [
-            'title'     => 'Nueva incidencia · Kyros',
+            'title'     => 'Nueva incidencia · Kyros Rent Car',
             'active'    => 'incidents',
             'customers' => Customer::listForTenant($tid),
             'vehicles'  => Vehicle::listForTenant($tid, ['status'=>'']),
@@ -73,7 +73,7 @@ class IncidentController extends AdminController
         $incident['created_by_name'] = $incident['created_by'] ? Database::scalar("SELECT name FROM users WHERE id = :id", ['id'=>(int)$incident['created_by']]) : null;
 
         $this->renderAdmin('admin/incidents/show', [
-            'title'    => 'Incidencia #' . $incident['id'] . ' · Kyros',
+            'title'    => 'Incidencia #' . $incident['id'] . ' · Kyros Rent Car',
             'active'   => 'incidents',
             'incident' => $incident,
             'breadcrumbs' => [['label'=>'Incidencias','url'=>url('/admin/incidents')],['label'=>'#' . $incident['id']]],

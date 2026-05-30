@@ -131,13 +131,13 @@ $tier = ['starter'=>1,'business'=>2,'premium'=>3];
       <?php if ($isCurrent): ?>
         <button disabled class="w-full k-btn k-btn-outline opacity-60 cursor-default">Plan actual</button>
       <?php elseif ($isUpgrade): ?>
-        <a href="mailto:soporte@kyrosrentcar.com?subject=<?= rawurlencode('Quiero actualizar a ' . $p['name']) ?>" class="w-full k-btn k-btn-grad">Actualizar <i data-lucide="arrow-right" class="w-4 h-4"></i></a>
+        <a href="mailto:soporte@kyrosrd.com?subject=<?= rawurlencode('Quiero actualizar a ' . $p['name']) ?>" class="w-full k-btn k-btn-grad">Actualizar <i data-lucide="arrow-right" class="w-4 h-4"></i></a>
       <?php else: ?>
-        <a href="mailto:soporte@kyrosrentcar.com?subject=<?= rawurlencode('Cambio a ' . $p['name']) ?>" class="w-full k-btn k-btn-outline">Cambiar a este plan</a>
+        <a href="mailto:soporte@kyrosrd.com?subject=<?= rawurlencode('Cambio a ' . $p['name']) ?>" class="w-full k-btn k-btn-outline">Cambiar a este plan</a>
       <?php endif; ?>
     </div>
   </div>
   <?php endforeach; ?>
 </div>
 
-<p class="text-center text-sm text-slate-400 mt-6">¿Necesitas un plan a medida? Escríbenos a <a href="mailto:soporte@kyrosrentcar.com" class="text-brand font-medium hover:underline">soporte@kyrosrentcar.com</a>.</p>
+<p class="text-center text-sm text-slate-400 mt-6">¿Necesitas un plan a medida? Escríbenos a <a href="mailto:soporte@kyrosrd.com" class="text-brand font-medium hover:underline">soporte@kyrosrd.com</a>.</p>

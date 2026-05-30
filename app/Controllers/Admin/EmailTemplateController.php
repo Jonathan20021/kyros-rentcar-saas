@@ -13,7 +13,7 @@ class EmailTemplateController extends AdminController
     public function index(Request $request): void
     {
         $this->renderAdmin('admin/emails/index', [
-            'title'     => 'Plantillas de correo · Kyros',
+            'title'     => 'Plantillas de correo · Kyros Rent Car',
             'active'    => 'emails',
             'templates' => EmailTemplate::listForTenant($this->tenantId()),
             'breadcrumbs' => [['label'=>'Dashboard','url'=>url('/admin/dashboard')],['label'=>'Plantillas de correo']],
@@ -25,7 +25,7 @@ class EmailTemplateController extends AdminController
         $tpl = EmailTemplate::get($this->tenantId(), $code);
         if (!$tpl) { $this->abort(404); }
         $this->renderAdmin('admin/emails/form', [
-            'title'    => 'Editar plantilla · Kyros',
+            'title'    => 'Editar plantilla · Kyros Rent Car',
             'active'   => 'emails',
             'tpl'      => $tpl,
             'breadcrumbs' => [['label'=>'Plantillas','url'=>url('/admin/emails')],['label'=>$tpl['label']]],

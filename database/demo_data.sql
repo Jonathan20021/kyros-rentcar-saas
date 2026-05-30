@@ -14,7 +14,7 @@ DELETE FROM `tenants` WHERE `slug` = 'kyros-rent-car';
 INSERT INTO `tenants`
   (`id`,`name`,`slug`,`legal_name`,`rnc`,`phone`,`whatsapp`,`email`,`address`,`description`,`primary_color`,`secondary_color`,`currency`,`tax_rate`,`plan_id`,`status`,`trial_ends_at`)
 VALUES
-  (1,'Kyros Rent Car','kyros-rent-car','Kyros Mobility SRL','1-31-12345-6','+1 809 555 0100','18095550100','contacto@kyrosrentcar.com',
+  (1,'Kyros Rent Car','kyros-rent-car','Kyros Mobility SRL','1-31-12345-6','+1 809 555 0100','18095550100','contacto@kyrosrd.com',
    'Av. Winston Churchill 95, Santo Domingo, RD',
    'Renta de vehiculos premium en Republica Dominicana. Flotilla moderna, precios transparentes y atencion 24/7.',
    '#F23645','#1C2433','DOP',18.00,2,'active', DATE_ADD(CURDATE(), INTERVAL 30 DAY));

@@ -39,7 +39,7 @@ class ReportController extends AdminController
         );
 
         $this->renderAdmin('admin/reports/index', [
-            'title'   => 'Reportes · Kyros',
+            'title'   => 'Reportes · Kyros Rent Car',
             'active'  => 'reports',
             'topVehicles'   => $topVehicles,
             'monthlyIncome' => Payment::monthlyIncome($tid),

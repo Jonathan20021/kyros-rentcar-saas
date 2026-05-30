@@ -18,7 +18,7 @@ class UpgradeController extends AdminController
         [$uCount, $uMax]   = Plan::usage($tid, 'users');
 
         $this->renderAdmin('admin/upgrade/index', [
-            'title'   => 'Tu plan · Kyros',
+            'title'   => 'Tu plan · Kyros Rent Car',
             'active'  => '',
             'tenant'  => $tenant,
             'plans'   => Plan::publicPlans(),

@@ -14,7 +14,7 @@ class MaintenanceController extends AdminController
         $tid = $this->tenantId();
         $filters = ['status' => $request->str('status')];
         $this->renderAdmin('admin/maintenance/index', [
-            'title'   => 'Mantenimiento · Kyros',
+            'title'   => 'Mantenimiento · Kyros Rent Car',
             'active'  => 'maintenance',
             'records' => Maintenance::listForTenant($tid, $filters),
             'filters' => $filters,
@@ -26,7 +26,7 @@ class MaintenanceController extends AdminController
     {
         $tid = $this->tenantId();
         $this->renderAdmin('admin/maintenance/form', [
-            'title'    => 'Nuevo mantenimiento · Kyros',
+            'title'    => 'Nuevo mantenimiento · Kyros Rent Car',
             'active'   => 'maintenance',
             'record'   => null,
             'vehicles' => Vehicle::listForTenant($tid, ['status' => '']),
@@ -39,7 +39,7 @@ class MaintenanceController extends AdminController
         $tid = $this->tenantId();
         $record = Maintenance::findOrFail((int) $id, $tid);
         $this->renderAdmin('admin/maintenance/form', [
-            'title'    => 'Editar mantenimiento · Kyros',
+            'title'    => 'Editar mantenimiento · Kyros Rent Car',
             'active'   => 'maintenance',
             'record'   => $record,
             'vehicles' => Vehicle::listForTenant($tid, ['status' => '']),

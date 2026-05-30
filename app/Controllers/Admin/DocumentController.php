@@ -63,7 +63,7 @@ class DocumentController extends AdminController
         $list = $filter ? array_values(array_filter($rows, fn($r)=>$r['status']===$filter)) : $rows;
 
         $this->renderAdmin('admin/documents/index', [
-            'title'   => 'Vencimientos · Kyros',
+            'title'   => 'Vencimientos · Kyros Rent Car',
             'active'  => 'documents',
             'rows'    => $list,
             'counts'  => $counts,

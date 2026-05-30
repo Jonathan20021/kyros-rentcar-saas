@@ -22,7 +22,7 @@ class VehicleController extends AdminController
             'search'      => $request->str('search'),
         ];
         $this->renderAdmin('admin/vehicles/index', [
-            'title'      => 'Flotilla · Kyros',
+            'title'      => 'Flotilla · Kyros Rent Car',
             'active'     => 'vehicles',
             'vehicles'   => Vehicle::listForTenant($tid, $filters),
             'categories' => VehicleCategory::forTenant($tid),
@@ -67,7 +67,7 @@ class VehicleController extends AdminController
         ];
 
         $this->renderAdmin('admin/vehicles/show', [
-            'title'    => $vehicle['brand'].' '.$vehicle['model'].' · Kyros',
+            'title'    => $vehicle['brand'].' '.$vehicle['model'].' · Kyros Rent Car',
             'active'   => 'vehicles',
             'vehicle'  => $vehicle,
             'gallery'  => $gallery,
@@ -87,7 +87,7 @@ class VehicleController extends AdminController
             $this->redirect('/admin/vehicles');
         }
         $this->renderAdmin('admin/vehicles/form', [
-            'title'      => 'Nuevo vehiculo · Kyros',
+            'title'      => 'Nuevo vehiculo · Kyros Rent Car',
             'active'     => 'vehicles',
             'vehicle'    => null,
             'images'     => [],
@@ -142,7 +142,7 @@ class VehicleController extends AdminController
             ['t' => $tid, 'v' => (int) $id]
         );
         $this->renderAdmin('admin/vehicles/form', [
-            'title'      => 'Editar vehiculo · Kyros',
+            'title'      => 'Editar vehiculo · Kyros Rent Car',
             'active'     => 'vehicles',
             'vehicle'    => $vehicle,
             'images'     => $images,
