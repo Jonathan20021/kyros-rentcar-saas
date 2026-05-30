@@ -1,7 +1,7 @@
 <?php $atCap = $maxUsers >= 0 && $count >= $maxUsers; ?>
-<div class="flex items-center justify-between mb-6">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 sm:mb-6">
   <div>
-    <h1 class="font-display text-2xl font-bold text-navy dark:text-white">Equipo</h1>
+    <h1 class="font-display text-xl sm:text-2xl font-bold text-navy dark:text-white">Equipo</h1>
     <p class="text-sm text-slate-500"><?= $count ?> usuario<?= $count===1?'':'s' ?><?= $maxUsers>=0 ? ' de '.$maxUsers.' del plan' : '' ?></p>
   </div>
   <?php if (can('users.create')): ?>
@@ -15,28 +15,36 @@
 
 <?php if ($maxUsers >= 0): ?>
 <div class="card p-4 mb-5">
-  <div class="flex items-center justify-between mb-2 text-sm"><span class="text-slate-500">Uso de licencias</span><span class="font-semibold text-navy tnum"><?= $count ?> / <?= $maxUsers ?></span></div>
+  <div class="flex items-center justify-between mb-2 text-sm">
+    <span class="text-slate-500">Uso de licencias</span>
+    <span class="font-semibold text-navy dark:text-white tnum"><?= $count ?> / <?= $maxUsers ?></span>
+  </div>
   <div class="progress"><i style="width:<?= min(100, (int)round($count/max(1,$maxUsers)*100)) ?>%"></i></div>
 </div>
 <?php endif; ?>
 
 <div class="card overflow-hidden">
-  <div class="overflow-x-auto">
-    <table class="w-full text-sm">
-      <thead class="text-left text-slate-400 bg-paper"><tr><th class="px-6 py-3 font-medium">Usuario</th><th class="px-6 py-3 font-medium">Rol</th><th class="px-6 py-3 font-medium">Estado</th><th class="px-6 py-3 font-medium">Último acceso</th><th class="px-6 py-3 font-medium text-right">Acciones</th></tr></thead>
-      <tbody class="divide-y hairline">
+  <div class="overflow-x-auto sm:overflow-x-visible">
+    <table class="k-table">
+      <thead>
+        <tr><th>Usuario</th><th>Rol</th><th>Estado</th><th>Último acceso</th><th class="text-right">Acciones</th></tr>
+      </thead>
+      <tbody>
         <?php foreach ($users as $u): ?>
-        <tr class="hover:bg-paper">
-          <td class="px-6 py-3">
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-lg bg-navy/5 text-navy grid place-items-center text-xs font-bold"><?= e(initials($u['name'])) ?></div>
-              <div><div class="font-medium text-navy dark:text-white"><?= e($u['name']) ?><?= (int)$u['id']===$_auth['user_id']?' <span class="text-[11px] text-slate-400 font-normal">(tú)</span>':'' ?></div><div class="text-xs text-slate-400"><?= e($u['email']) ?></div></div>
+        <tr>
+          <td data-label="Usuario" class="k-td-primary">
+            <div class="flex items-center gap-3 w-full">
+              <div class="w-9 h-9 rounded-lg bg-navy/5 dark:bg-white/5 text-navy dark:text-white grid place-items-center text-xs font-bold shrink-0"><?= e(initials($u['name'])) ?></div>
+              <div class="min-w-0">
+                <div class="font-medium text-navy dark:text-white truncate"><?= e($u['name']) ?><?= (int)$u['id']===$_auth['user_id']?' <span class="text-[11px] text-slate-400 font-normal">(tú)</span>':'' ?></div>
+                <div class="text-xs text-slate-400 truncate"><?= e($u['email']) ?></div>
+              </div>
             </div>
           </td>
-          <td class="px-6 py-3"><span class="px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-600"><?= e($u['role_name']) ?></span></td>
-          <td class="px-6 py-3"><span class="px-2.5 py-1 rounded-full text-xs font-medium <?= status_badge($u['status']) ?>"><?= status_label($u['status']) ?></span></td>
-          <td class="px-6 py-3 text-slate-500"><?= $u['last_login_at'] ? format_datetime($u['last_login_at']) : 'Nunca' ?></td>
-          <td class="px-6 py-3">
+          <td data-label="Rol"><span class="px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-600"><?= e($u['role_name']) ?></span></td>
+          <td data-label="Estado"><span class="px-2.5 py-1 rounded-full text-xs font-medium <?= status_badge($u['status']) ?>"><?= status_label($u['status']) ?></span></td>
+          <td data-label="Último acceso" class="text-slate-500 tnum"><?= $u['last_login_at'] ? format_datetime($u['last_login_at']) : 'Nunca' ?></td>
+          <td class="k-td-actions text-right">
             <div class="flex items-center justify-end gap-1.5">
               <?php if (can('users.edit')): ?>
                 <a href="<?= url('/admin/users/edit/'.$u['id']) ?>" class="icon-btn !w-8 !h-8" title="Editar"><i data-lucide="pencil" class="w-4 h-4"></i></a>

@@ -49,7 +49,7 @@ $val = fn(string $k, $d = '') => e($isEdit ? ($record[$k] ?? $d) : $d);
       <div class="sm:col-span-2"><label class="block text-sm font-medium mb-1.5">Descripción</label><textarea name="description" rows="2" class="fld"><?= $val('description') ?></textarea></div>
       <div class="sm:col-span-2"><label class="block text-sm font-medium mb-1.5">Notas</label><textarea name="notes" rows="2" class="fld"><?= $val('notes') ?></textarea></div>
     </div>
-    <div class="flex gap-2">
+    <div class="k-sticky flex gap-2">
       <button type="submit" class="k-btn k-btn-grad"><?= $isEdit ? 'Guardar cambios' : 'Crear mantenimiento' ?></button>
       <a href="<?= url('/admin/maintenance') ?>" class="k-btn k-btn-outline">Cancelar</a>
     </div>

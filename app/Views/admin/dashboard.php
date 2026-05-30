@@ -18,38 +18,38 @@ $hired = $rs['converted'] + $rs['in_progress'];
 $pend  = $rs['pending'] + $rs['confirmed'];
 $canc  = $rs['cancelled'] + $rs['rejected'];
 ?>
-<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 sm:mb-6">
   <div>
-    <h1 class="font-display text-[26px] font-extrabold text-navy tracking-tight">Buen día, <?= e($first) ?></h1>
-    <p class="text-[13px] text-slate-500 mt-1"><?= e($tenant['name'] ?? '') ?> · <?= strftime_es() ?></p>
+    <h1 class="font-display text-[22px] sm:text-[26px] font-extrabold text-navy dark:text-white tracking-tight">Buen día, <?= e($first) ?></h1>
+    <p class="text-[13px] text-slate-500 mt-1 truncate"><?= e($tenant['name'] ?? '') ?> · <?= strftime_es() ?></p>
   </div>
-  <div class="flex gap-2">
+  <div class="flex flex-wrap gap-2">
     <?php if (!empty($branchOptions)): ?>
-    <select onchange="location.href='<?= url('/admin/dashboard') ?>'+(this.value?('?location_id='+this.value):'')" class="fld !h-10 !w-auto">
+    <select onchange="location.href='<?= url('/admin/dashboard') ?>'+(this.value?('?location_id='+this.value):'')" class="fld !h-10 !w-auto flex-1 sm:flex-none !text-[13px]">
       <option value="">Todas las sucursales</option>
       <?php foreach ($branchOptions as $bo): ?><option value="<?= $bo['id'] ?>" <?= (($selectedLoc ?? null)==$bo['id'])?'selected':'' ?>><?= e($bo['name']) ?></option><?php endforeach; ?>
     </select>
     <?php endif; ?>
-    <a href="<?= url('/admin/reservations/calendar') ?>" class="k-btn k-btn-outline"><i data-lucide="calendar" class="w-4 h-4"></i> Calendario</a>
-    <a href="<?= url('/admin/vehicles/create') ?>" class="k-btn k-btn-grad"><i data-lucide="plus" class="w-4 h-4"></i> Vehículo</a>
+    <a href="<?= url('/admin/reservations/calendar') ?>" class="k-btn k-btn-outline !h-10"><i data-lucide="calendar" class="w-4 h-4"></i><span class="hidden sm:inline">Calendario</span></a>
+    <a href="<?= url('/admin/vehicles/create') ?>" class="k-btn k-btn-grad !h-10"><i data-lucide="plus" class="w-4 h-4"></i><span>Vehículo</span></a>
   </div>
 </div>
 
-<div class="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-5">
+<div class="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-4 sm:gap-5">
   <!-- LEFT column -->
-  <div class="space-y-5">
+  <div class="space-y-4 sm:space-y-5">
     <!-- KPI row -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
       <?php foreach ($kpis as $k): ?>
-      <div class="card p-5 reveal">
-        <div class="flex items-center justify-between">
-          <div class="w-10 h-10 rounded-xl grid place-items-center <?= $k['tint'] ?>"><i data-lucide="<?= $k['icon'] ?>" class="w-5 h-5"></i></div>
+      <div class="card p-4 sm:p-5 reveal">
+        <div class="flex items-center justify-between gap-1">
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl grid place-items-center shrink-0 <?= $k['tint'] ?>"><i data-lucide="<?= $k['icon'] ?>" class="w-4 h-4 sm:w-5 sm:h-5"></i></div>
           <?= $k['pill'] ?>
         </div>
-        <p class="mt-3.5 text-[26px] leading-none font-extrabold text-navy tracking-tight tnum">
+        <p class="mt-3 sm:mt-3.5 text-[22px] sm:text-[26px] leading-none font-extrabold text-navy dark:text-white tracking-tight tnum truncate">
           <?php if (!empty($k['count'])): ?><span data-count="<?= (int)$k['value'] ?>">0</span><?php else: ?><?= e($k['value']) ?><?php endif; ?>
         </p>
-        <p class="text-[13px] text-slate-400 mt-1.5"><?= e($k['label']) ?></p>
+        <p class="text-[12px] sm:text-[13px] text-slate-400 mt-1.5 truncate"><?= e($k['label']) ?></p>
       </div>
       <?php endforeach; ?>
     </div>

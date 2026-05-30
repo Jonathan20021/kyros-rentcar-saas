@@ -28,7 +28,7 @@
       </div>
       <div class="sm:col-span-2"><label class="block text-sm font-medium mb-1.5">Descripción</label><textarea name="description" rows="3" class="fld"></textarea></div>
     </div>
-    <div class="flex gap-2">
+    <div class="k-sticky flex gap-2">
       <button type="submit" class="k-btn k-btn-grad">Registrar incidencia</button>
       <a href="<?= url('/admin/incidents') ?>" class="k-btn k-btn-outline">Cancelar</a>
     </div>

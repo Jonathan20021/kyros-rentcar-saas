@@ -51,7 +51,7 @@ $initial = $prefill
       </div>
     </div>
 
-    <div class="flex gap-2">
+    <div class="k-sticky flex gap-2">
       <button type="submit" class="k-btn k-btn-grad">Emitir factura</button>
       <a href="<?= url('/admin/invoices') ?>" class="k-btn k-btn-outline">Cancelar</a>
     </div>

@@ -39,7 +39,7 @@
         <input type="password" name="password" <?= $isEdit?'':'required minlength="8"' ?> placeholder="<?= $isEdit?'Dejar en blanco para no cambiar':'Mín. 8 caracteres' ?>" class="fld">
       </div>
     </div>
-    <div class="flex gap-2">
+    <div class="k-sticky flex gap-2">
       <button type="submit" class="k-btn k-btn-grad"><?= $isEdit ? 'Guardar cambios' : 'Agregar al equipo' ?></button>
       <a href="<?= url('/admin/users') ?>" class="k-btn k-btn-outline">Cancelar</a>
     </div>

@@ -150,6 +150,95 @@ tailwind.config = {
   .dark .panel-shell input[type=color]{ background:#0F1726; }
   .dark .panel-shell .hairline{ border-color:rgba(255,255,255,.08); }
 
+  /* =================== Responsive tables =====================
+     Use: <table class="k-table"> with <td data-label="Columna">.
+     Desktop = standard table. Mobile = each row becomes a card.
+  */
+  .k-table{ width:100%; border-collapse:collapse; font-size:14px; }
+  .k-table th{ font-weight:500; color:#94a3b8; text-align:left; padding:.75rem 1.5rem; background:#F8FAFC; }
+  .k-table td{ padding:.85rem 1.5rem; border-top:1px solid #EAEEF4; vertical-align:middle; }
+  .k-table tbody tr:hover{ background:#F8FAFC; }
+  .dark .panel-shell .k-table th{ background:rgba(255,255,255,.03); color:#7a849b; }
+  .dark .panel-shell .k-table td{ border-color:rgba(255,255,255,.06); }
+  .dark .panel-shell .k-table tbody tr:hover{ background:rgba(255,255,255,.025); }
+  @media (max-width: 640px){
+    .k-table{ display:block; }
+    .k-table thead{ display:none; }
+    .k-table tbody, .k-table tfoot{ display:block; }
+    .k-table tr{ display:flex; flex-direction:column; padding:1rem 1.1rem; border-top:1px solid #EAEEF4; gap:.55rem; }
+    .dark .panel-shell .k-table tr{ border-color:rgba(255,255,255,.06); }
+    .k-table tr:hover{ background:transparent; }
+    .k-table tr:first-child{ border-top:0; }
+    .k-table td{ display:flex; justify-content:space-between; align-items:center; gap:1rem;
+                 padding:0; border:0; min-height:24px; }
+    .k-table td[data-label]::before{ content:attr(data-label); color:#94a3b8; font-size:11px;
+                 font-weight:700; text-transform:uppercase; letter-spacing:.04em; flex-shrink:0; }
+    .k-table td.k-td-actions{ justify-content:flex-end; padding-top:.5rem;
+                 border-top:1px dashed #EAEEF4; margin-top:.25rem; }
+    .dark .panel-shell .k-table td.k-td-actions{ border-color:rgba(255,255,255,.06); }
+    .k-table td.k-td-actions::before{ display:none; }
+    .k-table td.k-td-primary{ flex-direction:column; align-items:flex-start; gap:.15rem; }
+    .k-table td.k-td-primary::before{ display:none; }
+  }
+
+  /* Sticky-actions bar — wrap form footers in <div class="k-sticky"> for
+     a docked save/cancel toolbar on mobile that hovers above the bottom nav. */
+  @media (max-width: 768px){
+    .k-sticky{ position:sticky; bottom:0; z-index:20;
+               background:rgba(255,255,255,.92); backdrop-filter:blur(12px);
+               padding:.85rem 1rem; margin:0 -1rem -1rem;
+               border-top:1px solid #EAEEF4; }
+    .dark .panel-shell .k-sticky{ background:rgba(11,17,32,.92); border-color:rgba(255,255,255,.08); }
+    .k-sticky .k-btn{ flex:1; min-height:46px; }
+  }
+
+  /* =================== Mobile bottom dock =====================
+     5 quick actions visible only on mobile. */
+  .mob-dock{ display:none; }
+  @media (max-width: 1023px){
+    .mob-dock{ display:grid; position:fixed; bottom:0; left:0; right:0; z-index:30;
+               grid-template-columns:repeat(5, 1fr); gap:2px;
+               background:rgba(255,255,255,.96); backdrop-filter:blur(20px);
+               border-top:1px solid #EAEEF4; padding:.45rem .25rem calc(.45rem + env(safe-area-inset-bottom));
+               box-shadow:0 -10px 30px -18px rgba(28,36,51,.25); }
+    .dark .panel-shell .mob-dock{ background:rgba(11,17,32,.95); border-color:rgba(255,255,255,.08); }
+    .mob-dock a, .mob-dock button{ display:flex; flex-direction:column; align-items:center;
+               gap:2px; padding:.4rem .25rem; border-radius:.65rem; color:#5a6377;
+               font-size:10.5px; font-weight:600; transition:.15s; min-height:48px; justify-content:center;
+               background:transparent; border:0; cursor:pointer; }
+    .mob-dock a.is-active{ color:var(--brand); background:color-mix(in srgb,var(--brand) 9%,transparent); }
+    .mob-dock a:active, .mob-dock button:active{ transform:scale(.94); }
+    .mob-dock svg{ width:20px; height:20px; }
+    .mob-dock .mob-dock-fab{ position:relative; }
+    .mob-dock .mob-dock-fab > span{ position:absolute; top:-22px; left:50%; transform:translateX(-50%);
+               width:48px; height:48px; border-radius:50%; background:var(--brand); color:#fff;
+               display:grid; place-items:center;
+               box-shadow:0 10px 24px -8px color-mix(in srgb,var(--brand) 50%, transparent); }
+    .mob-dock .mob-dock-fab > span svg{ width:22px; height:22px; }
+    .mob-dock .mob-dock-fab > b{ visibility:hidden; }
+    /* Pad main so it doesn't get hidden behind the dock */
+    body.panel-shell main{ padding-bottom:5.5rem !important; }
+    .dark .panel-shell .mob-dock a.is-active{ color:var(--brand); background:color-mix(in srgb,var(--brand) 16%,transparent); }
+  }
+
+  /* Tighter spacing on small screens */
+  @media (max-width: 640px){
+    body.panel-shell main{ padding-left:.85rem !important; padding-right:.85rem !important; padding-top:.85rem !important; }
+    .card{ border-radius:.95rem; }
+    .card.\!p-6, .card.p-6{ padding:1rem !important; }
+    .card.\!p-5, .card.p-5{ padding:.9rem !important; }
+  }
+
+  /* Bigger touch targets on mobile */
+  @media (max-width: 640px){
+    .k-btn{ min-height:44px; padding:0 1rem; }
+    .icon-btn{ min-width:42px; min-height:42px; }
+    .fld{ min-height:44px; }
+  }
+
+  /* Truncation utility for long single-line content */
+  .truncate-2{ display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+
   /* Segmented + dual range */
   .seg{ display:inline-flex; padding:3px; gap:2px; background:#EEF1F6; border-radius:.7rem; }
   .seg input{ position:absolute; opacity:0; pointer-events:none; }

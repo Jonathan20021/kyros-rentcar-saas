@@ -12,9 +12,9 @@ $catIcon = [
 ];
 $net = $monthNet; $netUp = $net >= 0;
 ?>
-<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 sm:mb-6">
   <div>
-    <h1 class="font-display text-2xl font-bold text-navy dark:text-white">Gastos</h1>
+    <h1 class="font-display text-xl sm:text-2xl font-bold text-navy dark:text-white">Gastos</h1>
     <p class="text-sm text-slate-500 dark:text-slate-400">Controla los costos operativos de tu rent car</p>
   </div>
   <?php if (can('expenses.create')): ?>
@@ -23,7 +23,7 @@ $net = $monthNet; $netUp = $net >= 0;
 </div>
 
 <!-- Financial KPIs -->
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-5">
   <div class="card p-5 reveal">
     <div class="flex items-center gap-2.5"><div class="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 grid place-items-center"><i data-lucide="trending-up" class="w-[18px] h-[18px]"></i></div><p class="text-[13px] text-slate-400 font-medium">Ingresos (mes)</p></div>
     <p class="mt-3 text-[22px] leading-none font-extrabold text-navy dark:text-white tnum"><?= money($monthIncome) ?></p>
@@ -69,39 +69,48 @@ $net = $monthNet; $netUp = $net >= 0;
 </form>
 
 <div class="card overflow-hidden reveal">
-  <div class="overflow-x-auto">
-    <table class="w-full text-sm">
-      <thead class="text-left text-slate-400 bg-paper dark:bg-slate-800/50">
-        <tr><th class="px-6 py-3 font-medium">Fecha</th><th class="px-6 py-3 font-medium">Descripción</th><th class="px-6 py-3 font-medium">Categoría</th><th class="px-6 py-3 font-medium">Sucursal / Vehículo</th><th class="px-6 py-3 font-medium">Método</th><th class="px-6 py-3 font-medium text-right">Monto</th><th class="px-6 py-3"></th></tr>
+  <div class="overflow-x-auto sm:overflow-x-visible">
+    <table class="k-table">
+      <thead>
+        <tr>
+          <th>Fecha</th><th>Descripción</th><th>Categoría</th>
+          <th>Sucursal / Vehículo</th><th>Método</th><th class="text-right">Monto</th><th class="text-right">Acciones</th>
+        </tr>
       </thead>
-      <tbody class="divide-y hairline">
+      <tbody>
         <?php $sum = 0; foreach ($expenses as $e): $sum += (float)$e['amount']; ?>
-        <tr class="hover:bg-paper dark:hover:bg-slate-800/40">
-          <td class="px-6 py-3.5 text-slate-500 whitespace-nowrap tnum"><?= e(date('d/m/Y', strtotime($e['expense_date']))) ?></td>
-          <td class="px-6 py-3.5">
-            <p class="font-medium text-navy dark:text-white"><?= e($e['description']) ?></p>
-            <?php if (!empty($e['vendor'])): ?><p class="text-xs text-slate-400"><?= e($e['vendor']) ?></p><?php endif; ?>
+        <tr>
+          <td data-label="Fecha" class="text-slate-500 tnum"><?= e(date('d/m/Y', strtotime($e['expense_date']))) ?></td>
+          <td data-label="Descripción" class="k-td-primary">
+            <p class="font-medium text-navy dark:text-white truncate"><?= e($e['description']) ?></p>
+            <?php if (!empty($e['vendor'])): ?><p class="text-xs text-slate-400 truncate"><?= e($e['vendor']) ?></p><?php endif; ?>
           </td>
-          <td class="px-6 py-3.5">
+          <td data-label="Categoría">
             <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold <?= $catTint[$e['category']] ?? 'bg-slate-100 text-slate-500' ?>"><i data-lucide="<?= $catIcon[$e['category']] ?? 'circle-dot' ?>" class="w-3.5 h-3.5"></i><?= Expense::CATEGORIES[$e['category']] ?? $e['category'] ?></span>
           </td>
-          <td class="px-6 py-3.5 text-slate-500">
-            <?= e($e['location_name'] ?? '—') ?><?php if (!empty($e['vehicle_name'])): ?><span class="block text-xs text-slate-400"><?= e($e['vehicle_name']) ?></span><?php endif; ?>
+          <td data-label="Sucursal/Vehículo" class="text-slate-500">
+            <span class="truncate"><?= e($e['location_name'] ?? '—') ?><?php if (!empty($e['vehicle_name'])): ?> · <span class="text-xs text-slate-400"><?= e($e['vehicle_name']) ?></span><?php endif; ?></span>
           </td>
-          <td class="px-6 py-3.5 text-slate-500"><?= Expense::METHODS[$e['payment_method']] ?? $e['payment_method'] ?></td>
-          <td class="px-6 py-3.5 text-right font-bold text-navy dark:text-white tnum"><?= money($e['amount']) ?></td>
-          <td class="px-6 py-3.5 text-right whitespace-nowrap">
+          <td data-label="Método" class="text-slate-500"><?= Expense::METHODS[$e['payment_method']] ?? $e['payment_method'] ?></td>
+          <td data-label="Monto" class="text-right font-bold text-navy dark:text-white tnum"><?= money($e['amount']) ?></td>
+          <td class="k-td-actions text-right whitespace-nowrap">
             <?php if (can('expenses.edit')): ?><a href="<?= url('/admin/expenses/edit/'.$e['id']) ?>" class="p-1.5 inline-grid rounded-lg hover:bg-paper dark:hover:bg-slate-800 text-slate-400 hover:text-navy dark:hover:text-white" title="Editar"><i data-lucide="pencil" class="w-4 h-4"></i></a><?php endif; ?>
             <?php if (can('expenses.delete')): ?><form method="POST" action="<?= url('/admin/expenses/delete/'.$e['id']) ?>" class="inline" data-confirm="Esta acción no se puede deshacer." data-confirm-title="¿Eliminar este gasto?"><?= csrf_field() ?><button class="p-1.5 inline-grid rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 text-slate-400 hover:text-red-600" title="Eliminar"><i data-lucide="trash-2" class="w-4 h-4"></i></button></form><?php endif; ?>
           </td>
         </tr>
         <?php endforeach; ?>
         <?php if (empty($expenses)): ?>
-        <tr><td colspan="7" class="px-6 py-12 text-center text-slate-400"><i data-lucide="receipt-text" class="w-8 h-8 mx-auto mb-2 opacity-40"></i><p class="text-sm">No hay gastos en este período.</p></td></tr>
+        <tr><td colspan="7" class="text-center text-slate-400 py-12"><i data-lucide="receipt-text" class="w-8 h-8 mx-auto mb-2 opacity-40"></i><p class="text-sm">No hay gastos en este período.</p></td></tr>
         <?php endif; ?>
       </tbody>
       <?php if (!empty($expenses)): ?>
-      <tfoot><tr class="border-t-2 hairline bg-paper dark:bg-slate-800/50"><td colspan="5" class="px-6 py-3 font-semibold text-navy dark:text-white text-right">Total filtrado</td><td class="px-6 py-3 text-right font-extrabold text-brand tnum"><?= money($sum) ?></td><td></td></tr></tfoot>
+      <tfoot>
+        <tr class="bg-paper dark:bg-slate-800/40">
+          <td colspan="5" class="text-right font-semibold text-navy dark:text-white">Total filtrado</td>
+          <td class="text-right font-extrabold text-brand tnum"><?= money($sum) ?></td>
+          <td></td>
+        </tr>
+      </tfoot>
       <?php endif; ?>
     </table>
   </div>

@@ -1,7 +1,7 @@
 <?php $canEdit = can('locations.edit'); $canDelete = can('locations.delete'); ?>
-<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 sm:mb-6">
   <div>
-    <h1 class="font-display text-2xl font-bold text-navy dark:text-white">Sucursales</h1>
+    <h1 class="font-display text-xl sm:text-2xl font-bold text-navy dark:text-white">Sucursales</h1>
     <p class="text-sm text-slate-500 dark:text-slate-400">Gestiona tus ubicaciones y la flotilla asignada a cada una</p>
   </div>
   <?php if (can('locations.create')): ?>

@@ -75,7 +75,7 @@ $val = fn(string $k, $d = '') => e($isEdit ? ($driver[$k] ?? $d) : $d);
       </div>
     </div>
 
-    <div class="flex gap-2 pt-2">
+    <div class="k-sticky flex gap-2 pt-2">
       <button type="submit" class="k-btn k-btn-grad"><?= $isEdit ? 'Guardar cambios' : 'Crear chofer' ?></button>
       <a href="<?= url('/admin/drivers') ?>" class="k-btn k-btn-outline">Cancelar</a>
     </div>

@@ -30,7 +30,7 @@
       <div class="sm:col-span-2"><label class="block text-sm font-medium mb-1.5">Notas</label><textarea name="notes" rows="2" class="fld"></textarea></div>
     </div>
     <label class="flex items-center gap-2 text-sm text-slate-600"><input type="checkbox" name="allow_overpay" value="1" class="rounded text-brand focus:ring-brand/30"> Permitir monto mayor al balance</label>
-    <div class="flex gap-2">
+    <div class="k-sticky flex gap-2">
       <button type="submit" class="k-btn k-btn-grad">Registrar pago</button>
       <a href="<?= url('/admin/payments') ?>" class="k-btn k-btn-outline">Cancelar</a>
     </div>

@@ -156,12 +156,16 @@ $planName = $tenant['plan_name'] ?? null;
         <?php endif; ?>
       </div>
 
-      <!-- Trigger for the ⌘K command palette -->
+      <!-- Trigger for the ⌘K command palette — full bar on desktop, icon on mobile -->
       <button type="button" @click="$dispatch('kyros:cmd-open')"
-              class="relative ml-auto hidden sm:flex items-center w-72 pl-10 pr-2 py-2.5 text-sm rounded-xl bg-slate-100/80 dark:bg-slate-800 border border-transparent hover:bg-white hover:border-slate-200 dark:hover:border-slate-700 transition text-left text-slate-400">
+              class="relative ml-auto hidden sm:flex items-center w-60 lg:w-72 pl-10 pr-2 py-2.5 text-sm rounded-xl bg-slate-100/80 dark:bg-slate-800 border border-transparent hover:bg-white hover:border-slate-200 dark:hover:border-slate-700 transition text-left text-slate-400">
         <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
         <span class="truncate">Buscar reservas, vehículos, clientes…</span>
         <kbd class="ml-auto text-[10px] font-semibold text-slate-400 bg-white dark:bg-slate-700 border hairline rounded-md px-1.5 py-0.5">⌘K</kbd>
+      </button>
+      <button type="button" @click="$dispatch('kyros:cmd-open')"
+              class="sm:hidden ml-auto p-2 -mr-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" aria-label="Buscar">
+        <i data-lucide="search" class="w-5 h-5"></i>
       </button>
 
       <div class="flex items-center gap-1.5 <?= ' sm:ml-0 ml-auto' ?>">
@@ -257,6 +261,39 @@ $planName = $tenant['plan_name'] ?? null;
     <main class="flex-1 p-4 lg:p-7 max-w-[1500px] w-full mx-auto"><?= $content ?></main>
   </div>
 </div>
+
+<?php if ($panel === 'admin'):
+  $dockItems = [
+    ['key'=>'dashboard',   'label'=>'Inicio',     'icon'=>'home',          'url'=>url('/admin/dashboard')],
+    ['key'=>'reservations','label'=>'Reservas',   'icon'=>'calendar-check','url'=>url('/admin/reservations')],
+    ['key'=>'_create',     'label'=>'Crear',      'icon'=>'plus',          'url'=>url('/admin/reservations/create')],
+    ['key'=>'vehicles',    'label'=>'Flotilla',   'icon'=>'car',           'url'=>url('/admin/vehicles')],
+    ['key'=>'_more',       'label'=>'Más',        'icon'=>'menu',          'url'=>'#'],
+  ];
+?>
+<nav class="mob-dock" aria-label="Acciones principales móvil">
+  <?php foreach ($dockItems as $d):
+    $isFab = $d['key'] === '_create';
+    $isMore = $d['key'] === '_more';
+    $isOn = $active === $d['key'];
+  ?>
+    <?php if ($isMore): ?>
+      <button type="button" @click="open = !open" class="<?= $isOn ? 'is-active' : '' ?>">
+        <i data-lucide="<?= e($d['icon']) ?>"></i><b><?= e($d['label']) ?></b>
+      </button>
+    <?php elseif ($isFab): ?>
+      <a href="<?= e($d['url']) ?>" class="mob-dock-fab">
+        <span><i data-lucide="<?= e($d['icon']) ?>"></i></span>
+        <b><?= e($d['label']) ?></b>
+      </a>
+    <?php else: ?>
+      <a href="<?= e($d['url']) ?>" class="<?= $isOn ? 'is-active' : '' ?>">
+        <i data-lucide="<?= e($d['icon']) ?>"></i><b><?= e($d['label']) ?></b>
+      </a>
+    <?php endif; ?>
+  <?php endforeach; ?>
+</nav>
+<?php endif; ?>
 
 <!-- Global Confirm Modal (any form with [data-confirm="msg"]) -->
 <div x-data="confirmModal()" x-init="bind()" @kyros:confirm.window="open($event.detail)">

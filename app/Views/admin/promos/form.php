@@ -102,7 +102,7 @@ $val = fn(string $k, $d = '') => e($isEdit ? ($promo[$k] ?? $d) : $d);
       <span class="px-3 py-1.5 rounded-lg bg-white border hairline font-mono font-bold text-navy text-sm" x-text="document.querySelector('input[name=code]')?.value || 'CÓDIGO'">CÓDIGO</span>
     </div>
 
-    <div class="flex gap-2 pt-2">
+    <div class="k-sticky flex gap-2 pt-2">
       <button type="submit" class="k-btn k-btn-grad"><?= $isEdit ? 'Guardar' : 'Crear código' ?></button>
       <a href="<?= url('/admin/promos') ?>" class="k-btn k-btn-outline">Cancelar</a>
     </div>
