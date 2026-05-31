@@ -82,6 +82,12 @@ class StorefrontController extends Controller
             "SELECT path FROM vehicle_images WHERE tenant_id = :t AND vehicle_id = :v ORDER BY is_main DESC, sort_order ASC",
             ['t' => $tid, 'v' => $vehicle['id']]
         );
+        if (!empty($vehicle['main_image'])) {
+            $paths = array_column($images, 'path');
+            if (!in_array($vehicle['main_image'], $paths, true)) {
+                array_unshift($images, ['path' => $vehicle['main_image']]);
+            }
+        }
         $features = $vehicle['features'] ? (json_decode($vehicle['features'], true) ?: []) : [];
 
         $this->view('public/storefront/vehicle', [

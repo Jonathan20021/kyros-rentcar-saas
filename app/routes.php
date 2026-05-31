@@ -23,6 +23,11 @@ $feat = fn(string $f) => new FeatureMiddleware($f);
 // ---------------------------------------------------------------------
 $router->get('/', 'HomeController@index');
 $router->get('/planes', 'HomeController@plans');
+$router->get('/producto', 'HomeController@product');
+$router->get('/seguridad', 'HomeController@security');
+$router->get('/privacidad', 'HomeController@privacy');
+$router->get('/terminos', 'HomeController@terms');
+$router->get('/contacto', 'HomeController@contact');
 
 // Storefront by slug
 $router->get('/r/{slug}', 'PublicSite\\StorefrontController@show');
@@ -107,6 +112,8 @@ $router->post('/admin/vehicles', 'Admin\\VehicleController@store', [$auth, $tena
 $router->get('/admin/vehicles/edit/{id}', 'Admin\\VehicleController@edit', [$auth, $tenant, $perm('vehicles.edit')]);
 $router->post('/admin/vehicles/update/{id}', 'Admin\\VehicleController@update', [$auth, $tenant, $perm('vehicles.edit')]);
 $router->post('/admin/vehicles/delete/{id}', 'Admin\\VehicleController@destroy', [$auth, $tenant, $perm('vehicles.delete')]);
+$router->post('/admin/vehicles/image/main/{id}', 'Admin\\VehicleController@setMainImage', [$auth, $tenant, $perm('vehicles.edit')]);
+$router->post('/admin/vehicles/image/delete/{id}', 'Admin\\VehicleController@deleteImage', [$auth, $tenant, $perm('vehicles.edit')]);
 $router->post('/admin/vehicles/status/{id}', 'Admin\\VehicleController@changeStatus', [$auth, $tenant, $perm('vehicles.change_status')]);
 
 // Customers

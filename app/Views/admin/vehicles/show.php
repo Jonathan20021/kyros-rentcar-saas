@@ -10,7 +10,7 @@
     </div>
     <p class="text-sm text-slate-500 mt-1"><?= e($v['version'] ?? '') ?> · <?= e($v['year']) ?> · <?= e($v['plate_number'] ?? 's/placa') ?></p>
   </div>
-  <div class="flex gap-2">
+  <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
     <?php if (can('reservations.create') && $v['status']==='available'): ?><a href="<?= url('/admin/reservations/create?vehicle='.$v['id']) ?>" class="k-btn k-btn-grad"><i data-lucide="calendar-plus" class="w-4 h-4"></i> Reservar</a><?php endif; ?>
     <?php if (can('vehicles.edit')): ?><a href="<?= url('/admin/vehicles/edit/'.$v['id']) ?>" class="k-btn k-btn-outline"><i data-lucide="pencil" class="w-4 h-4"></i> Editar</a><?php endif; ?>
     <a href="<?= url('/admin/vehicles') ?>" class="k-btn k-btn-ghost">Volver</a>
@@ -19,16 +19,16 @@
 
 <div class="grid lg:grid-cols-3 gap-5">
   <!-- LEFT: gallery + specs -->
-  <div class="lg:col-span-2 space-y-5" x-data="{ main: <?= json_encode($galleryUrls[0] ?? '') ?> }">
+  <div class="lg:col-span-2 space-y-5" x-data='{ main: <?= json_encode($galleryUrls[0] ?? '') ?> }'>
     <div class="card p-5">
       <div class="aspect-[16/10] bg-paper rounded-xl grid place-items-center overflow-hidden">
         <?php if (!empty($gallery)): ?><img :src="main" class="w-full h-full object-cover" alt="<?= e($v['brand'].' '.$v['model']) ?>">
         <?php else: ?><i data-lucide="car" class="w-20 h-20 text-slate-200"></i><?php endif; ?>
       </div>
       <?php if (count($gallery) > 1): ?>
-      <div class="flex gap-2 mt-3">
+      <div class="flex gap-2 mt-3 overflow-x-auto pb-1">
         <?php foreach ($gallery as $g): ?>
-          <button type="button" @click="main=<?= json_encode(media($g)) ?>" class="w-20 h-14 rounded-lg overflow-hidden border-2 bg-paper" :class="main===<?= json_encode(media($g)) ?>?'border-brand':'border-transparent'"><img src="<?= e(media($g)) ?>" class="w-full h-full object-cover" alt="<?= e($v['brand'].' '.$v['model']) ?>"></button>
+          <button type="button" @click='main=<?= json_encode(media($g)) ?>' class="w-20 h-14 shrink-0 rounded-lg overflow-hidden border-2 bg-paper" :class='main===<?= json_encode(media($g)) ?>?"border-brand":"border-transparent"'><img src="<?= e(media($g)) ?>" class="w-full h-full object-cover" alt="<?= e($v['brand'].' '.$v['model']) ?>"></button>
         <?php endforeach; ?>
       </div>
       <?php endif; ?>

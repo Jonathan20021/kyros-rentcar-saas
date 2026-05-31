@@ -130,6 +130,9 @@ class VehicleController extends AdminController
         }
 
         $id = Vehicle::create($payload);
+        if (!empty($payload['main_image'])) {
+            $this->syncMainImage($tid, (int) $id, $payload['main_image']);
+        }
 
         // Gallery images
         $this->handleGallery($request, $tid, $id);
@@ -177,13 +180,18 @@ class VehicleController extends AdminController
         $payload = $this->buildPayload($tid, $data, $slug);
         unset($payload['tenant_id']); // never reassign tenant
 
+        $uploadedMain = null;
         if ($file = $request->file('main_image')) {
             if ($path = FileUploader::image($file, 'vehicles')) {
                 $payload['main_image'] = $path;
+                $uploadedMain = $path;
             }
         }
 
         Vehicle::update((int) $id, $tid, $payload);
+        if ($uploadedMain) {
+            $this->syncMainImage($tid, (int) $id, $uploadedMain);
+        }
         $this->handleGallery($request, $tid, (int) $id);
 
         ActivityLog::record('updated', 'vehicles', (int) $id, 'Vehiculo actualizado');
@@ -213,6 +221,77 @@ class VehicleController extends AdminController
         Vehicle::update((int) $id, $tid, ['status' => $status]);
         ActivityLog::record('change_status', 'vehicles', (int) $id, 'Estado cambiado a ' . $status);
         Session::flash('success', 'Estado actualizado.');
+        $this->back();
+    }
+
+    public function setMainImage(Request $request, string $id): void
+    {
+        $tid = $this->tenantId();
+        $image = Database::selectOne(
+            "SELECT * FROM vehicle_images WHERE id=:id AND tenant_id=:t",
+            ['id' => (int) $id, 't' => $tid]
+        );
+        if (!$image) {
+            Session::flash('error', 'Imagen no encontrada.');
+            $this->back();
+        }
+
+        $this->syncMainImage($tid, (int) $image['vehicle_id'], $image['path']);
+        ActivityLog::record('updated', 'vehicles', (int) $image['vehicle_id'], 'Imagen principal actualizada');
+        Session::flash('success', 'Imagen principal actualizada.');
+        $this->back();
+    }
+
+    public function deleteImage(Request $request, string $id): void
+    {
+        $tid = $this->tenantId();
+        $image = Database::selectOne(
+            "SELECT * FROM vehicle_images WHERE id=:id AND tenant_id=:t",
+            ['id' => (int) $id, 't' => $tid]
+        );
+        if (!$image) {
+            Session::flash('error', 'Imagen no encontrada.');
+            $this->back();
+        }
+
+        $vehicleId = (int) $image['vehicle_id'];
+        Database::beginTransaction();
+        try {
+            Database::execute("DELETE FROM vehicle_images WHERE id=:id AND tenant_id=:t", ['id' => (int) $id, 't' => $tid]);
+
+            $currentMain = (string) Database::scalar(
+                "SELECT COALESCE(main_image, '') FROM vehicles WHERE id=:v AND tenant_id=:t",
+                ['v' => $vehicleId, 't' => $tid]
+            );
+            if ((int) $image['is_main'] === 1 || $currentMain === (string) $image['path']) {
+                $next = Database::selectOne(
+                    "SELECT * FROM vehicle_images WHERE tenant_id=:t AND vehicle_id=:v ORDER BY sort_order ASC, id ASC LIMIT 1",
+                    ['t' => $tid, 'v' => $vehicleId]
+                );
+                if ($next) {
+                    Database::execute(
+                        "UPDATE vehicle_images SET is_main=CASE WHEN id=:id THEN 1 ELSE 0 END WHERE tenant_id=:t AND vehicle_id=:v",
+                        ['id' => (int) $next['id'], 't' => $tid, 'v' => $vehicleId]
+                    );
+                    Database::execute(
+                        "UPDATE vehicles SET main_image=:p WHERE id=:v AND tenant_id=:t",
+                        ['p' => $next['path'], 'v' => $vehicleId, 't' => $tid]
+                    );
+                } else {
+                    Database::execute(
+                        "UPDATE vehicles SET main_image=NULL WHERE id=:v AND tenant_id=:t",
+                        ['v' => $vehicleId, 't' => $tid]
+                    );
+                }
+            }
+            Database::commit();
+        } catch (\Throwable $e) {
+            Database::rollBack();
+            throw $e;
+        }
+
+        ActivityLog::record('updated', 'vehicles', $vehicleId, 'Imagen eliminada');
+        Session::flash('success', 'Imagen eliminada.');
         $this->back();
     }
 
@@ -274,29 +353,72 @@ class VehicleController extends AdminController
 
     protected function handleGallery(Request $request, int $tid, int $vehicleId): void
     {
-        if (empty($_FILES['gallery']) || !is_array($_FILES['gallery']['name'])) {
+        $paths = FileUploader::imagesFromField('gallery', 'vehicles');
+        if (!$paths) {
             return;
         }
-        $count = count($_FILES['gallery']['name']);
-        for ($i = 0; $i < $count; $i++) {
-            $file = [
-                'name'     => $_FILES['gallery']['name'][$i],
-                'type'     => $_FILES['gallery']['type'][$i],
-                'tmp_name' => $_FILES['gallery']['tmp_name'][$i],
-                'error'    => $_FILES['gallery']['error'][$i],
-                'size'     => $_FILES['gallery']['size'][$i],
-            ];
-            if ($path = FileUploader::image($file, 'vehicles')) {
+
+        $mainPath = (string) Database::scalar(
+            "SELECT COALESCE(main_image, '') FROM vehicles WHERE id=:v AND tenant_id=:t",
+            ['v' => $vehicleId, 't' => $tid]
+        );
+        $hasGalleryMain = (int) Database::scalar(
+            "SELECT COUNT(*) FROM vehicle_images WHERE tenant_id=:t AND vehicle_id=:v AND is_main=1",
+            ['t' => $tid, 'v' => $vehicleId]
+        ) > 0;
+        $sort = (int) Database::scalar(
+            "SELECT COALESCE(MAX(sort_order), -1) FROM vehicle_images WHERE tenant_id=:t AND vehicle_id=:v",
+            ['t' => $tid, 'v' => $vehicleId]
+        );
+
+        foreach ($paths as $index => $path) {
+            $makeMain = $mainPath === '' && !$hasGalleryMain && $index === 0;
+            Database::execute(
+                "INSERT INTO vehicle_images (tenant_id, vehicle_id, path, is_main, sort_order) VALUES (:t,:v,:p,:m,:o)",
+                ['t' => $tid, 'v' => $vehicleId, 'p' => $path, 'm' => $makeMain ? 1 : 0, 'o' => ++$sort]
+            );
+            if ($makeMain) {
                 Database::execute(
-                    "INSERT INTO vehicle_images (tenant_id, vehicle_id, path, sort_order) VALUES (:t,:v,:p,:o)",
-                    ['t' => $tid, 'v' => $vehicleId, 'p' => $path, 'o' => $i]
-                );
-                // If vehicle has no main image yet, set this one.
-                Database::execute(
-                    "UPDATE vehicles SET main_image = :p WHERE id = :v AND tenant_id = :t AND (main_image IS NULL OR main_image = '')",
+                    "UPDATE vehicles SET main_image=:p WHERE id=:v AND tenant_id=:t",
                     ['p' => $path, 'v' => $vehicleId, 't' => $tid]
                 );
+                $mainPath = $path;
+                $hasGalleryMain = true;
             }
+        }
+    }
+
+    protected function syncMainImage(int $tid, int $vehicleId, string $path): void
+    {
+        Database::beginTransaction();
+        try {
+            Database::execute(
+                "UPDATE vehicle_images SET is_main=0 WHERE tenant_id=:t AND vehicle_id=:v",
+                ['t' => $tid, 'v' => $vehicleId]
+            );
+            $existing = Database::selectOne(
+                "SELECT id FROM vehicle_images WHERE tenant_id=:t AND vehicle_id=:v AND path=:p",
+                ['t' => $tid, 'v' => $vehicleId, 'p' => $path]
+            );
+            if ($existing) {
+                Database::execute(
+                    "UPDATE vehicle_images SET is_main=1, sort_order=0 WHERE id=:id AND tenant_id=:t",
+                    ['id' => (int) $existing['id'], 't' => $tid]
+                );
+            } else {
+                Database::execute(
+                    "INSERT INTO vehicle_images (tenant_id, vehicle_id, path, is_main, sort_order) VALUES (:t,:v,:p,1,0)",
+                    ['t' => $tid, 'v' => $vehicleId, 'p' => $path]
+                );
+            }
+            Database::execute(
+                "UPDATE vehicles SET main_image=:p WHERE id=:v AND tenant_id=:t",
+                ['p' => $path, 'v' => $vehicleId, 't' => $tid]
+            );
+            Database::commit();
+        } catch (\Throwable $e) {
+            Database::rollBack();
+            throw $e;
         }
     }
 }

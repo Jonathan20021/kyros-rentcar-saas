@@ -128,26 +128,72 @@ $inputCls = 'fld';
     </div>
 
     <!-- Images -->
-    <div class="card p-6">
-      <h2 class="font-semibold mb-4 flex items-center gap-2"><i data-lucide="image" class="w-4 h-4 text-brand"></i> Imagenes</h2>
-      <div class="grid sm:grid-cols-2 gap-4">
+    <div class="card p-6" x-data="vehicleImageManager()">
+      <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-5">
         <div>
-          <label class="block text-sm font-medium mb-1.5">Imagen principal</label>
-          <input type="file" name="main_image" accept="image/*" class="<?= $inputCls ?>">
-          <?php if ($isEdit && !empty($vehicle['main_image'])): ?>
-            <img src="<?= e(media($vehicle['main_image'])) ?>" class="mt-2 w-32 h-20 object-cover rounded-lg">
-          <?php endif; ?>
+          <h2 class="font-semibold flex items-center gap-2"><i data-lucide="image" class="w-4 h-4 text-brand"></i> Imagenes publicas</h2>
+          <p class="text-xs text-slate-500 mt-1">La imagen principal encabeza la ficha publica; la galeria aparece debajo como selector.</p>
         </div>
-        <div>
-          <label class="block text-sm font-medium mb-1.5">Galeria (multiples)</label>
-          <input type="file" name="gallery[]" accept="image/*" multiple class="<?= $inputCls ?>">
+        <?php if (!empty($images)): ?>
+          <span class="px-2.5 py-1 rounded-full bg-paper border hairline text-xs text-slate-500 self-start"><?= count($images) ?> en galeria</span>
+        <?php endif; ?>
+      </div>
+
+      <div class="grid lg:grid-cols-2 gap-5">
+        <div class="rounded-2xl border hairline bg-paper/60 p-4">
+          <label class="block text-sm font-semibold text-navy dark:text-white mb-2">Imagen principal</label>
+          <input type="file" name="main_image" accept="image/*" class="<?= $inputCls ?>" @change="previewMain($event)">
+          <div class="mt-3 aspect-[16/10] rounded-xl overflow-hidden bg-white dark:bg-slate-900 border hairline grid place-items-center">
+            <template x-if="mainPreview"><img :src="mainPreview" class="w-full h-full object-cover" alt="Preview principal"></template>
+            <?php if ($isEdit && !empty($vehicle['main_image'])): ?>
+              <img x-show="!mainPreview" src="<?= e(media($vehicle['main_image'])) ?>" class="w-full h-full object-cover" alt="Imagen principal actual">
+            <?php else: ?>
+              <div x-show="!mainPreview" class="text-center text-slate-400">
+                <i data-lucide="car" class="w-9 h-9 mx-auto mb-2"></i>
+                <span class="text-xs">Sin imagen principal</span>
+              </div>
+            <?php endif; ?>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border hairline bg-paper/60 p-4">
+          <label class="block text-sm font-semibold text-navy dark:text-white mb-2">Galeria</label>
+          <input type="file" name="gallery[]" accept="image/*" multiple class="<?= $inputCls ?>" @change="previewGallery($event)">
+          <div class="mt-3 grid grid-cols-3 gap-2" x-show="galleryPreview.length">
+            <template x-for="src in galleryPreview" :key="src">
+              <img :src="src" class="aspect-[4/3] w-full rounded-lg object-cover border hairline bg-white" alt="Preview galeria">
+            </template>
+          </div>
+          <div class="mt-3 rounded-xl border border-dashed border-slate-300/80 dark:border-white/10 p-5 text-center text-xs text-slate-500" x-show="!galleryPreview.length">
+            Puedes seleccionar varias fotos del mismo vehiculo en una sola carga.
+          </div>
         </div>
       </div>
+
       <?php if (!empty($images)): ?>
-      <div class="flex flex-wrap gap-2 mt-3">
-        <?php foreach ($images as $img): ?>
-          <img src="<?= e(media($img['path'])) ?>" class="w-20 h-16 object-cover rounded-lg border border-slate-200">
-        <?php endforeach; ?>
+      <div class="mt-6">
+        <div class="flex items-center justify-between gap-3 mb-3">
+          <h3 class="text-sm font-semibold text-navy dark:text-white">Galeria actual</h3>
+          <p class="text-xs text-slate-500">Marca una foto como principal o retirala de la publicacion.</p>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <?php foreach ($images as $img): $isMainImg = (int)($img['is_main'] ?? 0) === 1 || (($vehicle['main_image'] ?? '') === ($img['path'] ?? '')); ?>
+            <div class="rounded-xl border hairline bg-white dark:bg-slate-950 overflow-hidden">
+              <div class="relative aspect-[16/10] bg-paper">
+                <img src="<?= e(media($img['path'])) ?>" class="w-full h-full object-cover" alt="Imagen del vehiculo">
+                <?php if ($isMainImg): ?><span class="absolute left-2 top-2 px-2 py-1 rounded-lg bg-brand text-white text-[11px] font-bold">Principal</span><?php endif; ?>
+              </div>
+              <div class="p-3 flex items-center gap-2">
+                <?php if (!$isMainImg): ?>
+                  <button type="submit" form="vehicle-image-main-<?= (int)$img['id'] ?>" class="k-btn k-btn-outline !h-9 !px-3 text-xs flex-1 justify-center">Principal</button>
+                <?php else: ?>
+                  <span class="k-btn k-btn-ghost !h-9 !px-3 text-xs flex-1 justify-center opacity-70">Publica</span>
+                <?php endif; ?>
+                <button type="submit" form="vehicle-image-delete-<?= (int)$img['id'] ?>" class="icon-btn !w-9 !h-9 hover:!text-brand" title="Eliminar imagen"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+              </div>
+            </div>
+          <?php endforeach; ?>
+        </div>
       </div>
       <?php endif; ?>
     </div>
@@ -160,9 +206,35 @@ $inputCls = 'fld';
       </div>
     </div>
 
-    <div class="flex items-center gap-3">
-      <button type="submit" class="k-btn k-btn-grad !px-6"><?= $isEdit ? 'Guardar cambios' : 'Crear vehiculo' ?></button>
-      <a href="<?= url('/admin/vehicles') ?>" class="k-btn k-btn-outline !px-6">Cancelar</a>
+    <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+      <button type="submit" class="k-btn k-btn-grad !px-6 w-full sm:w-auto justify-center"><?= $isEdit ? 'Guardar cambios' : 'Crear vehiculo' ?></button>
+      <a href="<?= url('/admin/vehicles') ?>" class="k-btn k-btn-outline !px-6 w-full sm:w-auto justify-center">Cancelar</a>
     </div>
   </form>
+
+  <?php if (!empty($images)): foreach ($images as $img): ?>
+    <form id="vehicle-image-main-<?= (int)$img['id'] ?>" method="POST" action="<?= url('/admin/vehicles/image/main/' . $img['id']) ?>" class="hidden"><?= csrf_field() ?></form>
+    <form id="vehicle-image-delete-<?= (int)$img['id'] ?>" method="POST" action="<?= url('/admin/vehicles/image/delete/' . $img['id']) ?>" class="hidden" data-confirm="La imagen saldra de la pagina publica del vehiculo." data-confirm-title="Eliminar imagen"><?= csrf_field() ?></form>
+  <?php endforeach; endif; ?>
 </div>
+
+<?php \App\Core\View::push('scripts', <<<'HTML'
+<script>
+function vehicleImageManager(){
+  return {
+    mainPreview: '',
+    galleryPreview: [],
+    previewMain(event){
+      const file = event.target.files && event.target.files[0];
+      if (!file) { this.mainPreview = ''; return; }
+      this.mainPreview = URL.createObjectURL(file);
+      this.$nextTick(() => window.lucide && lucide.createIcons());
+    },
+    previewGallery(event){
+      this.galleryPreview.forEach(src => URL.revokeObjectURL(src));
+      this.galleryPreview = Array.from(event.target.files || []).map(file => URL.createObjectURL(file));
+    }
+  }
+}
+</script>
+HTML); ?>

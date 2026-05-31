@@ -73,10 +73,10 @@ $flashes = $_flashes ?? [];
         </span>
       </a>
       <nav class="hidden md:flex items-center gap-1 text-[14px] font-medium">
-        <a href="#showcase" :class="sec==='showcase'?'text-white bg-white/10':'text-white/55 hover:text-white'" class="px-3 py-1.5 rounded-lg transition">Producto</a>
-        <a href="#modulos" :class="sec==='modulos'?'text-white bg-white/10':'text-white/55 hover:text-white'" class="px-3 py-1.5 rounded-lg transition">Módulos</a>
-        <a href="#storefront" :class="sec==='storefront'?'text-white bg-white/10':'text-white/55 hover:text-white'" class="px-3 py-1.5 rounded-lg transition">Tu página</a>
-        <a href="#planes" :class="sec==='planes'?'text-white bg-white/10':'text-white/55 hover:text-white'" class="px-3 py-1.5 rounded-lg transition">Planes</a>
+        <a href="<?= url('/#showcase') ?>" :class="sec==='showcase'?'text-white bg-white/10':'text-white/55 hover:text-white'" class="px-3 py-1.5 rounded-lg transition">Producto</a>
+        <a href="<?= url('/#modulos') ?>" :class="sec==='modulos'?'text-white bg-white/10':'text-white/55 hover:text-white'" class="px-3 py-1.5 rounded-lg transition">Módulos</a>
+        <a href="<?= url('/#storefront') ?>" :class="sec==='storefront'?'text-white bg-white/10':'text-white/55 hover:text-white'" class="px-3 py-1.5 rounded-lg transition">Tu página</a>
+        <a href="<?= url('/#planes') ?>" :class="sec==='planes'?'text-white bg-white/10':'text-white/55 hover:text-white'" class="px-3 py-1.5 rounded-lg transition">Planes</a>
         <a href="#faq" :class="sec==='faq'?'text-white bg-white/10':'text-white/55 hover:text-white'" class="px-3 py-1.5 rounded-lg transition">FAQ</a>
       </nav>
       <div class="marketing-actions flex items-center gap-2">
@@ -98,10 +98,10 @@ $flashes = $_flashes ?? [];
     <div x-show="mobile" x-cloak x-transition.opacity.duration.200ms @click.outside="mobile = false"
          class="md:hidden mt-2 rounded-2xl bg-[#141E30]/95 backdrop-blur-xl border border-white/[0.08] shadow-soft p-2">
       <nav class="flex flex-col text-[15px] font-medium">
-        <a href="#showcase" @click="mobile=false" class="px-4 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/[0.06] transition">Producto</a>
-        <a href="#modulos"  @click="mobile=false" class="px-4 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/[0.06] transition">Módulos</a>
-        <a href="#storefront" @click="mobile=false" class="px-4 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/[0.06] transition">Tu página</a>
-        <a href="#planes"   @click="mobile=false" class="px-4 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/[0.06] transition">Planes</a>
+        <a href="<?= url('/#showcase') ?>" @click="mobile=false" class="px-4 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/[0.06] transition">Producto</a>
+        <a href="<?= url('/#modulos') ?>"  @click="mobile=false" class="px-4 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/[0.06] transition">Módulos</a>
+        <a href="<?= url('/#storefront') ?>" @click="mobile=false" class="px-4 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/[0.06] transition">Tu página</a>
+        <a href="<?= url('/#planes') ?>"   @click="mobile=false" class="px-4 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/[0.06] transition">Planes</a>
         <a href="#faq"      @click="mobile=false" class="px-4 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/[0.06] transition">FAQ</a>
       </nav>
       <div class="h-px bg-white/[0.08] my-2"></div>
@@ -124,7 +124,7 @@ $flashes = $_flashes ?? [];
       <p class="text-white/55 text-[14.5px] max-w-sm leading-relaxed">El sistema operativo de tu rent car. Flotilla, reservas, contratos, pagos y página pública — en una plataforma.</p>
 
       <!-- Status -->
-      <a href="#" class="inline-flex items-center gap-2 mt-6 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[12.5px] text-emerald-400 hover:bg-emerald-500/15 transition">
+      <a href="<?= url('/seguridad') ?>" class="inline-flex items-center gap-2 mt-6 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[12.5px] text-emerald-400 hover:bg-emerald-500/15 transition">
         <span class="relative w-2 h-2 rounded-full bg-emerald-400">
           <span class="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-60"></span>
         </span>
@@ -135,10 +135,10 @@ $flashes = $_flashes ?? [];
     <div class="md:col-span-2">
       <p class="font-semibold text-[13px] text-white/85 mb-4 uppercase tracking-wider">Producto</p>
       <ul class="space-y-2.5 text-[14px] text-white/55">
-        <li><a href="#showcase" class="hover:text-white transition">Recorrido</a></li>
-        <li><a href="#modulos" class="hover:text-white transition">Módulos</a></li>
-        <li><a href="#storefront" class="hover:text-white transition">Tu página pública</a></li>
-        <li><a href="#planes" class="hover:text-white transition">Planes</a></li>
+        <li><a href="<?= url('/producto') ?>" class="hover:text-white transition">Recorrido</a></li>
+        <li><a href="<?= url('/producto') ?>" class="hover:text-white transition">Módulos</a></li>
+        <li><a href="<?= url('/producto') ?>" class="hover:text-white transition">Tu página pública</a></li>
+        <li><a href="<?= url('/planes') ?>" class="hover:text-white transition">Planes</a></li>
         <li><a href="<?= url('/r/kyros-rent-car') ?>" class="hover:text-white transition flex items-center gap-1">Demo en vivo <i data-lucide="external-link" class="w-3 h-3"></i></a></li>
       </ul>
     </div>
@@ -159,9 +159,9 @@ $flashes = $_flashes ?? [];
         <li class="flex items-start gap-2"><i data-lucide="map-pin" class="w-3.5 h-3.5 mt-1 shrink-0"></i>Santo Domingo, RD</li>
       </ul>
       <div class="flex items-center gap-2 mt-5">
-        <a href="#" class="w-9 h-9 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.07] grid place-items-center text-white/55 hover:text-white transition"><i data-lucide="twitter" class="w-4 h-4"></i></a>
-        <a href="#" class="w-9 h-9 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.07] grid place-items-center text-white/55 hover:text-white transition"><i data-lucide="instagram" class="w-4 h-4"></i></a>
-        <a href="#" class="w-9 h-9 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.07] grid place-items-center text-white/55 hover:text-white transition"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
+        <a href="mailto:soporte@kyrosrd.com" class="w-9 h-9 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.07] grid place-items-center text-white/55 hover:text-white transition" aria-label="Enviar correo"><i data-lucide="mail" class="w-4 h-4"></i></a>
+        <a href="<?= url('/contacto') ?>" class="w-9 h-9 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.07] grid place-items-center text-white/55 hover:text-white transition" aria-label="Contacto"><i data-lucide="message-circle" class="w-4 h-4"></i></a>
+        <a href="<?= url('/seguridad') ?>" class="w-9 h-9 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.07] grid place-items-center text-white/55 hover:text-white transition" aria-label="Seguridad"><i data-lucide="shield-check" class="w-4 h-4"></i></a>
       </div>
     </div>
   </div>
@@ -171,9 +171,9 @@ $flashes = $_flashes ?? [];
     <div class="max-w-7xl mx-auto px-5 sm:px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-[12.5px] text-white/45">
       <p>&copy; <?= date('Y') ?> Kyros Rent Car · Todos los derechos reservados.</p>
       <div class="flex items-center gap-5">
-        <a href="#" class="hover:text-white transition">Términos</a>
-        <a href="#" class="hover:text-white transition">Privacidad</a>
-        <a href="#" class="hover:text-white transition">Seguridad</a>
+        <a href="<?= url('/terminos') ?>" class="hover:text-white transition">Términos</a>
+        <a href="<?= url('/privacidad') ?>" class="hover:text-white transition">Privacidad</a>
+        <a href="<?= url('/seguridad') ?>" class="hover:text-white transition">Seguridad</a>
       </div>
     </div>
   </div>
