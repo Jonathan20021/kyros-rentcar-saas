@@ -80,7 +80,40 @@ class Database
         return self::run($sql, $params)->rowCount();
     }
 
-    public static function beginTransaction(): void { self::connection()->beginTransaction(); }
-    public static function commit(): void { self::connection()->commit(); }
-    public static function rollBack(): void { if (self::connection()->inTransaction()) self::connection()->rollBack(); }
+    /**
+     * Transaction nesting depth. PDO has no native nested transactions, so a
+     * service that opens its own transaction (e.g. VehicleStatusService) while
+     * already inside a controller transaction would throw "There is already an
+     * active transaction". We count depth and only touch PDO at the outermost
+     * level, turning inner begin/commit into no-ops.
+     */
+    protected static int $txDepth = 0;
+
+    public static function beginTransaction(): void
+    {
+        if (self::$txDepth === 0) {
+            self::connection()->beginTransaction();
+        }
+        self::$txDepth++;
+    }
+
+    public static function commit(): void
+    {
+        if (self::$txDepth === 0) { return; }
+        self::$txDepth--;
+        if (self::$txDepth === 0 && self::connection()->inTransaction()) {
+            self::connection()->commit();
+        }
+    }
+
+    public static function rollBack(): void
+    {
+        // Any rollback unwinds the whole outer transaction — inner work cannot be
+        // partially kept without savepoints, and atomic-all-or-nothing is what
+        // every caller here expects.
+        self::$txDepth = 0;
+        if (self::connection()->inTransaction()) {
+            self::connection()->rollBack();
+        }
+    }
 }
