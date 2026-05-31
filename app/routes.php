@@ -69,6 +69,18 @@ $router->post('/super-admin/tenants/activate/{id}', 'SuperAdmin\\TenantControlle
 $router->get('/super-admin/plans', 'SuperAdmin\\PlanController@index', [$auth, $superadmin]);
 $router->get('/super-admin/users', 'SuperAdmin\\UserController@index', [$auth, $superadmin]);
 $router->get('/super-admin/logs', 'SuperAdmin\\LogController@index', [$auth, $superadmin]);
+// Approvals — tenant activations + storage requests
+$router->get ('/super-admin/approvals',                              'SuperAdmin\\ApprovalsController@index',          [$auth, $superadmin]);
+$router->post('/super-admin/approvals/tenant/approve/{id}',          'SuperAdmin\\ApprovalsController@approveTenant',  [$auth, $superadmin]);
+$router->post('/super-admin/approvals/tenant/reject/{id}',           'SuperAdmin\\ApprovalsController@rejectTenant',   [$auth, $superadmin]);
+$router->post('/super-admin/approvals/storage/approve/{id}',         'SuperAdmin\\ApprovalsController@approveStorage', [$auth, $superadmin]);
+$router->post('/super-admin/approvals/storage/reject/{id}',          'SuperAdmin\\ApprovalsController@rejectStorage',  [$auth, $superadmin]);
+
+// Notification routing — recipients per platform event (registrations, demos, logins)
+$router->get ('/super-admin/notifications',      'SuperAdmin\\NotificationController@index',  [$auth, $superadmin]);
+$router->post('/super-admin/notifications',      'SuperAdmin\\NotificationController@update', [$auth, $superadmin]);
+$router->post('/super-admin/notifications/test', 'SuperAdmin\\NotificationController@test',   [$auth, $superadmin]);
+
 $router->get('/super-admin/settings', 'SuperAdmin\\SettingController@index', [$auth, $superadmin]);
 $router->post('/super-admin/settings', 'SuperAdmin\\SettingController@update', [$auth, $superadmin]);
 $router->post('/super-admin/settings/test', 'SuperAdmin\\SettingController@test', [$auth, $superadmin]);
@@ -98,6 +110,7 @@ $router->post('/admin/customers', 'Admin\\CustomerController@store', [$auth, $te
 $router->get('/admin/customers/edit/{id}', 'Admin\\CustomerController@edit', [$auth, $tenant, $perm('customers.edit')]);
 $router->post('/admin/customers/update/{id}', 'Admin\\CustomerController@update', [$auth, $tenant, $perm('customers.edit')]);
 $router->post('/admin/customers/delete/{id}', 'Admin\\CustomerController@destroy', [$auth, $tenant, $perm('customers.delete')]);
+$router->post('/admin/customers/bulk-delete',  'Admin\\CustomerController@bulkDestroy', [$auth, $tenant, $perm('customers.delete')]);
 
 // Reservations
 $router->get('/admin/reservations', 'Admin\\ReservationController@index', [$auth, $tenant, $perm('reservations.view')]);
@@ -176,6 +189,17 @@ $router->post('/admin/users/toggle/{id}', 'Admin\\UserController@toggle', [$auth
 
 $router->get('/admin/settings', 'Admin\\SettingController@index', [$auth, $tenant, $perm('settings.view')]);
 $router->post('/admin/settings', 'Admin\\SettingController@update', [$auth, $tenant, $perm('settings.edit')]);
+
+// NCF sequences (RD DGII compliance)
+$router->get ('/admin/ncf',                    'Admin\\NcfController@index',       [$auth, $tenant, $perm('settings.view')]);
+$router->post('/admin/ncf',                    'Admin\\NcfController@store',       [$auth, $tenant, $perm('settings.edit')]);
+$router->post('/admin/ncf/disable/{id}',       'Admin\\NcfController@disable',     [$auth, $tenant, $perm('settings.edit')]);
+
+// Storage quota + extra-storage requests
+$router->get ('/admin/storage',                'Admin\\StorageController@index',   [$auth, $tenant, $perm('settings.view')]);
+$router->post('/admin/storage/refresh',        'Admin\\StorageController@refresh', [$auth, $tenant, $perm('settings.view')]);
+$router->post('/admin/storage/request',        'Admin\\StorageController@request', [$auth, $tenant, $perm('settings.edit')]);
+$router->post('/admin/storage/cancel/{id}',    'Admin\\StorageController@cancel',  [$auth, $tenant, $perm('settings.edit')]);
 
 // Vehicle categories
 $router->get('/admin/categories', 'Admin\\CategoryController@index', [$auth, $tenant, $perm('catalog.view')]);

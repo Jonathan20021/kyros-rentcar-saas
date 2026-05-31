@@ -13,6 +13,7 @@
     <ul class="mt-4 space-y-2 text-sm text-slate-600 dark:text-slate-300">
       <li class="flex items-center gap-2"><i data-lucide="car" class="w-4 h-4 text-indigo-500"></i> <?= ((int)$p['max_vehicles'] < 0) ? 'Vehiculos ilimitados' : $p['max_vehicles'] . ' vehiculos' ?></li>
       <li class="flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 text-indigo-500"></i> <?= ((int)$p['max_users'] < 0) ? 'Usuarios ilimitados' : $p['max_users'] . ' usuarios' ?></li>
+      <li class="flex items-center gap-2"><i data-lucide="hard-drive" class="w-4 h-4 text-indigo-500"></i> <?= (int)$p['storage_mb'] >= 1024 ? number_format((int)$p['storage_mb']/1024, 1) . ' GB' : (int)$p['storage_mb'] . ' MB' ?> de almacenamiento</li>
       <?php foreach ($p['features_list'] as $f): ?>
         <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> <?= e($f) ?></li>
       <?php endforeach; ?>

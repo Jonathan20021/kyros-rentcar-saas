@@ -40,6 +40,12 @@ class FileUploader
         if ($raw === false || strlen($raw) < 8 || strlen($raw) > 2 * 1024 * 1024 || substr($raw, 0, 8) !== "\x89PNG\r\n\x1a\n") {
             return null;
         }
+        // Quota gate before write
+        $tid = \App\Core\Auth::tenantId();
+        if ($tid) {
+            [$ok, $reason] = StorageService::canStore((int) $tid, strlen($raw));
+            if (!$ok) { \App\Core\Session::flash('error', $reason); return null; }
+        }
         $subdir = preg_replace('/[^a-z0-9_\-]/i', '', $subdir);
         $dir = Config::get('app.upload_path') . DIRECTORY_SEPARATOR . $subdir;
         if (!is_dir($dir)) { @mkdir($dir, 0775, true); }
@@ -48,6 +54,7 @@ class FileUploader
             Logger::error('Failed to write signature to ' . $dir);
             return null;
         }
+        if ($tid) StorageService::addBytes((int) $tid, strlen($raw));
         return Config::get('app.upload_url') . '/' . $subdir . '/' . $name;
     }
 
@@ -84,6 +91,13 @@ class FileUploader
         );
         if ($stripped === null) return null;
 
+        // Quota gate (post-sanitize size).
+        $tid = \App\Core\Auth::tenantId();
+        if ($tid) {
+            [$ok, $reason] = StorageService::canStore((int) $tid, strlen($stripped));
+            if (!$ok) { \App\Core\Session::flash('error', $reason); return null; }
+        }
+
         $subdir = preg_replace('/[^a-z0-9_\-]/i', '', $subdir);
         $dir = Config::get('app.upload_path') . DIRECTORY_SEPARATOR . $subdir;
         if (!is_dir($dir)) { @mkdir($dir, 0775, true); }
@@ -92,6 +106,7 @@ class FileUploader
             Logger::error('Failed to write signature to ' . $dir);
             return null;
         }
+        if ($tid) StorageService::addBytes((int) $tid, strlen($stripped));
         return Config::get('app.upload_url') . '/' . $subdir . '/' . $name;
     }
 
@@ -138,6 +153,17 @@ class FileUploader
             return null;
         }
 
+        // Storage quota gate — block before move when the tenant is over plan.
+        $tid = \App\Core\Auth::tenantId();
+        if ($tid) {
+            [$ok, $reason] = StorageService::canStore((int) $tid, (int) $file['size']);
+            if (!$ok) {
+                Logger::warning('Upload blocked by quota for tenant ' . $tid . ': ' . $reason);
+                \App\Core\Session::flash('error', $reason);
+                return null;
+            }
+        }
+
         // Real MIME detection
         $finfo = new \finfo(FILEINFO_MIME_TYPE);
         $mime  = $finfo->file($file['tmp_name']);
@@ -160,6 +186,11 @@ class FileUploader
         if (!move_uploaded_file($file['tmp_name'], $dest)) {
             Logger::error('Failed to move uploaded file to ' . $dest);
             return null;
+        }
+
+        // Track the saved bytes in the tenant's quota cache (cheap UPDATE).
+        if ($tid) {
+            StorageService::addBytes((int) $tid, (int) @filesize($dest));
         }
 
         // SVGs are vector documents — sanitize after write so an attacker

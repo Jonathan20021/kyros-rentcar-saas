@@ -39,7 +39,19 @@ $riskMap=['low'=>'bg-emerald-100 text-emerald-700','medium'=>'bg-amber-100 text-
 <div class="grid lg:grid-cols-3 gap-5">
   <!-- Profile -->
   <div class="card p-6 h-fit">
-    <h2 class="font-display font-bold text-navy mb-4">Información</h2>
+    <div class="flex items-start justify-between gap-3 mb-4">
+      <h2 class="font-display font-bold text-navy">Información</h2>
+      <?php if ($c['phone'] || $c['whatsapp'] || $c['email']): ?>
+        <?= \App\Core\View::renderPartial('_partials/contact_actions', [
+          'phone'    => $c['phone'],
+          'whatsapp' => $c['whatsapp'] ?? $c['phone'],
+          'email'    => $c['email'],
+          'country'  => $tenant['country'] ?? 'DO',
+          'message'  => 'Hola ' . trim($c['first_name'] . ' ' . ($c['last_name'] ?? '')) . ', te escribo de ' . ($tenant['name'] ?? 'Kyros Rent Car') . '.',
+          'size'     => 'md',
+        ]) ?>
+      <?php endif; ?>
+    </div>
     <div class="space-y-3 text-sm">
       <?php foreach ([['Teléfono',$c['phone']],['WhatsApp',$c['whatsapp']],['Email',$c['email']],['Dirección',$c['address']],['Nacionalidad',$c['nationality']],['Licencia',$c['license_number']],['Vence licencia',$c['license_expiration']?format_date($c['license_expiration']):null]] as $row): ?>
       <div class="flex justify-between gap-3"><span class="text-slate-400"><?= $row[0] ?></span><span class="font-medium text-navy text-right"><?= e($row[1] ?: '—') ?></span></div>

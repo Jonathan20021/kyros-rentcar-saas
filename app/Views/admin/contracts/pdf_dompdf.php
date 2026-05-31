@@ -39,21 +39,8 @@ $sigData  = !empty($c['customer_signature']) ? PdfService::embedImage($c['custom
 $shareUrl = !empty($c['share_token']) ? abs_url('/contrato/' . $c['share_token']) : null;
 $qrSrc    = $shareUrl ? PdfService::qrSvgDataUri($shareUrl, $ink) : '';
 
-/* color helpers */
-function pdf_hex_split(string $hex): array {
-    $hex = ltrim($hex, '#');
-    if (strlen($hex) === 3) $hex = $hex[0].$hex[0].$hex[1].$hex[1].$hex[2].$hex[2];
-    return [hexdec(substr($hex,0,2)), hexdec(substr($hex,2,2)), hexdec(substr($hex,4,2))];
-}
-function pdf_mix(array $a, array $b, float $w): string {
-    return sprintf('#%02X%02X%02X',
-        (int)($a[0] * (1-$w) + $b[0] * $w),
-        (int)($a[1] * (1-$w) + $b[1] * $w),
-        (int)($a[2] * (1-$w) + $b[2] * $w),
-    );
-}
-function pdf_mix_white(string $hex, float $w): string { return pdf_mix(pdf_hex_split($hex), [255,255,255], $w); }
-function pdf_mix_navy (string $hex, float $w): string { return pdf_mix(pdf_hex_split($hex), [14, 20, 34], $w); }
+/* color helpers (pdf_mix_white / pdf_mix_navy live in app/Helpers/functions.php
+   so every PDF template can call them without redeclaring). */
 
 /* Inclusions — what's covered with the rental (fills space + adds clarity) */
 $inclusions = [

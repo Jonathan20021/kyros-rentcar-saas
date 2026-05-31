@@ -6,6 +6,7 @@ use App\Core\Session;
 use App\Models\Tenant;
 use App\Models\ActivityLog;
 use App\Services\FileUploader;
+use App\Services\LocaleService;
 
 class SettingController extends AdminController
 {
@@ -30,6 +31,13 @@ class SettingController extends AdminController
             'tax_rate' => 'numeric|min:0|max:100',
         ], '/admin/settings');
 
+        // Country drives locale defaults. If the user changed countries, snap
+        // the dependent fields to the new country's defaults UNLESS they
+        // explicitly overrode them in the same request.
+        $country = strtoupper($request->str('country', 'DO'));
+        if (!in_array($country, LocaleService::COUNTRIES, true)) $country = 'DO';
+        $defaults = LocaleService::defaultsFor($country);
+
         $payload = [
             'name'            => $data['name'],
             'legal_name'      => $request->str('legal_name') ?: null,
@@ -41,8 +49,11 @@ class SettingController extends AdminController
             'description'     => $request->str('description') ?: null,
             'primary_color'   => $request->str('primary_color', '#4F46E5'),
             'secondary_color' => $request->str('secondary_color', '#06B6D4'),
-            'currency'        => $request->str('currency', 'DOP'),
-            'tax_rate'        => (float) $request->float('tax_rate', 18),
+            'country'         => $country,
+            'currency'        => $request->str('currency') ?: $defaults['currency'],
+            'tax_rate'        => $request->float('tax_rate') ?: $defaults['tax_rate'],
+            'tax_label'       => $request->str('tax_label') ?: $defaults['tax_label'],
+            'tax_id_label'    => $request->str('tax_id_label') ?: $defaults['tax_id_label'],
         ];
 
         if ($f = $request->file('logo')) {

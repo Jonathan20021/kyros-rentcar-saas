@@ -82,6 +82,121 @@ if (!function_exists('money')) {
     }
 }
 
+// ---------------------------------------------------------------------
+// PDF color helpers (used by every dompdf template). Declared globally so
+// any template can call them without bootstrapping them locally.
+// ---------------------------------------------------------------------
+if (!function_exists('pdf_hex_split')) {
+    function pdf_hex_split(string $hex): array {
+        $hex = ltrim($hex, '#');
+        if (strlen($hex) === 3) $hex = $hex[0].$hex[0].$hex[1].$hex[1].$hex[2].$hex[2];
+        return [hexdec(substr($hex, 0, 2)), hexdec(substr($hex, 2, 2)), hexdec(substr($hex, 4, 2))];
+    }
+}
+if (!function_exists('pdf_mix')) {
+    function pdf_mix(array $a, array $b, float $w): string {
+        return sprintf('#%02X%02X%02X',
+            (int)($a[0] * (1 - $w) + $b[0] * $w),
+            (int)($a[1] * (1 - $w) + $b[1] * $w),
+            (int)($a[2] * (1 - $w) + $b[2] * $w),
+        );
+    }
+}
+if (!function_exists('pdf_mix_white')) {
+    function pdf_mix_white(string $hex, float $w): string { return pdf_mix(pdf_hex_split($hex), [255, 255, 255], $w); }
+}
+if (!function_exists('pdf_mix_navy')) {
+    function pdf_mix_navy(string $hex, float $w): string { return pdf_mix(pdf_hex_split($hex), [14, 20, 34], $w); }
+}
+
+if (!function_exists('phone_clean')) {
+    /**
+     * Normalize a phone for tel: / wa.me deep links.
+     * Strips spaces, dashes, parens; keeps a leading + if present.
+     * Returns null if there are fewer than 7 digits (unusable).
+     */
+    function phone_clean(?string $phone): ?string
+    {
+        if (!$phone) return null;
+        $raw = preg_replace('/[^\d+]/', '', $phone) ?: '';
+        $digits = preg_replace('/\D/', '', $raw) ?: '';
+        if (strlen($digits) < 7) return null;
+        return str_starts_with($raw, '+') ? '+' . $digits : $digits;
+    }
+}
+
+if (!function_exists('tel_link')) {
+    /** Build a tel: href, country-prefixed if missing. */
+    function tel_link(?string $phone, string $countryCode = '+1'): ?string
+    {
+        $clean = phone_clean($phone);
+        if (!$clean) return null;
+        if ($clean[0] !== '+') $clean = $countryCode . $clean;
+        return 'tel:' . $clean;
+    }
+}
+
+if (!function_exists('wa_link')) {
+    /**
+     * Build a wa.me deep link with an optional prefilled message.
+     * Strips the leading + (wa.me expects pure digits).
+     */
+    function wa_link(?string $phone, string $message = '', string $countryCode = '+1'): ?string
+    {
+        $clean = phone_clean($phone);
+        if (!$clean) return null;
+        if ($clean[0] !== '+') $clean = $countryCode . $clean;
+        $digits = ltrim($clean, '+');
+        $url = 'https://wa.me/' . $digits;
+        if ($message !== '') {
+            $url .= '?text=' . rawurlencode($message);
+        }
+        return $url;
+    }
+}
+
+if (!function_exists('mail_link')) {
+    /** mailto: with optional subject/body. */
+    function mail_link(?string $email, string $subject = '', string $body = ''): ?string
+    {
+        if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) return null;
+        $params = [];
+        if ($subject !== '') $params['subject'] = $subject;
+        if ($body !== '')    $params['body']    = $body;
+        return 'mailto:' . $email . ($params ? '?' . http_build_query($params) : '');
+    }
+}
+
+if (!function_exists('money_compact')) {
+    /**
+     * Compact money format for narrow cells (KPI cards, sparkline labels):
+     *   77520     → RD$ 77.5K
+     *   1245000   → RD$ 1.2M
+     *   980       → RD$ 980        (under 10k stays as integer for clarity)
+     *   amounts under 1000 keep two decimals like full money() but with no .00 noise.
+     */
+    function money_compact($amount): string
+    {
+        $symbol = Config::get('app.currency_symbol', 'RD$');
+        $n      = (float) $amount;
+        $abs    = abs($n);
+        $sign   = $n < 0 ? '-' : '';
+
+        if ($abs >= 1_000_000) {
+            return $symbol . ' ' . $sign . rtrim(rtrim(number_format($abs / 1_000_000, 1, '.', ''), '0'), '.') . 'M';
+        }
+        if ($abs >= 10_000) {
+            return $symbol . ' ' . $sign . rtrim(rtrim(number_format($abs / 1_000, 1, '.', ''), '0'), '.') . 'K';
+        }
+        if ($abs >= 1_000) {
+            return $symbol . ' ' . $sign . number_format($abs, 0);
+        }
+        // Show cents only when there are actual cents (avoids "RD$ 100.00")
+        $decimals = (fmod($abs, 1.0) > 0) ? 2 : 0;
+        return $symbol . ' ' . $sign . number_format($abs, $decimals);
+    }
+}
+
 if (!function_exists('slugify')) {
     /** Convert a string into a URL-safe slug. */
     function slugify(string $text): string

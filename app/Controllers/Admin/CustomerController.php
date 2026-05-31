@@ -134,6 +134,49 @@ class CustomerController extends AdminController
         $this->redirect('/admin/customers');
     }
 
+    /** Bulk delete from the list page. Skips customers with active contracts. */
+    public function bulkDestroy(Request $request): void
+    {
+        if (!can('customers.delete')) { $this->abort(403); }
+        $tid = $this->tenantId();
+        $raw = (string) $request->input('ids', '');
+        $ids = array_filter(array_map('intval', explode(',', $raw)), fn($n) => $n > 0);
+        if (!$ids) {
+            Session::flash('error', 'No se seleccionaron clientes.');
+            $this->redirect('/admin/customers');
+        }
+
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        // Customers with at least one active contract — skipped.
+        $skipRows = Database::select(
+            "SELECT customer_id, COUNT(*) AS n FROM contracts
+              WHERE tenant_id = ? AND customer_id IN ($placeholders)
+                AND status IN ('active','overdue','claim') AND deleted_at IS NULL
+           GROUP BY customer_id",
+            array_merge([$tid], $ids)
+        );
+        $skipIds = array_map(fn($r) => (int) $r['customer_id'], $skipRows);
+        $deleteIds = array_values(array_diff($ids, $skipIds));
+
+        $n = 0;
+        foreach ($deleteIds as $cid) {
+            try {
+                Customer::delete($cid, $tid);
+                ActivityLog::record('deleted', 'customers', $cid, 'Eliminación masiva');
+                $n++;
+            } catch (\Throwable $e) {
+                \App\Core\Logger::warning('Bulk delete customer ' . $cid . ' failed: ' . $e->getMessage());
+            }
+        }
+
+        $msg = $n . ' cliente' . ($n === 1 ? '' : 's') . ' eliminado' . ($n === 1 ? '' : 's') . '.';
+        if ($skipIds) {
+            $msg .= ' Se omitieron ' . count($skipIds) . ' con contratos activos.';
+        }
+        Session::flash($n > 0 ? 'success' : 'warning', $msg);
+        $this->redirect('/admin/customers');
+    }
+
     protected function validated(Request $request, string $back): array
     {
         return $this->validateOrBack($request->all(), [

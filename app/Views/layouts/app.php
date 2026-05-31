@@ -31,6 +31,7 @@ $adminGroups = [
   ['title'=>'Finanzas','items'=>[
     ['key'=>'payments','label'=>'Pagos','icon'=>'credit-card','url'=>url('/admin/payments'),'feature'=>'payments'],
     ['key'=>'invoices','label'=>'Facturas','icon'=>'receipt','url'=>url('/admin/invoices'),'feature'=>'invoices'],
+    ['key'=>'ncf','label'=>'Comprobantes (NCF)','icon'=>'file-badge','url'=>url('/admin/ncf'),'feature'=>'invoices'],
     ['key'=>'expenses','label'=>'Gastos','icon'=>'trending-down','url'=>url('/admin/expenses'),'feature'=>'expenses'],
     ['key'=>'cashbox','label'=>'Cierre de caja','icon'=>'calculator','url'=>url('/admin/cashbox'),'feature'=>'cashbox'],
     ['key'=>'reports','label'=>'Reportes','icon'=>'bar-chart-3','url'=>url('/admin/reports'),'feature'=>'reports'],
@@ -45,6 +46,7 @@ $adminGroups = [
     ['key'=>'activity','label'=>'Actividad','icon'=>'history','url'=>url('/admin/activity')],
     ['key'=>'emails','label'=>'Correos','icon'=>'mail','url'=>url('/admin/emails'),'feature'=>'email_templates'],
     ['key'=>'api','label'=>'API','icon'=>'plug','url'=>url('/admin/api'),'feature'=>'api'],
+    ['key'=>'storage','label'=>'Almacenamiento','icon'=>'hard-drive','url'=>url('/admin/storage')],
     ['key'=>'settings','label'=>'Configuracion','icon'=>'settings','url'=>url('/admin/settings')],
   ]],
 ];
@@ -53,10 +55,12 @@ $superGroups = [
     ['key'=>'dashboard','label'=>'Dashboard','icon'=>'layout-dashboard','url'=>url('/super-admin')],
     ['key'=>'tenants','label'=>'Empresas','icon'=>'building-2','url'=>url('/super-admin/tenants')],
     ['key'=>'plans','label'=>'Planes','icon'=>'package','url'=>url('/super-admin/plans')],
+    ['key'=>'approvals','label'=>'Aprobaciones','icon'=>'badge-check','url'=>url('/super-admin/approvals')],
   ]],
   ['title'=>'Administracion','items'=>[
     ['key'=>'users','label'=>'Usuarios','icon'=>'users','url'=>url('/super-admin/users')],
     ['key'=>'logs','label'=>'Logs','icon'=>'scroll-text','url'=>url('/super-admin/logs')],
+    ['key'=>'notifications','label'=>'Notificaciones','icon'=>'bell-ring','url'=>url('/super-admin/notifications')],
     ['key'=>'settings','label'=>'Configuracion','icon'=>'settings','url'=>url('/super-admin/settings')],
   ]],
 ];
@@ -493,14 +497,26 @@ $planName = $tenant['plan_name'] ?? null;
   </div>
 </div>
 
-<!-- Toasts -->
-<div class="fixed bottom-5 right-5 z-50 space-y-2.5" x-data="{toasts: window.__flashes || []}">
+<!-- Toasts: colored icon by type, longer dwell for errors -->
+<div class="fixed bottom-5 right-5 z-50 space-y-2.5 max-w-[calc(100vw-2.5rem)]"
+     x-data="{toasts: window.__flashes || []}">
   <template x-for="(t,i) in toasts" :key="i">
-    <div x-show="t.show" x-init="setTimeout(()=>t.show=false,5000)" x-transition.opacity.duration.300ms
-         class="flex items-center gap-3 pl-4 pr-3 py-3 rounded-2xl shadow-lift bg-white dark:bg-slate-900 border hairline min-w-[280px]">
-      <span class="w-2 h-2 rounded-full" :class="{'bg-emerald-500':t.type==='success','bg-red-500':t.type==='error','bg-amber-500':t.type==='warning','bg-slate-400':t.type==='info'}"></span>
-      <span x-text="t.message" class="text-sm font-medium text-ink dark:text-white"></span>
-      <button @click="t.show=false" class="ml-auto text-slate-400 hover:text-ink">&times;</button>
+    <div x-show="t.show"
+         x-init="setTimeout(()=>t.show=false, t.type==='error' ? 8000 : 5000); $nextTick(()=>window.lucide&&lucide.createIcons())"
+         x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-3" x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+         class="flex items-start gap-3 pl-3 pr-3 py-3 rounded-2xl shadow-lift bg-white dark:bg-slate-900 border hairline min-w-[300px] max-w-[400px]">
+      <div class="w-8 h-8 rounded-xl grid place-items-center shrink-0"
+           :class="{'bg-emerald-50 text-emerald-600':t.type==='success','bg-red-50 text-red-600':t.type==='error','bg-amber-50 text-amber-600':t.type==='warning','bg-slate-100 text-slate-500':t.type==='info'}">
+        <i class="w-4 h-4"
+           :data-lucide="t.type==='success' ? 'check-circle-2' : (t.type==='error' ? 'alert-octagon' : (t.type==='warning' ? 'alert-triangle' : 'info'))"></i>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p x-text="t.message" class="text-[13.5px] font-medium text-ink dark:text-white leading-snug"></p>
+      </div>
+      <button @click="t.show=false" class="text-slate-300 hover:text-ink transition shrink-0 -mt-0.5" aria-label="Cerrar">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
     </div>
   </template>
 </div>

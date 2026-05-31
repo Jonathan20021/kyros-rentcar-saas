@@ -46,15 +46,47 @@ class AuthController extends Controller
         }
 
         if (Auth::attempt($email, $pass)) {
+            // Block tenant users whose company is still in approval queue.
+            // Super admins (no tenant) and demo tenants are allowed through.
+            $tid = Auth::tenantId();
+            if ($tid) {
+                $tStatus = Database::scalar("SELECT status FROM tenants WHERE id = :t", ['t' => $tid]);
+                if ($tStatus === 'pending_approval') {
+                    Auth::logout();
+                    Session::flash('error', 'Tu cuenta está en revisión. Te avisaremos cuando esté lista.');
+                    $this->redirect('/login');
+                }
+                if ($tStatus === 'suspended' || $tStatus === 'inactive') {
+                    Auth::logout();
+                    Session::flash('error', 'Tu cuenta está suspendida. Contacta a soporte.');
+                    $this->redirect('/login');
+                }
+            }
             LoginThrottle::clear($email, $ip);
             LoginThrottle::record($email, $ip, true);
             ActivityLog::record('login', 'auth', Auth::id(), 'Inicio de sesion');
+            // Platform alert: login success
+            try {
+                $u = Auth::user() ?: ['email' => $email];
+                \App\Services\NotificationService::notifyLogin(
+                    ['name' => $u['name'] ?? '', 'email' => $u['email'] ?? $email, 'tenant_id' => $u['tenant_id'] ?? null,
+                     'tenant_name' => $u['tenant_name'] ?? null],
+                    $ip, $_SERVER['HTTP_USER_AGENT'] ?? null, true
+                );
+            } catch (\Throwable $e) { \App\Core\Logger::error('notify login ok: ' . $e->getMessage()); }
             $intended = Session::get('_intended');
             Session::forget('_intended');
             $this->redirect($intended ?: '/dashboard');
         }
 
         LoginThrottle::record($email, $ip, false);
+        // Platform alert: failed login
+        try {
+            \App\Services\NotificationService::notifyLogin(
+                ['name' => '', 'email' => $email, 'tenant_id' => null],
+                $ip, $_SERVER['HTTP_USER_AGENT'] ?? null, false
+            );
+        } catch (\Throwable $e) { \App\Core\Logger::error('notify login fail: ' . $e->getMessage()); }
         Session::flash('error', 'Credenciales invalidas. Verifica tu correo y contrasena.');
         Session::flashInput(['email' => $email]);
         $this->redirect('/login');
@@ -117,6 +149,15 @@ class AuthController extends Controller
         $user['role_slug'] = 'owner';
         Auth::login($user);
         ActivityLog::record('login', 'auth', $uid, 'Demo redimida: ' . $license['code']);
+
+        // Platform alert: demo was redeemed.
+        try {
+            \App\Services\NotificationService::notifyDemoCreated(
+                ['name' => $name, 'slug' => $slug, 'demo_expires_at' => date('Y-m-d H:i:s', time() + ((int)$license['hours_valid']) * 3600)],
+                ['name' => $name, 'email' => $email],
+                $license
+            );
+        } catch (\Throwable $e) { \App\Core\Logger::error('notify demo: ' . $e->getMessage()); }
 
         Session::flash('success', sprintf(
             '¡Demo activa! Tienes %d horas para explorar como %s. Tu página pública: /r/%s',
@@ -184,7 +225,10 @@ class AuthController extends Controller
                 'secondary_color'=> '#06B6D4',
                 'currency'       => 'DOP',
                 'plan_id'        => 1, // Starter
-                'status'         => 'trial',
+                // Fresh registrations sit in `pending_approval` until super admin
+                // reviews. Demo redemptions bypass this (they go straight to
+                // trial in DemoService::redeem).
+                'status'         => 'pending_approval',
                 'trial_ends_at'  => date('Y-m-d', strtotime('+30 days')),
             ]);
 
@@ -227,12 +271,25 @@ class AuthController extends Controller
                 \App\Services\Mailer::layout('¡Tu rent car está lista! 🚗', $body, null, ['label'=>'Ir a mi panel','url'=>abs_url('/login')]));
         } catch (\Throwable $e) { \App\Core\Logger::error('welcome mail: ' . $e->getMessage()); }
 
-        // Auto-login the new owner
-        $user = User::findByEmail($email, $tenantId);
-        $user['role_slug'] = 'owner';
-        Auth::login($user);
-        Session::flash('success', '¡Bienvenido a Kyros! Tu rent car fue creada. Tu pagina publica: /r/' . $slug);
-        $this->redirect('/admin/dashboard');
+        // Platform alert to ops inbox (Super Admin configured recipients).
+        try {
+            \App\Services\NotificationService::notifyRegistration(
+                [
+                    'name'      => $data['company'],
+                    'slug'      => $slug,
+                    'email'     => $email,
+                    'phone'     => $data['phone'] ?? null,
+                    'plan_name' => 'Starter',
+                    'status'    => 'pending_approval',
+                ],
+                ['name' => $data['owner_name'], 'email' => $email]
+            );
+        } catch (\Throwable $e) { \App\Core\Logger::error('notify registration: ' . $e->getMessage()); }
+
+        // No auto-login — wait for super admin to activate the tenant.
+        // The login flow checks tenant status and blocks pending_approval.
+        Session::flash('success', '¡Cuenta creada! Estamos revisando tu solicitud. Te avisaremos por email cuando esté activa.');
+        $this->redirect('/login');
     }
 
     // ---- FORGOT / RESET -------------------------------------------------

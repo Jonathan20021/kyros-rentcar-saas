@@ -253,6 +253,10 @@ tailwind.config = {
 </style>
 <script>
   document.addEventListener('DOMContentLoaded', function(){
+    // The marketing layout opts into a GSAP+ScrollTrigger driven system. When
+    // it does, this legacy IntersectionObserver stands down so the two don't
+    // double-animate. Admin/auth pages keep using this lightweight fallback.
+    if (window.__USE_GSAP__) return;
     var els=document.querySelectorAll('.reveal,.reveal-s');
     if(!('IntersectionObserver' in window)){ els.forEach(e=>e.classList.add('in')); return; }
     var io=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target);} }); },{threshold:.12});

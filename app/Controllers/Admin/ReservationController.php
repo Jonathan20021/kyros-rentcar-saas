@@ -274,7 +274,10 @@ class ReservationController extends AdminController
                 'status'=>'active','created_by'=>\App\Core\Auth::id(),
             ]);
             Reservation::update((int)$id, $tid, ['status'=>'converted']);
-            Vehicle::update((int)$r['vehicle_id'], $tid, ['status'=>'rented']);
+            // Audit-logged transition via the service (also fires hooks in the future).
+            \App\Services\VehicleStatusService::onContractStart(
+                $tid, (int) $cid, (int) $r['vehicle_id'], \App\Core\Auth::id()
+            );
             // Delivery photos (evidence at handover)
             foreach (\App\Services\FileUploader::imagesFromField('delivery_photos', 'contracts') as $p) {
                 Database::execute("INSERT INTO contract_photos (tenant_id, contract_id, phase, path) VALUES (:t,:c,'delivery',:p)", ['t'=>$tid,'c'=>$cid,'p'=>$p]);

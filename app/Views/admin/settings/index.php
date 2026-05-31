@@ -62,13 +62,60 @@ $publicUrl = rtrim(\App\Core\Config::get('app.url'),'/').'/r/'.$tenant['slug'];
     </div>
 
     <!-- Billing -->
-    <div x-show="tab==='billing'" x-cloak class="card p-6">
-      <h2 class="font-display font-bold text-navy mb-4">Facturación y moneda</h2>
-      <div class="grid sm:grid-cols-2 gap-4">
-        <div><label class="block text-sm font-medium mb-1.5">Moneda</label><input name="currency" value="<?= sval($tenant,'currency','DOP') ?>" class="fld"></div>
-        <div><label class="block text-sm font-medium mb-1.5">Impuesto (%)</label><input type="number" step="0.01" name="tax_rate" value="<?= sval($tenant,'tax_rate','18') ?>" class="fld"></div>
+    <div x-show="tab==='billing'" x-cloak class="card p-6"
+         x-data="localeBox('<?= e($tenant['country'] ?? 'DO') ?>')" x-init="$nextTick(()=>window.lucide&&lucide.createIcons())">
+      <h2 class="font-display font-bold text-navy mb-4">País, facturación y moneda</h2>
+
+      <!-- Country picker — drives all dependent fields below -->
+      <label class="block text-sm font-medium mb-2">País de operación</label>
+      <div class="grid sm:grid-cols-2 gap-3 mb-5">
+        <?php foreach ([
+          'DO' => ['República Dominicana', '🇩🇴', 'ITBIS 18 % · DOP · RNC · Marbete'],
+          'CO' => ['Colombia',              '🇨🇴', 'IVA 19 % · COP · NIT · SOAT'],
+        ] as $code => $info): ?>
+          <label class="relative cursor-pointer">
+            <input type="radio" name="country" value="<?= $code ?>" x-model="country" @change="apply()"
+                   class="peer sr-only" <?= ($tenant['country'] ?? 'DO') === $code ? 'checked' : '' ?>>
+            <div class="p-4 rounded-2xl border-2 hairline transition peer-checked:border-brand peer-checked:bg-brand/[0.04]">
+              <div class="flex items-center gap-3">
+                <span class="text-2xl"><?= $info[1] ?></span>
+                <div class="flex-1 min-w-0">
+                  <p class="font-display font-bold text-navy text-[14.5px] truncate"><?= e($info[0]) ?></p>
+                  <p class="text-[11.5px] text-slate-500 mt-0.5 truncate"><?= e($info[2]) ?></p>
+                </div>
+                <i data-lucide="check-circle-2" class="w-5 h-5 text-brand opacity-0 peer-checked:opacity-100"></i>
+              </div>
+            </div>
+          </label>
+        <?php endforeach; ?>
       </div>
-      <p class="text-xs text-slate-400 mt-3">El impuesto se aplica automáticamente al calcular reservas y contratos.</p>
+
+      <div class="grid sm:grid-cols-4 gap-3">
+        <div>
+          <label class="block text-[12px] font-medium mb-1.5">Moneda</label>
+          <input name="currency" x-model="currency" class="fld font-mono tnum">
+        </div>
+        <div>
+          <label class="block text-[12px] font-medium mb-1.5">Impuesto (%)</label>
+          <input type="number" step="0.01" name="tax_rate" x-model="taxRate" class="fld tnum">
+        </div>
+        <div>
+          <label class="block text-[12px] font-medium mb-1.5">Etiqueta de impuesto</label>
+          <input name="tax_label" x-model="taxLabel" class="fld">
+        </div>
+        <div>
+          <label class="block text-[12px] font-medium mb-1.5">ID fiscal</label>
+          <input name="tax_id_label" x-model="taxIdLabel" class="fld">
+        </div>
+      </div>
+
+      <div class="mt-4 p-3.5 rounded-xl bg-brand/[0.04] border border-brand/15 text-[12.5px] text-slate-600 flex items-start gap-2.5">
+        <i data-lucide="info" class="w-4 h-4 text-brand mt-0.5 shrink-0"></i>
+        <div>
+          <p class="font-semibold text-navy" x-text="hint.title"></p>
+          <p class="text-slate-500 mt-0.5" x-text="hint.body"></p>
+        </div>
+      </div>
     </div>
 
     <div class="flex items-center gap-3">
@@ -77,6 +124,36 @@ $publicUrl = rtrim(\App\Core\Config::get('app.url'),'/').'/r/'.$tenant['slug'];
   </form>
 </div>
 <?php \App\Core\View::push('scripts', '<script>
+/**
+ * localeBox — keeps the country picker in sync with the currency / tax
+ * fields. When the user toggles country, the dependent fields snap to the
+ * country defaults; manual edits afterwards survive on submit.
+ */
+function localeBox(initial){
+  var DEFAULTS = {
+    DO: { currency:"DOP", taxRate:18, taxLabel:"ITBIS", taxIdLabel:"RNC",
+          hint:{ title:"República Dominicana", body:"DGII NCF requerido en facturación legal · marbete e inspección por vehículo · ITBIS 18 %." } },
+    CO: { currency:"COP", taxRate:19, taxLabel:"IVA",   taxIdLabel:"NIT",
+          hint:{ title:"Colombia",              body:"Resolución DIAN para facturación electrónica · SOAT y tecnomecánica obligatorios · IVA 19 %." } },
+  };
+  return {
+    country: initial || "DO",
+    currency: DEFAULTS[initial || "DO"].currency,
+    taxRate:  DEFAULTS[initial || "DO"].taxRate,
+    taxLabel: DEFAULTS[initial || "DO"].taxLabel,
+    taxIdLabel: DEFAULTS[initial || "DO"].taxIdLabel,
+    hint: DEFAULTS[initial || "DO"].hint,
+    apply(){
+      var d = DEFAULTS[this.country] || DEFAULTS.DO;
+      this.currency = d.currency;
+      this.taxRate  = d.taxRate;
+      this.taxLabel = d.taxLabel;
+      this.taxIdLabel = d.taxIdLabel;
+      this.hint = d.hint;
+    }
+  };
+}
+
 /**
  * Before the settings form submits, raster image inputs (PNG/WEBP/GIF/BMP)
  * are re-encoded as JPEG via Canvas. dompdf cannot render PNG/WEBP without

@@ -145,9 +145,17 @@ class ContractController extends AdminController
             'status'         => 'finished',
         ]);
 
-        // Vehicle goes to cleaning if it needs it, else available.
+        // Vehicle goes to cleaning if it needs it, else available. The
+        // VehicleStatusService writes the transition to the audit log.
         $newVehStatus = $request->str('vehicle_status', 'cleaning');
-        Vehicle::update((int) $c['vehicle_id'], $tid, ['status' => $newVehStatus, 'mileage' => $request->int('end_mileage') ?: null]);
+        if (!empty($request->int('end_mileage'))) {
+            Vehicle::update((int) $c['vehicle_id'], $tid, ['mileage' => $request->int('end_mileage')]);
+        }
+        \App\Services\VehicleStatusService::transition(
+            $tid, (int) $c['vehicle_id'], $newVehStatus,
+            'contract.finish', (int) $id, \App\Core\Auth::id(),
+            'Cierre del contrato ' . $c['contract_number']
+        );
 
         // Return photos
         $this->savePhotos($tid, (int) $id, 'return_photos', 'return');

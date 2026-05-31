@@ -94,6 +94,18 @@ $kpis = [
         <?php if (!empty($d['license_number'])): ?><i data-lucide="id-card" class="w-3 h-3 inline -mt-0.5"></i> <?= e($d['license_number']) ?><?php endif; ?>
         <?php if (!empty($d['phone'])): ?> · <?= e($d['phone']) ?><?php endif; ?>
       </p>
+      <?php if (!empty($d['phone']) || !empty($d['email'])): ?>
+        <div class="mt-2" @click.stop>
+          <?= \App\Core\View::renderPartial('_partials/contact_actions', [
+            'phone'    => $d['phone'] ?? null,
+            'whatsapp' => $d['phone'] ?? null,
+            'email'    => $d['email'] ?? null,
+            'country'  => $tenant['country'] ?? 'DO',
+            'message'  => 'Hola ' . e($fullName) . ', te contacto desde ' . ($tenant['name'] ?? 'Kyros Rent Car') . '.',
+            'size'     => 'sm',
+          ]) ?>
+        </div>
+      <?php endif; ?>
       <div class="flex items-end justify-between mt-3 pt-3 border-t hairline">
         <div>
           <p class="text-[11px] text-slate-400">Tarifa diaria</p>

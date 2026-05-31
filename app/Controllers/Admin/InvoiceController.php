@@ -128,11 +128,9 @@ class InvoiceController extends AdminController
     {
         $inv = Invoice::withItems($this->tenantId(), (int) $id);
         if (!$inv) { $this->abort(404); }
-        $this->view('admin/invoices/pdf', [
-            'title'   => 'Factura '.$inv['invoice_number'],
-            'inv'     => $inv,
-            'backUrl' => url('/admin/invoices/show/'.$id),
-        ], 'print');
+        $html = \App\Core\View::renderPartial('admin/invoices/pdf_dompdf', ['inv' => $inv]);
+        $pdf  = \App\Services\PdfService::render($html);
+        \App\Services\PdfService::stream($pdf, 'Factura-' . $inv['invoice_number'] . '.pdf');
     }
 
     public function status(Request $request, string $id): void

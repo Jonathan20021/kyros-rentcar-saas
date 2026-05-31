@@ -160,6 +160,13 @@ $demoOffers = $demoOffers ?? [];
         <span class="text-white/15">·</span>
         <span class="inline-flex items-center gap-1.5"><i data-lucide="shield" class="w-3.5 h-3.5 text-indigo-400/70"></i>Multi-tenant seguro</span>
       </div>
+
+      <!-- Quick capability chips: scrollable on mobile, wrap on desktop -->
+      <div class="mt-9 flex flex-wrap justify-center gap-1.5 reveal max-w-[820px] mx-auto">
+        <?php foreach (['Reservas online','Contratos con firma','PDF profesional','Pagos','Facturas','Multi-sucursal','Choferes','Mantenimiento','Incidencias','Promociones','Reportes P&L','Cierre de caja','API REST','Tu marca'] as $cap): ?>
+          <span class="text-[11.5px] px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.07] text-white/65 font-medium hover:bg-white/[0.07] hover:border-white/[0.12] hover:text-white transition"><?= e($cap) ?></span>
+        <?php endforeach; ?>
+      </div>
     </div>
 
     <!-- Product mockup -->
@@ -578,6 +585,244 @@ $demoOffers = $demoOffers ?? [];
           <?php endforeach; ?>
         </div>
       </div>
+
+      <!-- Storage tile: full width, shows quota + extras model -->
+      <div class="bento md:col-span-6 p-7 lg:p-9 reveal-s"
+           onmousemove="this.style.setProperty('--mx', (event.offsetX)+'px'); this.style.setProperty('--my', (event.offsetY)+'px')">
+        <div class="grid lg:grid-cols-[1fr_auto] gap-6 items-center">
+          <div>
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-400 grid place-items-center"><i data-lucide="hard-drive" class="w-5 h-5"></i></div>
+              <p class="eyebrow text-brand">Almacenamiento incluido + flexible</p>
+            </div>
+            <h3 class="font-display text-xl lg:text-2xl font-extrabold text-white">Fotos, contratos firmados y evidencia — todo en tu cuota</h3>
+            <p class="text-sm text-white/55 mt-2 leading-relaxed max-w-2xl">
+              Cada plan incluye espacio para tu catálogo y operación.
+              <span class="text-white/85">¿Necesitas más?</span>
+              Pides una ampliación desde el panel y la activamos en horas — sin migrar ni tocar tus datos.
+              Aviso en vivo al 80 % y bloqueo limpio al 100 % para evitar sorpresas.
+            </p>
+          </div>
+          <!-- Mini quota visualization -->
+          <div class="flex flex-col sm:flex-row lg:flex-col gap-2.5 lg:w-56">
+            <?php foreach ([
+              ['Starter',  '500 MB', '25%',  'bg-slate-200/60'],
+              ['Business', '5 GB',   '60%',  'bg-indigo-400/60'],
+              ['Premium',  '25 GB',  '100%', 'grad-bg'],
+            ] as $tier): ?>
+            <div class="flex-1 lg:flex-none rounded-xl p-3 border border-white/[0.07] bg-white/[0.03]">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[11px] font-semibold text-white/65"><?= $tier[0] ?></span>
+                <span class="text-[11px] font-mono text-white tnum"><?= $tier[1] ?></span>
+              </div>
+              <div class="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+                <div class="h-full <?= $tier[3] ?>" style="width:<?= $tier[2] ?>"></div>
+              </div>
+            </div>
+            <?php endforeach; ?>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     PLATAFORMA COMPLETA — every module the SaaS ships with
+     ============================================================== -->
+<section id="modulos" class="bg-[#0B1120] pb-24 sm:pb-32">
+  <div class="max-w-7xl mx-auto px-5 sm:px-6">
+    <div class="text-center max-w-2xl mx-auto mb-14 reveal">
+      <p class="eyebrow text-brand mb-3">Plataforma completa</p>
+      <h2 class="font-display display-lg text-[34px] sm:text-[52px] font-extrabold">Más de 20 módulos<br>listos para usar</h2>
+      <p class="mt-4 text-white/55 leading-relaxed">No tienes que armar tu stack — todo viene integrado y conectado entre sí.</p>
+    </div>
+
+    <?php
+    // Each module: [icon, name, description, badge (Starter/Business/Premium), accent]
+    $moduleGroups = [
+      ['Operación diaria', 'calendar-check', [
+        ['layout-dashboard', 'Dashboard en vivo',  'KPIs de ingresos, ocupación, reservas, alertas y vencimientos en tiempo real.', 'Starter'],
+        ['calendar-check',   'Reservas',          'Reservas online + internas, calendario visual, conversión a contrato 1-clic.',  'Starter'],
+        ['car',              'Flotilla',          'Vehículos con fotos, VIN, kilometraje, características, estados y galería.',   'Starter'],
+        ['id-card',          'Choferes',          'Equipo de chóferes con licencia, tarifa diaria/hora, rating y asignación.',     'Business'],
+        ['users',            'Clientes',          'Ficha completa, historial de reservas, documentos, licencias y notas.',         'Starter'],
+        ['file-text',        'Contratos',         'Generación automática, firma digital, fotos de entrega y PDF profesional.',     'Business'],
+      ]],
+      ['Mantenimiento & control', 'wrench', [
+        ['wrench',           'Mantenimiento',     'Programa servicios por vehículo: aceite, llantas, frenos, alineación.',         'Business'],
+        ['shield-alert',     'Incidencias',       'Multas de tránsito, daños, combustible, llaves perdidas — con evidencia.',      'Business'],
+        ['calendar-clock',   'Vencimientos',      'Alertas automáticas de seguro, marbete, placa e inspección por vehículo.',      'Business'],
+        ['map-pin',          'Multi-sucursal',    'Stock independiente por sucursal, manager y datos de contacto.',                'Business'],
+      ]],
+      ['Finanzas', 'wallet', [
+        ['credit-card',      'Pagos',             'Efectivo, tarjeta, transferencia, Azul, Cardnet, Stripe — todo trazable.',      'Business'],
+        ['receipt',          'Facturas',          'Emisión y seguimiento con estados (borrador, emitida, pagada, anulada).',       'Business'],
+        ['trending-down',    'Gastos',            'Combustible, nómina, alquiler, marketing — por sucursal o vehículo.',           'Business'],
+        ['calculator',       'Cierre de caja',    'Cierre diario con conteo de efectivo y conciliación de métodos.',               'Business'],
+        ['bar-chart-3',      'Reportes & P&L',    'P&L mensual, ingresos vs. gastos, ocupación, top vehículos y clientes.',        'Business'],
+      ]],
+      ['Catálogo & ventas', 'sparkles', [
+        ['globe',            'Página pública',    'Tu propio /r/slug con buscador, filtros, galería y reservas online.',           'Starter'],
+        ['tags',              'Categorías',        'Sedán, SUV, Pickup, Van, Lujo — con sus iconos y filtros públicos.',           'Starter'],
+        ['sparkles',         'Extras / Servicios','GPS, silla de bebé, WiFi, chofer adicional — facturados automáticamente.',      'Starter'],
+        ['ticket-percent',   'Promociones',       'Códigos % o monto fijo, mínimos, máximos de uso y vigencia.',                   'Business'],
+      ]],
+      ['Sistema & equipo', 'settings', [
+        ['users-round',      'Equipo & roles',    'Usuarios con permisos granulares: dueño, operador, taller, solo lectura.',      'Starter'],
+        ['history',          'Actividad',         'Audit log de cada acción: quién, qué, cuándo. Búsqueda y filtro.',              'Starter'],
+        ['mail',             'Plantillas email',  'Confirmación de reserva, recordatorios y avisos con marcadores dinámicos.',     'Business'],
+        ['plug',             'API REST',          'Tokens por empresa, endpoints REST con aislamiento total entre tenants.',       'Premium'],
+        ['settings',         'Branding',          'Logo, colores, datos legales, NCF, ITBIS y configuración por tenant.',         'Starter'],
+      ]],
+    ];
+    $badgeColor = [
+      'Starter'  => 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20',
+      'Business' => 'bg-indigo-500/10 text-indigo-300 border-indigo-500/20',
+      'Premium'  => 'bg-brand/10 text-brand border-brand/20',
+    ];
+    foreach ($moduleGroups as $gi => $group):
+      [$groupTitle, $groupIcon, $modules] = $group;
+    ?>
+    <div class="mt-10 first:mt-0 reveal">
+      <div class="flex items-center gap-3 mb-5">
+        <span class="w-9 h-9 rounded-xl bg-white/[0.04] border border-white/[0.08] grid place-items-center text-brand">
+          <i data-lucide="<?= e($groupIcon) ?>" class="w-4 h-4"></i>
+        </span>
+        <h3 class="font-display font-bold text-white text-lg"><?= e($groupTitle) ?></h3>
+        <span class="flex-1 h-px bg-gradient-to-r from-white/[0.07] to-transparent"></span>
+        <span class="text-[11px] font-mono text-white/35 tnum"><?= count($modules) ?> módulos</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+        <?php foreach ($modules as $m):
+          [$icon, $name, $desc, $badge] = $m;
+        ?>
+        <div class="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5"
+             style="background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.06);">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] grid place-items-center text-white/70 group-hover:text-brand group-hover:border-brand/30 transition">
+              <i data-lucide="<?= e($icon) ?>" class="w-[18px] h-[18px]"></i>
+            </div>
+            <span class="text-[9.5px] font-bold tracking-wide uppercase px-2 py-1 rounded-full border <?= $badgeColor[$badge] ?>"><?= e($badge) ?></span>
+          </div>
+          <p class="font-display font-bold text-white text-[15px]"><?= e($name) ?></p>
+          <p class="text-[12.5px] text-white/55 mt-1 leading-relaxed"><?= e($desc) ?></p>
+        </div>
+        <?php endforeach; ?>
+      </div>
+    </div>
+    <?php endforeach; ?>
+
+    <div class="mt-14 text-center reveal">
+      <p class="text-white/45 text-sm">¿Te falta algún módulo? <a href="mailto:soporte@kyrosrd.com" class="text-white font-medium hover:underline">Dínoslo</a> — escuchamos a nuestras rent cars.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     STOREFRONT PREVIEW — what the customer sees
+     ============================================================== -->
+<section id="storefront" class="bg-[#0B1120] pb-24 sm:pb-32">
+  <div class="max-w-7xl mx-auto px-5 sm:px-6">
+    <div class="grid lg:grid-cols-[1fr_1.4fr] gap-10 lg:gap-14 items-center">
+      <div class="reveal order-2 lg:order-1">
+        <p class="eyebrow text-brand mb-3">Tu marca, online</p>
+        <h2 class="font-display display-lg text-[32px] sm:text-[44px] font-extrabold text-white">
+          Una página pública<br>tan buena como un sitio dedicado
+        </h2>
+        <p class="mt-5 text-white/60 text-[15px] leading-relaxed max-w-xl">
+          Sin código, sin diseñadores, sin esperar semanas. En el momento que creas tu rent car, ya tienes un <span class="font-mono text-white/85 text-[13.5px] bg-white/[0.05] px-1.5 py-0.5 rounded">rentcar.kyrosrd.com/r/tu-slug</span> con catálogo, filtros, galería y motor de reservas.
+        </p>
+        <div class="mt-7 space-y-3.5">
+          <?php foreach ([
+            ['search',          'Buscador con filtros', 'Categoría, precio, transmisión, pasajeros, sucursal.'],
+            ['layout-grid',     'Catálogo con galería', 'Cada vehículo con fotos múltiples, precio, badges de disponibilidad.'],
+            ['calendar-check',  'Reservas online 24/7', 'El cliente reserva sin llamarte. El lead llega a tu panel al instante.'],
+            ['palette',         'Tu identidad de marca','Logo, colores y datos — el cliente nunca ve "Kyros", ve tu rent car.'],
+          ] as $f): ?>
+          <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-xl bg-brand/10 text-brand border border-brand/20 grid place-items-center shrink-0">
+              <i data-lucide="<?= e($f[0]) ?>" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <p class="font-display font-bold text-white text-[14.5px]"><?= e($f[1]) ?></p>
+              <p class="text-[13px] text-white/55 mt-0.5 leading-relaxed"><?= e($f[2]) ?></p>
+            </div>
+          </div>
+          <?php endforeach; ?>
+        </div>
+        <a href="<?= url('/register') ?>" class="k-btn k-btn-grad magnetic mt-8 px-6 !rounded-xl">
+          Crear mi página <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </a>
+      </div>
+
+      <!-- Storefront mockup: browser frame -->
+      <div class="order-1 lg:order-2 reveal-s">
+        <div class="relative">
+          <div class="absolute -inset-12 grad-bg opacity-20 blur-3xl rounded-full"></div>
+          <div class="relative rounded-2xl overflow-hidden border border-white/[0.08] bg-[#0F172A] shadow-lift">
+            <!-- Browser chrome -->
+            <div class="h-9 flex items-center gap-1.5 px-4 border-b border-white/[0.05] bg-white/[0.018]">
+              <span class="w-2 h-2 rounded-full bg-[#FF5F57]"></span>
+              <span class="w-2 h-2 rounded-full bg-[#FEBC2E]"></span>
+              <span class="w-2 h-2 rounded-full bg-[#28C840]"></span>
+              <span class="mx-auto text-[10.5px] text-white/30 tnum truncate">rentcar.kyrosrd.com/r/luxdrive</span>
+            </div>
+            <!-- Storefront body -->
+            <div class="p-5 sm:p-6">
+              <!-- Top brand bar -->
+              <div class="flex items-center justify-between mb-5">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg grad-bg text-white grid place-items-center font-extrabold text-sm">L</div>
+                  <div>
+                    <p class="text-white font-display font-extrabold text-[13.5px] leading-none">LuxDrive</p>
+                    <p class="text-[10px] text-white/40 mt-0.5">Santo Domingo · 4.9 ★</p>
+                  </div>
+                </div>
+                <div class="hidden sm:flex items-center gap-1.5">
+                  <span class="text-[10px] text-white/50 px-2 py-1 rounded-md bg-white/[0.04]">Inicio</span>
+                  <span class="text-[10px] text-white/50 px-2 py-1 rounded-md bg-white/[0.04]">Catálogo</span>
+                  <span class="text-[10px] text-white font-semibold px-2 py-1 rounded-md grad-bg">Reservar</span>
+                </div>
+              </div>
+              <!-- Search bar -->
+              <div class="rounded-xl border border-white/[0.07] bg-white/[0.025] p-2.5 flex items-center gap-2 mb-4">
+                <i data-lucide="search" class="w-3.5 h-3.5 text-white/40 ml-1.5"></i>
+                <div class="h-2 w-24 rounded bg-white/15"></div>
+                <span class="ml-auto text-[10px] text-white/45 px-2 py-1 rounded bg-white/[0.04]">SUV ▾</span>
+                <span class="text-[10px] text-white/45 px-2 py-1 rounded bg-white/[0.04]">Auto ▾</span>
+              </div>
+              <!-- Vehicle cards -->
+              <div class="grid grid-cols-2 gap-2.5">
+                <?php
+                $cards = [
+                  ['economico', 'Kia Picanto', '1,800', 'bg-amber-500/15'],
+                  ['suv',       'Hyundai Tucson','3,500','bg-emerald-500/15'],
+                  ['lujo',      'Mercedes C300','8,500', 'bg-brand/15'],
+                  ['pickup',    'Ford F-150',   '4,500', 'bg-indigo-500/15'],
+                ];
+                foreach ($cards as $cd):
+                ?>
+                <div class="rounded-xl border border-white/[0.07] bg-white/[0.02] overflow-hidden hover:border-white/[0.16] hover:-translate-y-0.5 transition-all">
+                  <div class="h-20 sm:h-24 grid place-items-center <?= $cd[3] ?>">
+                    <img src="<?= url('/assets/demo/vehicles/' . $cd[0] . '.svg') ?>" class="h-full w-full object-cover opacity-90" alt="">
+                  </div>
+                  <div class="p-2.5">
+                    <p class="text-white font-semibold text-[11.5px] truncate"><?= e($cd[1]) ?></p>
+                    <div class="flex items-center justify-between mt-1">
+                      <p class="text-white tnum text-[12.5px] font-extrabold">RD$ <?= $cd[2] ?><span class="text-white/40 font-normal text-[9px]">/día</span></p>
+                      <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 font-semibold">Libre</span>
+                    </div>
+                  </div>
+                </div>
+                <?php endforeach; ?>
+              </div>
+              <!-- Footer hint -->
+              <p class="text-center text-[10px] text-white/35 mt-4 tnum">Vista previa · Tu catálogo real puede tener cientos de vehículos</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -715,6 +960,7 @@ $demoOffers = $demoOffers ?? [];
         <ul class="mt-6 space-y-3 text-sm <?= $featured ? 'text-slate-600' : 'text-white/65' ?>">
           <li class="flex items-center gap-2.5"><i data-lucide="car" class="w-4 h-4 text-brand"></i><?= (int)$p['max_vehicles'] < 0 ? 'Vehículos ilimitados' : $p['max_vehicles'] . ' vehículos' ?></li>
           <li class="flex items-center gap-2.5"><i data-lucide="users" class="w-4 h-4 text-brand"></i><?= (int)$p['max_users'] < 0 ? 'Usuarios ilimitados' : $p['max_users'] . ' usuarios' ?></li>
+          <li class="flex items-center gap-2.5"><i data-lucide="hard-drive" class="w-4 h-4 text-brand"></i><?= (int)($p['storage_mb'] ?? 0) >= 1024 ? number_format((int)$p['storage_mb']/1024, 1) . ' GB' : (int)($p['storage_mb'] ?? 500) . ' MB' ?> de almacenamiento</li>
           <?php foreach ($feats as $f): ?>
             <li class="flex items-start gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand mt-0.5 shrink-0"></i><span><?= e($f) ?></span></li>
           <?php endforeach; ?>
@@ -757,6 +1003,8 @@ $demoOffers = $demoOffers ?? [];
               ['API REST',                 '—','—','✓'],
               ['Vehículos ilimitados',     '10','50','∞'],
               ['Usuarios ilimitados',      '2','10','∞'],
+              ['Almacenamiento incluido',  '500 MB','5 GB','25 GB'],
+              ['Storage extra a demanda',  '✓','✓','✓'],
               ['Soporte',                  'Email','Email','Prioritario'],
             ];
             foreach ($rows as $r):
@@ -798,9 +1046,12 @@ $demoOffers = $demoOffers ?? [];
         ['¿Necesito conocimientos técnicos?','No. Creas tu cuenta y empiezas a cargar tu flotilla en minutos. Todo es visual y guiado.'],
         ['¿Cómo funciona la demo de 5 horas?','En la página de login eliges un código de plan (Starter, Business o Premium). Te creamos una cuenta nueva con datos de ejemplo y la podrás usar 5 horas. Al expirar se elimina automáticamente — junto con todo lo que registres.'],
         ['¿Mis datos están seguros?','Sí. Cada empresa está aislada (multi-tenant), con prepared statements, CSRF en todas las acciones, control de roles y headers de seguridad endurecidos.'],
+        ['¿Cómo funciona el almacenamiento?','Cada plan incluye espacio para fotos, contratos firmados, evidencia de incidencias y branding (500 MB Starter · 5 GB Business · 25 GB Premium). Verás tu uso en vivo desde el panel y puedes pedir más espacio en cualquier momento — un administrador revisa la solicitud y aprueba el extra.'],
+        ['¿Qué pasa si me quedo sin almacenamiento?','Al 80 % de uso te avisamos en el dashboard. Al 100 % bloqueamos cargas nuevas (las existentes siguen intactas). En segundos puedes solicitar más espacio sin migrar nada.'],
         ['¿Puedo personalizar mi página pública?','Sí. Configuras logo, colores, descripción, datos de contacto y horario. Cada cliente reserva en `/r/tu-rentcar`.'],
         ['¿Puedo cambiar de plan?','Sí, en cualquier momento desde tu panel. Conservas todos tus datos.'],
         ['¿Tienen API REST?','Sí, en el plan Premium. Con tokens por empresa, aislamiento total entre tenants y respuestas JSON limpias.'],
+        ['¿Quién aprueba las cuentas nuevas?','Toda registración pasa primero por una breve revisión del equipo Kyros — verificamos que la empresa sea real antes de activarla. Normalmente toma menos de 24 horas.'],
       ] as $i => $f): ?>
       <div class="border-b border-white/[0.07] reveal">
         <button type="button" @click="open===<?= $i ?>?open=null:open=<?= $i ?>" class="w-full flex items-center justify-between text-left py-5 group">

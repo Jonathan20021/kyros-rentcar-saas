@@ -103,13 +103,27 @@ $inputCls = 'fld';
     </div>
 
     <!-- Documents -->
+    <?php
+      $localeTenant = \App\Models\Tenant::find(\App\Core\Auth::tenantId(), null);
+      $expirations = \App\Services\LocaleService::vehicleExpirationFields(strtoupper($localeTenant['country'] ?? 'DO'));
+    ?>
     <div class="card p-6">
-      <h2 class="font-semibold mb-4 flex items-center gap-2"><i data-lucide="calendar-clock" class="w-4 h-4 text-brand"></i> Vencimientos</h2>
+      <h2 class="font-semibold mb-4 flex items-center gap-2">
+        <i data-lucide="calendar-clock" class="w-4 h-4 text-brand"></i>
+        Vencimientos
+        <span class="text-[11px] font-normal text-slate-400 ml-1">· <?= ($localeTenant['country'] ?? 'DO') === 'CO' ? '🇨🇴 Colombia' : '🇩🇴 República Dominicana' ?></span>
+      </h2>
       <div class="grid sm:grid-cols-4 gap-4">
-        <div><label class="block text-sm font-medium mb-1.5">Seguro</label><input type="date" name="insurance_expires" value="<?= vval($vehicle,'insurance_expires') ?>" class="<?= $inputCls ?>"></div>
-        <div><label class="block text-sm font-medium mb-1.5">Marbete</label><input type="date" name="marbete_expires" value="<?= vval($vehicle,'marbete_expires') ?>" class="<?= $inputCls ?>"></div>
-        <div><label class="block text-sm font-medium mb-1.5">Matricula</label><input type="date" name="plate_expires" value="<?= vval($vehicle,'plate_expires') ?>" class="<?= $inputCls ?>"></div>
-        <div><label class="block text-sm font-medium mb-1.5">Inspeccion</label><input type="date" name="inspection_expires" value="<?= vval($vehicle,'inspection_expires') ?>" class="<?= $inputCls ?>"></div>
+        <?php foreach ($expirations as $exp): ?>
+          <div>
+            <label class="block text-sm font-medium mb-1.5 flex items-center gap-1.5">
+              <i data-lucide="<?= e($exp['icon']) ?>" class="w-3.5 h-3.5 <?= $exp['critical'] ? 'text-red-500' : 'text-slate-400' ?>"></i>
+              <?= e($exp['label']) ?>
+              <?php if ($exp['critical']): ?><span class="text-[9.5px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-red-50 text-red-600 ml-auto">Crítico</span><?php endif; ?>
+            </label>
+            <input type="date" name="<?= e($exp['col']) ?>" value="<?= vval($vehicle, $exp['col']) ?>" class="<?= $inputCls ?>">
+          </div>
+        <?php endforeach; ?>
       </div>
     </div>
 

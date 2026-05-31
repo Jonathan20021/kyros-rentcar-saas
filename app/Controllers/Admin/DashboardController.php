@@ -145,7 +145,147 @@ class DashboardController extends AdminController
             'reservationStatus' => Reservation::statusCounts($tid),
             'monthlyIncome' => Payment::monthlyIncome($tid),
             'monthlyExpenses' => Expense::monthly($tid),
+            'storage'       => \App\Services\StorageService::snapshot($tid),
+
+            // ---- Rich-dashboard additions ----
+            // Fleet occupation: rented / total
+            'occupation'    => $this->computeOccupation($tid, $locId),
+            // Today's pulse (counts for today)
+            'pulse'         => $this->todaysPulse($tid),
+            // Daily revenue last 14 days for the sparkline
+            'revenueSparkline' => $this->dailyRevenueSeries($tid, 14),
+            // Reservation count last 14 days
+            'reservationSparkline' => $this->dailyReservationSeries($tid, 14),
+            // Top 5 best-performing vehicles last 90 days
+            'topVehiclesMini' => $this->topVehicles($tid, 90, 5),
+            // Upcoming returns next 7 days
+            'upcomingReturns' => $this->upcomingReturns($tid, 7, 6),
+            // Recent activity (last 8 events)
+            'recentActivity' => $this->recentActivity($tid, 8),
         ]);
+    }
+
+    /** % of fleet currently rented or reserved. */
+    private function computeOccupation(int $tid, ?int $locId = null): array
+    {
+        $totSql = "SELECT COUNT(*) FROM vehicles WHERE tenant_id=:t AND deleted_at IS NULL" . ($locId ? " AND location_id=:l" : "");
+        $busySql = "SELECT COUNT(*) FROM vehicles WHERE tenant_id=:t AND deleted_at IS NULL
+                    AND status IN ('rented','reserved')" . ($locId ? " AND location_id=:l" : "");
+        $p = $locId ? ['t'=>$tid,'l'=>$locId] : ['t'=>$tid];
+        $total = (int) Database::scalar($totSql, $p);
+        $busy  = (int) Database::scalar($busySql, $p);
+        $pct   = $total > 0 ? round(($busy / $total) * 100, 1) : 0.0;
+        return ['total' => $total, 'busy' => $busy, 'pct' => $pct];
+    }
+
+    /** Counts for "what's happening today". */
+    private function todaysPulse(int $tid): array
+    {
+        return [
+            'new_reservations' => (int) Database::scalar(
+                "SELECT COUNT(*) FROM reservations WHERE tenant_id=:t AND deleted_at IS NULL AND DATE(created_at)=CURDATE()",
+                ['t'=>$tid]),
+            'pickups_today' => (int) Database::scalar(
+                "SELECT COUNT(*) FROM contracts WHERE tenant_id=:t AND deleted_at IS NULL AND DATE(start_datetime)=CURDATE()",
+                ['t'=>$tid]),
+            'returns_today' => (int) Database::scalar(
+                "SELECT COUNT(*) FROM contracts WHERE tenant_id=:t AND deleted_at IS NULL AND DATE(end_datetime)=CURDATE() AND status IN ('active','overdue')",
+                ['t'=>$tid]),
+            'payments_today' => (float) Database::scalar(
+                "SELECT COALESCE(SUM(amount),0) FROM payments WHERE tenant_id=:t AND status='paid' AND payment_date=CURDATE()",
+                ['t'=>$tid]),
+        ];
+    }
+
+    /** Per-day revenue series for sparkline (last N days, oldest first). */
+    private function dailyRevenueSeries(int $tid, int $days = 14): array
+    {
+        $rows = Database::select(
+            "SELECT DATE(payment_date) d, COALESCE(SUM(amount),0) total
+               FROM payments
+              WHERE tenant_id=:t AND status='paid'
+                AND payment_date >= DATE_SUB(CURDATE(), INTERVAL :d DAY)
+              GROUP BY DATE(payment_date) ORDER BY d ASC",
+            ['t'=>$tid,'d'=>$days]
+        );
+        $map = [];
+        foreach ($rows as $r) $map[$r['d']] = (float) $r['total'];
+        $series = [];
+        for ($i = $days - 1; $i >= 0; $i--) {
+            $d = date('Y-m-d', strtotime("-$i days"));
+            $series[] = ['date' => $d, 'value' => $map[$d] ?? 0];
+        }
+        return $series;
+    }
+
+    /** Per-day reservation count series for sparkline. */
+    private function dailyReservationSeries(int $tid, int $days = 14): array
+    {
+        $rows = Database::select(
+            "SELECT DATE(created_at) d, COUNT(*) cnt FROM reservations
+              WHERE tenant_id=:t AND deleted_at IS NULL
+                AND created_at >= DATE_SUB(CURDATE(), INTERVAL :d DAY)
+              GROUP BY DATE(created_at) ORDER BY d ASC",
+            ['t'=>$tid,'d'=>$days]
+        );
+        $map = [];
+        foreach ($rows as $r) $map[$r['d']] = (int) $r['cnt'];
+        $series = [];
+        for ($i = $days - 1; $i >= 0; $i--) {
+            $d = date('Y-m-d', strtotime("-$i days"));
+            $series[] = ['date' => $d, 'value' => $map[$d] ?? 0];
+        }
+        return $series;
+    }
+
+    /** Top revenue-earning vehicles for a recent window. */
+    private function topVehicles(int $tid, int $days, int $limit): array
+    {
+        return Database::select(
+            "SELECT v.id, v.brand, v.model, v.plate_number, v.main_image,
+                    COUNT(ct.id) AS contracts,
+                    COALESCE(SUM(ct.total_amount),0) AS revenue
+               FROM vehicles v
+          LEFT JOIN contracts ct ON ct.vehicle_id = v.id AND ct.deleted_at IS NULL
+                                AND ct.start_datetime >= DATE_SUB(CURDATE(), INTERVAL :d DAY)
+              WHERE v.tenant_id=:t AND v.deleted_at IS NULL
+              GROUP BY v.id ORDER BY revenue DESC, contracts DESC
+              LIMIT $limit",
+            ['t'=>$tid,'d'=>$days]
+        );
+    }
+
+    /** Contracts due to return in the next N days. */
+    private function upcomingReturns(int $tid, int $days, int $limit): array
+    {
+        return Database::select(
+            "SELECT ct.id, ct.contract_number, ct.end_datetime,
+                    v.brand, v.model, v.plate_number,
+                    CONCAT(c.first_name,' ',COALESCE(c.last_name,'')) AS customer_name
+               FROM contracts ct
+               JOIN vehicles v ON v.id = ct.vehicle_id
+               JOIN customers c ON c.id = ct.customer_id
+              WHERE ct.tenant_id=:t AND ct.deleted_at IS NULL
+                AND ct.status IN ('active','overdue')
+                AND ct.end_datetime >= NOW()
+                AND ct.end_datetime <= DATE_ADD(NOW(), INTERVAL :d DAY)
+              ORDER BY ct.end_datetime ASC LIMIT $limit",
+            ['t'=>$tid,'d'=>$days]
+        );
+    }
+
+    /** Last-N activity events for the activity feed. */
+    private function recentActivity(int $tid, int $limit): array
+    {
+        return Database::select(
+            "SELECT a.action, a.module, a.entity_id, a.description, a.created_at, u.name as user_name
+               FROM activity_logs a
+          LEFT JOIN users u ON u.id = a.user_id
+              WHERE a.tenant_id = :t
+              ORDER BY a.id DESC
+              LIMIT $limit",
+            ['t' => $tid]
+        );
     }
 
     protected function tenantName(): string

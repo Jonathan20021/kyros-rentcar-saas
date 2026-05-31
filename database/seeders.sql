@@ -9,13 +9,13 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- PLANS
 -- ---------------------------------------------------------------------
 TRUNCATE TABLE `plans`;
-INSERT INTO `plans` (`id`,`name`,`slug`,`price_monthly`,`price_yearly`,`max_vehicles`,`max_users`,`features`,`is_public`,`status`) VALUES
-(1,'Starter','starter', 990.00,  9900.00, 10,  2,
-  JSON_ARRAY('Pagina publica con slug','Reservas basicas','Gestion de flotilla','Soporte por email'),1,'active'),
-(2,'Business','business',2490.00, 24900.00, 50, 10,
-  JSON_ARRAY('Todo lo de Starter','Contratos PDF','Pagos','Mantenimiento','Reportes','Multi-sucursal'),1,'active'),
-(3,'Premium','premium',4990.00, 49900.00, -1, -1,
-  JSON_ARRAY('Todo lo de Business','Vehiculos ilimitados','Usuarios ilimitados','API REST','Dominio personalizado','WhatsApp','Automatizaciones','Reportes avanzados'),1,'active');
+INSERT INTO `plans` (`id`,`name`,`slug`,`price_monthly`,`price_yearly`,`max_vehicles`,`max_users`,`storage_mb`,`features`,`is_public`,`status`) VALUES
+(1,'Starter','starter', 990.00,  9900.00, 10,  2,   500,
+  JSON_ARRAY('Pagina publica con slug','Reservas basicas','Gestion de flotilla','500 MB de almacenamiento','Soporte por email'),1,'active'),
+(2,'Business','business',2490.00, 24900.00, 50, 10, 5000,
+  JSON_ARRAY('Todo lo de Starter','Contratos PDF','Pagos','Mantenimiento','Reportes','Multi-sucursal','5 GB de almacenamiento'),1,'active'),
+(3,'Premium','premium',4990.00, 49900.00, -1, -1, 25000,
+  JSON_ARRAY('Todo lo de Business','Vehiculos ilimitados','Usuarios ilimitados','API REST','Dominio personalizado','WhatsApp','Automatizaciones','Reportes avanzados','25 GB de almacenamiento'),1,'active');
 
 -- ---------------------------------------------------------------------
 -- ROLES

@@ -44,7 +44,13 @@ class VehicleController extends AdminController
         $gallery = array_column($images, 'path');
         if (empty($gallery) && !empty($vehicle['main_image'])) $gallery = [$vehicle['main_image']];
 
-        $vehicle['category_name'] = $vehicle['category_id'] ? Database::scalar("SELECT name FROM vehicle_categories WHERE id=:c", ['c'=>$vehicle['category_id']]) : null;
+        // tenant_id check is defense-in-depth — the category is already
+        // guaranteed to belong to the tenant via the vehicle's FK, but we
+        // scope here too so a tampered category_id can't leak names.
+        $vehicle['category_name'] = $vehicle['category_id']
+            ? Database::scalar("SELECT name FROM vehicle_categories WHERE id=:c AND tenant_id=:t",
+                ['c'=>$vehicle['category_id'], 't'=>$tid])
+            : null;
         $features = $vehicle['features'] ? (json_decode($vehicle['features'], true) ?: []) : [];
 
         $reservations = Database::select(
@@ -254,10 +260,12 @@ class VehicleController extends AdminController
             'status'           => $data['status'],
             'description'      => $_POST['description'] ?? null,
             'features'         => $features ? json_encode(array_values($features), JSON_UNESCAPED_UNICODE) : null,
-            'insurance_expires'  => ($_POST['insurance_expires'] ?? '') ?: null,
-            'marbete_expires'    => ($_POST['marbete_expires'] ?? '') ?: null,
-            'plate_expires'      => ($_POST['plate_expires'] ?? '') ?: null,
-            'inspection_expires' => ($_POST['inspection_expires'] ?? '') ?: null,
+            'insurance_expires'     => ($_POST['insurance_expires'] ?? '') ?: null,
+            'marbete_expires'       => ($_POST['marbete_expires'] ?? '') ?: null,
+            'plate_expires'         => ($_POST['plate_expires'] ?? '') ?: null,
+            'inspection_expires'    => ($_POST['inspection_expires'] ?? '') ?: null,
+            'soat_expires'          => ($_POST['soat_expires'] ?? '') ?: null,
+            'tecnomecanica_expires' => ($_POST['tecnomecanica_expires'] ?? '') ?: null,
             'is_featured'      => isset($_POST['is_featured']) ? 1 : 0,
             'is_public'        => isset($_POST['is_public']) ? 1 : 0,
             'slug'             => $slug,

@@ -126,11 +126,10 @@ class PaymentController extends AdminController
         $p['tenant']   = Tenant::find($tid, null);
         $p['customer'] = $p['customer_id'] ? Customer::find((int) $p['customer_id'], $tid) : null;
         $p['contract'] = $p['contract_id'] ? Contract::find((int) $p['contract_id'], $tid) : null;
-        $this->view('admin/payments/receipt', [
-            'title'   => 'Recibo '.$p['payment_code'],
-            'p'       => $p,
-            'backUrl' => url('/admin/payments'),
-        ], 'print');
+        // Streamed PDF (dompdf). Inline so the browser opens it as a tab.
+        $html = \App\Core\View::renderPartial('admin/payments/receipt_dompdf', ['p' => $p]);
+        $pdf  = \App\Services\PdfService::render($html);
+        \App\Services\PdfService::stream($pdf, 'Recibo-' . $p['payment_code'] . '.pdf');
     }
 
     /** Void / refund a payment and recompute the contract balance. */
