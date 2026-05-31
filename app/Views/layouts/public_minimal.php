@@ -8,8 +8,8 @@ $brand   = $tenant['primary_color'] ?? '#F23645';
 <html lang="es" x-data="{}" x-cloak>
 <head>
 <?= View::renderPartial('layouts/_assets', ['title' => $title ?? 'Kyros Rent Car', 'accent' => $brand]) ?>
-<script src="https://unpkg.com/lucide@latest"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script src="<?= asset('js/lucide.min.js') ?>"></script>
+<script defer src="<?= asset('js/alpine.min.js') ?>"></script>
 <style>
   body{ background:#F4F6FB; color:#1C2433; }
   .doc-shell{ background:#fff; border:1px solid #E6EAF1; border-radius:1.4rem;

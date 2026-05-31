@@ -8,6 +8,18 @@
 $accent  = $accent  ?? '#F23645';
 $accent2 = $accent2 ?? '#FF5C72';
 $navy    = '#1C2433';
+
+// Space-separated RGB channels for the self-hosted Tailwind build, which
+// resolves brand utilities as rgb(var(--brand-rgb) / <alpha>) so opacity
+// modifiers (bg-brand/10, ring-brand/30, ...) keep working with the tenant color.
+$hexToRgb = static function (string $hex): string {
+    $hex = ltrim($hex, '#');
+    if (strlen($hex) === 3) { $hex = $hex[0].$hex[0].$hex[1].$hex[1].$hex[2].$hex[2]; }
+    if (strlen($hex) !== 6 || !ctype_xdigit($hex)) { return '242 54 69'; } // fallback: brand red
+    return hexdec(substr($hex, 0, 2)) . ' ' . hexdec(substr($hex, 2, 2)) . ' ' . hexdec(substr($hex, 4, 2));
+};
+$accentRgb  = $hexToRgb($accent);
+$accent2Rgb = $hexToRgb($accent2);
 ?>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -22,35 +34,16 @@ $faviconSvg = rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0
 ?>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<?= $faviconSvg ?>">
 <link rel="apple-touch-icon" href="data:image/svg+xml,<?= $faviconSvg ?>">
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-tailwind.config = {
-  darkMode: 'class',
-  theme: { extend: {
-    colors: {
-      brand: '<?= e($accent) ?>', brand2: '<?= e($accent2) ?>',
-      ink: '<?= e($navy) ?>', navy: '<?= e($navy) ?>',
-      paper: '#EEF2F8', line: '#E6EAF1',
-    },
-    fontFamily: {
-      sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-      display: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
-    },
-    boxShadow: {
-      xs: '0 1px 2px rgba(28,36,51,.06)',
-      card: '0 1px 3px rgba(28,36,51,.05), 0 6px 16px -10px rgba(28,36,51,.12)',
-      soft: '0 12px 36px -16px rgba(28,36,51,.20)',
-      lift: '0 26px 64px -24px rgba(28,36,51,.34)',
-    },
-    borderRadius: { lg:'.65rem', xl:'.85rem', '2xl':'1.1rem', '3xl':'1.4rem', '4xl':'1.8rem' },
-  }}
-}
-</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<?php
+// Self-hosted, pre-compiled Tailwind + variable fonts (Inter, Plus Jakarta
+// Sans). Replaces the Tailwind Play CDN and Google Fonts so pages always load
+// fully styled with no runtime CDN dependency. The brand accent stays dynamic
+// via the CSS variables in the inline <style> below (--brand / --brand2).
+// Rebuild after changing classes:  see build/README in repo notes.
+?>
+<link rel="stylesheet" href="<?= asset('css/tailwind.css') ?>">
 <style>
-  :root{ --brand:<?= e($accent) ?>; --brand2:<?= e($accent2) ?>; --navy:<?= e($navy) ?>; --grad:linear-gradient(120deg,var(--brand),var(--brand2)); }
+  :root{ --brand:<?= e($accent) ?>; --brand2:<?= e($accent2) ?>; --brand-rgb:<?= $accentRgb ?>; --brand2-rgb:<?= $accent2Rgb ?>; --navy:<?= e($navy) ?>; --grad:linear-gradient(120deg,var(--brand),var(--brand2)); }
   *{ -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
   html{ scroll-behavior:smooth; }
   body{ font-family:'Inter',sans-serif; letter-spacing:-.011em; }

@@ -7,8 +7,8 @@ $flashes = $_flashes ?? [];
 <html lang="es" class="dark" x-data="{}" x-cloak>
 <head>
 <?= View::renderPartial('layouts/_assets', ['title' => $title ?? 'Acceder · Kyros Rent Car']) ?>
-<script src="https://unpkg.com/lucide@latest"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script src="<?= asset('js/lucide.min.js') ?>"></script>
+<script defer src="<?= asset('js/alpine.min.js') ?>"></script>
 </head>
 <body class="min-h-screen bg-[#0E1422] text-white antialiased">
 <div class="min-h-screen grid lg:grid-cols-2">

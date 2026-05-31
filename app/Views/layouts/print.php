@@ -7,9 +7,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= e($title ?? 'Documento · Kyros Rent Car') ?></title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="<?= asset('css/tailwind.css') ?>">
 <style>
+  :root{ --brand-rgb:242 54 69; --brand2-rgb:255 92 114; }
   body{ font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; }
   .tnum{ font-variant-numeric:tabular-nums; }
   @media print{ .no-print{ display:none !important; } body{ background:#fff !important; } @page{ margin:14mm; } }

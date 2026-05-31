@@ -30,10 +30,10 @@ $t = $tones[$tone] ?? $tones['indigo'];
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= e($code) ?> · <?= e($title) ?> · Kyros Rent Car</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/lucide@latest"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="<?= asset('css/tailwind.css') ?>">
+<script src="<?= asset('js/lucide.min.js') ?>"></script>
 <style>
+  :root{ --brand-rgb:242 54 69; --brand2-rgb:255 92 114; }
   * { font-family: 'Inter', sans-serif; }
   .font-display { font-family: 'Plus Jakarta Sans', sans-serif; }
   @keyframes blob { 0%,100% { transform: translate(0,0) scale(1) } 33% { transform: translate(20px,-30px) scale(1.05) } 66% { transform: translate(-15px,15px) scale(0.95) } }

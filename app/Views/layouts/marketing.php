@@ -7,11 +7,11 @@ $flashes = $_flashes ?? [];
 <html lang="es" class="dark" x-data="{scrolled:false,mobile:false}" @scroll.window="scrolled = window.scrollY > 20" x-cloak>
 <head>
 <?= View::renderPartial('layouts/_assets', ['title' => $title ?? 'Kyros Rent Car', 'metaDescription' => $metaDescription ?? null]) ?>
-<script src="https://unpkg.com/lucide@latest"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script src="<?= asset('js/lucide.min.js') ?>"></script>
+<script defer src="<?= asset('js/alpine.min.js') ?>"></script>
 <!-- GSAP + ScrollTrigger for the landing page — loads only here, NOT in the admin panel -->
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="<?= asset('js/gsap.min.js') ?>"></script>
+<script src="<?= asset('js/ScrollTrigger.min.js') ?>"></script>
 <!-- Mark the page so the legacy IntersectionObserver in _assets.php stands down -->
 <script>window.__USE_GSAP__ = true;</script>
 </head>

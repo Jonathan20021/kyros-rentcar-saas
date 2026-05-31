@@ -1,4 +1,5 @@
 /vendor/
+/build/node_modules/
 /storage/logs/*.log
 /storage/contracts/*
 /storage/invoices/*
@@ -8,6 +9,8 @@
 !/public/assets/uploads/.htaccess
 !**/.gitkeep
 .env
+.env.*
+!.env.example
 *.local.php
 Thumbs.db
 .DS_Store

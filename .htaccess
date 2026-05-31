@@ -1,6 +1,14 @@
 # Redirect all traffic into the public/ directory (keeps app/config/storage private).
 <IfModule mod_rewrite.c>
     RewriteEngine On
+
+    # Local (XAMPP) convenience: the app lives under /public and app.base_path
+    # includes it, so the bare project root must land on /public/ for routing +
+    # assets to resolve. Only fires on localhost — on production the docroot is
+    # public/ itself, so this project-root file is never reached.
+    RewriteCond %{HTTP_HOST} ^(localhost|127\.0\.0\.1) [NC]
+    RewriteRule ^$ %{REQUEST_URI}public/ [R=302,L]
+
     RewriteRule ^(\.htaccess|public/) - [L]
     RewriteRule ^(.*)$ public/$1 [L]
 </IfModule>

@@ -76,9 +76,9 @@ $planName = $tenant['plan_name'] ?? null;
 <html lang="es" :class="{ 'dark': dark }" x-data="shell()" x-init="init()" x-cloak>
 <head>
 <?= View::renderPartial('layouts/_assets', ['title' => $title ?? 'Kyros Rent Car', 'accent' => $accent]) ?>
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-<script src="https://unpkg.com/lucide@latest"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="<?= asset('js/lucide.min.js') ?>"></script>
+<script src="<?= asset('js/chart.umd.min.js') ?>"></script>
+<script defer src="<?= asset('js/alpine.min.js') ?>"></script>
 </head>
 <body class="panel-shell bg-paper dark:bg-slate-950 text-ink dark:text-slate-200">
 <div class="flex min-h-screen">

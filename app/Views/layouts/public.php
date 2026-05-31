@@ -13,15 +13,15 @@ $flashes = $_flashes ?? [];
 <html lang="es" x-data="{}" x-cloak>
 <head>
 <?= View::renderPartial('layouts/_assets', ['title' => $title ?? 'Kyros Rent Car', 'accent' => $accent, 'accent2' => $accent2, 'metaDescription' => $metaDescription ?? null]) ?>
-<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
-<script src="https://unpkg.com/lucide@latest"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<link href="<?= asset('css/aos.css') ?>" rel="stylesheet">
+<script src="<?= asset('js/lucide.min.js') ?>"></script>
+<script defer src="<?= asset('js/alpine.min.js') ?>"></script>
 </head>
 <body class="bg-white text-ink <?= e($bodyClass ?? '') ?>">
 <?= $content ?>
 
 <div class="fixed bottom-5 right-5 z-50 space-y-2.5" id="toasts"></div>
-<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script src="<?= asset('js/aos.min.js') ?>"></script>
 <script>
   AOS.init({ once:true, duration:650, easing:'ease-out-cubic', offset:60 });
   const flashes = [
