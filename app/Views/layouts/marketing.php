@@ -44,7 +44,27 @@ $flashes = $_flashes ?? [];
       <div class="flex items-center gap-2">
         <a href="<?= url('/login') ?>" class="hidden sm:inline-flex k-btn k-btn-ghost !h-9 !px-3 !text-[14px] !text-white/70 hover:!bg-white/10 hover:!text-white">Iniciar sesión</a>
         <a href="<?= url('/register') ?>" class="k-btn k-btn-light !h-9 !px-4 !text-[14px]">Crear mi rent car</a>
+        <!-- Mobile menu toggle -->
+        <button type="button" @click="mobile = !mobile" :aria-expanded="mobile" aria-label="Menú"
+                class="md:hidden inline-grid place-items-center w-9 h-9 rounded-lg text-white/80 hover:bg-white/10 transition">
+          <span x-show="!mobile" class="contents"><i data-lucide="menu" class="w-5 h-5"></i></span>
+          <span x-show="mobile" x-cloak class="contents"><i data-lucide="x" class="w-5 h-5"></i></span>
+        </button>
       </div>
+    </div>
+
+    <!-- Mobile menu panel -->
+    <div x-show="mobile" x-cloak x-transition.opacity.duration.200ms @click.outside="mobile = false"
+         class="md:hidden mt-2 rounded-2xl bg-[#141E30]/95 backdrop-blur-xl border border-white/[0.08] shadow-soft p-2">
+      <nav class="flex flex-col text-[15px] font-medium">
+        <a href="#showcase" @click="mobile=false" class="px-4 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/[0.06] transition">Producto</a>
+        <a href="#modulos"  @click="mobile=false" class="px-4 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/[0.06] transition">Módulos</a>
+        <a href="#storefront" @click="mobile=false" class="px-4 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/[0.06] transition">Tu página</a>
+        <a href="#planes"   @click="mobile=false" class="px-4 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/[0.06] transition">Planes</a>
+        <a href="#faq"      @click="mobile=false" class="px-4 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/[0.06] transition">FAQ</a>
+      </nav>
+      <div class="h-px bg-white/[0.08] my-2"></div>
+      <a href="<?= url('/login') ?>" class="block px-4 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/[0.06] transition text-[15px] font-medium">Iniciar sesión</a>
     </div>
   </div>
 </header>

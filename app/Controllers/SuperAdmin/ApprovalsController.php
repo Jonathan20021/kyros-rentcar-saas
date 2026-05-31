@@ -48,11 +48,12 @@ class ApprovalsController extends Controller
 
         $this->view('superadmin/approvals/index', [
             'title'           => 'Aprobaciones · Super Admin',
+            'panel'           => 'super',
             'active'          => 'approvals',
             'pendingTenants'  => $pendingTenants,
             'requests'        => $requests,
             'stats'           => $stats,
-        ]);
+        ], 'app');
     }
 
     /** Approve a pending tenant — status → active and log. */

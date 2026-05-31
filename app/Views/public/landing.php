@@ -433,7 +433,7 @@ $demoOffers = $demoOffers ?? [];
             <span class="mx-auto text-[11px] text-white/30 tnum">rentcar.kyrosrd.com/admin/dashboard</span>
             <i data-lucide="circle-user" class="w-4 h-4 text-white/30"></i>
           </div>
-          <div class="grid grid-cols-[220px_1fr]">
+          <div class="grid grid-cols-1 sm:grid-cols-[220px_1fr]">
             <!-- sidebar -->
             <div class="border-r border-white/[0.05] py-4 px-3 space-y-0.5 hidden sm:block bg-white/[0.012]">
               <div class="flex items-center gap-2 mb-4 px-2">
