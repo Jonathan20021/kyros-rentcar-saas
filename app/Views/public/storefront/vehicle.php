@@ -55,7 +55,7 @@ $transLabel = static fn($transmission) => $transmission === 'automatic' ? 'Autom
 
 <section class="bg-[#F4F6FA]">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12 lg:py-16">
-    <div class="grid lg:grid-cols-[1.1fr_.9fr] gap-8 lg:gap-12" x-data="{ main: <?= json_encode($galleryUrls[0] ?? '') ?> }">
+    <div class="grid lg:grid-cols-[1.1fr_.9fr] gap-8 lg:gap-12" x-data='{ main: <?= json_encode($galleryUrls[0] ?? '') ?> }'>
       <div data-aos="fade-up">
         <div class="overflow-hidden border hairline bg-white">
           <?php if (!empty($gallery)): ?>
@@ -67,7 +67,7 @@ $transLabel = static fn($transmission) => $transmission === 'automatic' ? 'Autom
         <?php if (count($gallery) > 1): ?>
         <div class="mt-3 grid grid-cols-4 gap-2.5">
           <?php foreach ($gallery as $g): ?>
-            <button type="button" @click="main=<?= json_encode(media($g)) ?>" class="overflow-hidden border-2 bg-white transition" :class="main===<?= json_encode(media($g)) ?>?'border-[color:var(--brand)]':'border-transparent'">
+            <button type="button" @click='main=<?= json_encode(media($g)) ?>' class="overflow-hidden border-2 bg-white transition" :class='main===<?= json_encode(media($g)) ?>?"border-[color:var(--brand)]":"border-transparent"'>
               <img src="<?= e(media($g)) ?>" class="aspect-[4/3] w-full object-cover" alt="<?= e($vehicle['brand'].' '.$vehicle['model']) ?>">
             </button>
           <?php endforeach; ?>
