@@ -14,6 +14,14 @@ $navy    = '#1C2433';
 <title><?= e($title ?? 'Kyros Rent Car') ?></title>
 <meta name="description" content="<?= e($metaDescription ?? 'Kyros Rent Car — software para administrar tu negocio de alquiler de vehiculos.') ?>">
 <meta name="theme-color" content="#0E1422">
+<?php
+// Inline SVG favicon — uses the resolved accent color so tenant-themed pages
+// inherit the brand. Falls back to the Kyros red for marketing pages.
+$faviconColor = ltrim($accent, '#');
+$faviconSvg = rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#' . $faviconColor . '"/><path fill="#fff" d="M19 17h8.6l7 11.2L41.7 17H50L37.6 35.6 50.4 47H42l-7.6-12L26.7 47H19l13-19.2L19 17z"/></svg>');
+?>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<?= $faviconSvg ?>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<?= $faviconSvg ?>">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
 tailwind.config = {
@@ -46,8 +54,10 @@ tailwind.config = {
   *{ -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
   html{ scroll-behavior:smooth; }
   body{ font-family:'Inter',sans-serif; letter-spacing:-.011em; }
-  h1,h2,h3,h4,.font-display{ font-family:'Plus Jakarta Sans','Inter',sans-serif; letter-spacing:-.022em; }
+  h1,h2,h3,h4,.font-display{ font-family:'Plus Jakarta Sans','Inter',sans-serif; letter-spacing:-.022em; text-wrap:balance; }
   .display-xl{ letter-spacing:-.035em; line-height:1.02; }
+  /* Pretty wrap for body paragraphs prevents last-line orphans without affecting headlines */
+  main p{ text-wrap:pretty; }
   [x-cloak]{ display:none !important; }
   .tnum{ font-variant-numeric:tabular-nums; font-feature-settings:'tnum'; }
   main table td, main table th{ font-variant-numeric:tabular-nums; }
@@ -235,6 +245,127 @@ tailwind.config = {
     .icon-btn{ min-width:42px; min-height:42px; }
     .fld{ min-height:44px; }
   }
+
+  /* =====================================================================
+     GLOBAL RESPONSIVE SAFETY NETS
+     Cascading rules so EVERY page (admin / superadmin / storefront /
+     auth / public) gets baseline responsive behavior without touching
+     individual files. These do not override deliberate per-page choices
+     — they catch the common breakage patterns:
+       1. rogue wide elements pushing horizontal scroll
+       2. raw <table> without .k-table responsive wrapping
+       3. <pre>/<code> blocks overflowing
+       4. images without responsive constraints
+       5. action-button rows that don't stack on mobile
+       6. sticky containers that overlap content under 768px
+       7. modals that don't go full-screen on phones
+       8. flex rows of buttons that don't wrap
+     ===================================================================== */
+
+  /* (1) Horizontal-scroll safety: any element wider than viewport gets
+     clipped at body level. Catches absolute children, wide images, long
+     unbreakable tokens, etc. We use overflow-x:clip (modern, no scroll)
+     with overflow-x:hidden fallback. */
+  html, body{ overflow-x:clip; max-width:100vw; }
+  @supports not (overflow-x:clip){ html, body{ overflow-x:hidden; } }
+
+  /* (2) Images & media: never overflow their container */
+  img, video, picture, svg{ max-width:100%; height:auto; }
+  img[width][height]{ height:auto; } /* respect explicit width but auto-scale height */
+
+  /* (3) Code / pre: scrollable horizontally if longer than container */
+  pre, code{ max-width:100%; overflow-x:auto; word-wrap:break-word; }
+  pre{ white-space:pre-wrap; word-break:break-word; }
+
+  /* (4) Raw <table> safety: when a page uses a vanilla table (not the
+     responsive .k-table), wrap-style overflow so it scrolls horizontally
+     instead of pushing the body wide. Pages that wrap tables in their
+     own .overflow-x-auto container are unaffected. */
+  table:not(.k-table){ max-width:100%; }
+  .table-wrap, .overflow-x-auto{ -webkit-overflow-scrolling:touch; }
+
+  /* (5) Word-break safety for unbreakable strings (URLs, codes, JSON) */
+  .break-anywhere{ overflow-wrap:anywhere; word-break:break-word; }
+
+  /* (6) Form action footers: when a `.card` contains a row of buttons at
+     the bottom, make them wrap and stretch on mobile so a "Guardar /
+     Cancelar" pair doesn't squeeze into 60px each. Detection: a flex
+     container that is a direct child of .card OR sits right after the
+     card. */
+  @media (max-width: 640px){
+    .card .flex.items-center.gap-3 > .k-btn,
+    .card .flex.gap-3 > .k-btn,
+    .card .flex.items-center.gap-2 > .k-btn,
+    .card .flex.gap-2 > .k-btn,
+    form .flex.items-center.gap-3 > .k-btn,
+    form .flex.gap-3 > .k-btn{
+      flex:1 1 auto; min-width:140px;
+    }
+    /* Stack buttons vertically when there are more than 2 to avoid wrap chaos */
+    .card .flex.items-center.gap-3:has(> .k-btn:nth-child(3)),
+    form .flex.items-center.gap-3:has(> .k-btn:nth-child(3)){
+      flex-direction:column; align-items:stretch;
+    }
+  }
+
+  /* (7) Sticky containers become static on mobile so they don't
+     overlap content or block the viewport. The reservation form's
+     "Resumen" sidebar is the canonical case. */
+  @media (max-width: 1023px){
+    .sticky{ position:static !important; top:auto !important; }
+  }
+
+  /* (8) Generic modals/dialogs: ensure full-width on phones, with
+     respected safe-area padding. Targets common Alpine modal patterns. */
+  @media (max-width: 640px){
+    [x-show][class*="fixed"][class*="left-1/2"][class*="top-1/2"]{
+      width:calc(100vw - 1rem) !important;
+      max-width:none !important;
+      max-height:calc(100dvh - 2rem) !important;
+      overflow-y:auto;
+    }
+  }
+
+  /* (9) Long form labels never wrap awkwardly */
+  label{ overflow-wrap:break-word; }
+
+  /* (10) Number/currency cells never overflow on narrow mobile cards */
+  .tnum{ overflow-wrap:normal; word-break:keep-all; }
+
+  /* (11) Page heading rows: when a page has H1 + action-buttons in a
+     flex-row, ensure the buttons wrap below the title on mobile if the
+     page didn't already use flex-col sm:flex-row. */
+  @media (max-width: 640px){
+    .panel-shell main > .flex.items-center.justify-between:first-child,
+    .panel-shell main > div > .flex.items-center.justify-between:first-child{
+      flex-wrap:wrap; gap:.75rem;
+    }
+  }
+
+  /* (12) Inputs with type=date/time on iOS Safari: force consistent height */
+  input[type="date"], input[type="time"], input[type="datetime-local"]{
+    -webkit-appearance:none; appearance:none;
+    min-height:42px;
+  }
+
+  /* (13) Select on mobile: prevent zoom-on-focus by forcing 16px min */
+  @media (max-width: 640px){
+    select.fld, input.fld, textarea.fld{ font-size:16px; }
+  }
+
+  /* (14) Card grids: any grid with 3+ columns falls back gracefully */
+  @media (max-width: 640px){
+    .grid.grid-cols-3:not(.sm\:grid-cols-3):not(.md\:grid-cols-3),
+    .grid.grid-cols-4:not(.sm\:grid-cols-4):not(.md\:grid-cols-4){
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  /* (15) Floating chips/pills row: always allow horizontal scroll if
+     they would overflow */
+  .chip-row{ display:flex; gap:.5rem; overflow-x:auto; padding-bottom:.25rem;
+             scrollbar-width:thin; -webkit-overflow-scrolling:touch; }
+  .chip-row::-webkit-scrollbar{ height:4px; }
 
   /* Truncation utility for long single-line content */
   .truncate-2{ display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }

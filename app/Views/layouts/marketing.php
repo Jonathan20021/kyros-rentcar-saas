@@ -199,20 +199,23 @@ $flashes = $_flashes ?? [];
       });
     }
 
-    // ---------- 2. HERO MOCKUP — fade-up + scale + scroll parallax ----------
+    // ---------- 2. HERO MOCKUP — fade-up only ----------
+    // Entry stays; the scroll-bound yPercent parallax was contributing to
+    // the "fighting scroll" feel and is now gone. The mockup sits still as
+    // the page scrolls past it, the way Stripe / Linear leave their visuals.
     var heroShot = document.getElementById('heroShot');
     if (heroShot) {
       gsap.set(heroShot, { autoAlpha: 0, y: 60, scale: 0.96 });
       gsap.to(heroShot, {
         autoAlpha: 1, y: 0, scale: 1, duration: 1.2, delay: 0.5, ease: 'power3.out',
       });
-      gsap.to(heroShot, {
-        yPercent: -8,
-        scrollTrigger: { trigger: heroShot, start: 'top center', end: 'bottom top', scrub: 0.6 },
-      });
     }
 
-    // ---------- 3. FLOATING NOTIFICATION CARDS — independent drift ----------
+    // ---------- 3. FLOATING NOTIFICATION CARDS — gentle entry only ----------
+    // The scroll-bound yPercent parallax used to drift the cards across the
+    // hero. On long pages with many other scroll triggers, the combined
+    // motion felt like the scroll was "fighting" the user. Entry animation
+    // stays; parallax removed.
     var floatCards = Array.from(document.querySelectorAll('section.scene .shadow-lift')).filter(function(c){
       return !c.closest('#heroShot');
     });
@@ -221,10 +224,6 @@ $flashes = $_flashes ?? [];
       gsap.to(card, {
         autoAlpha: 1, y: 0, x: 0, rotation: 0, duration: 1.1,
         delay: 0.7 + i * 0.12, ease: 'power3.out',
-      });
-      gsap.to(card, {
-        yPercent: -20,
-        scrollTrigger: { trigger: card, start: 'top bottom', end: 'bottom top', scrub: 1.2 },
       });
     });
 
@@ -280,13 +279,12 @@ $flashes = $_flashes ?? [];
       });
     });
 
-    // ---------- 9. SECTION HEADINGS — subtle parallax on h2 while scrolling ----------
-    document.querySelectorAll('section h2').forEach(function(h){
-      gsap.to(h, {
-        yPercent: -5,
-        scrollTrigger: { trigger: h, start: 'top bottom', end: 'bottom top', scrub: 0.8 },
-      });
-    });
+    // ---------- 9. SECTION HEADINGS — parallax intentionally REMOVED ----------
+    // Applying yPercent: -5 to EVERY section h2 stacked on top of the hero
+    // shot parallax + plan card scale + bento rotation produced a "shaky
+    // scroll" effect where multiple elements drifted simultaneously. The
+    // page now has one parallax moment (the hero shot) and the rest of the
+    // motion is reveal-on-enter only. This is the bigger taste move.
 
     // ---------- 10. EMERGENCY FALLBACK ----------
     // After all timelines are queued, force a refresh so ScrollTrigger

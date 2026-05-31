@@ -3,6 +3,7 @@ use App\Core\View;
 echo View::renderPartial('public/storefront/_nav', ['tenant' => $tenant]);
 $gallery = !empty($images) ? array_column($images, 'path') : [];
 if (empty($gallery) && !empty($vehicle['main_image'])) $gallery = [$vehicle['main_image']];
+$galleryUrls = array_map('media', $gallery);
 $primary = $tenant['primary_color'];
 ?>
 <section class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
@@ -12,12 +13,12 @@ $primary = $tenant['primary_color'];
     <span class="text-ink font-medium"><?= e($vehicle['brand'].' '.$vehicle['model']) ?></span>
   </nav>
 
-  <div class="grid lg:grid-cols-2 gap-10" x-data="{ main: <?= json_encode($gallery[0] ?? '') ?> }">
+  <div class="grid lg:grid-cols-2 gap-10" x-data="{ main: <?= json_encode($galleryUrls[0] ?? '') ?> }">
     <!-- Gallery -->
     <div data-aos="fade-right">
       <div class="aspect-[16/11] bg-paper rounded-3xl border hairline grid place-items-center overflow-hidden">
         <?php if (!empty($gallery)): ?>
-          <img :src="main" class="w-full h-full object-contain p-6" alt="<?= e($vehicle['brand']) ?>">
+          <img :src="main" class="w-full h-full object-cover" alt="<?= e($vehicle['brand'].' '.$vehicle['model']) ?>">
         <?php else: ?>
           <div class="text-slate-200"><i data-lucide="car" class="w-24 h-24"></i></div>
         <?php endif; ?>
@@ -25,8 +26,8 @@ $primary = $tenant['primary_color'];
       <?php if (count($gallery) > 1): ?>
       <div class="flex gap-2.5 mt-3">
         <?php foreach ($gallery as $g): ?>
-          <button type="button" @click="main=<?= json_encode($g) ?>" class="w-24 h-16 rounded-xl overflow-hidden border-2 bg-paper" :class="main===<?= json_encode($g) ?>?'border-ink':'border-transparent'">
-            <img src="<?= e(media($g)) ?>" class="w-full h-full object-contain p-1">
+          <button type="button" @click="main=<?= json_encode(media($g)) ?>" class="w-24 h-16 rounded-xl overflow-hidden border-2 bg-paper" :class="main===<?= json_encode(media($g)) ?>?'border-ink':'border-transparent'">
+            <img src="<?= e(media($g)) ?>" class="w-full h-full object-cover" alt="<?= e($vehicle['brand'].' '.$vehicle['model']) ?>">
           </button>
         <?php endforeach; ?>
       </div>

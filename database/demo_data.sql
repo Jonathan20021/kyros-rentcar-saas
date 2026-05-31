@@ -77,16 +77,16 @@ DELETE FROM `vehicles` WHERE `tenant_id` = 1;
 INSERT INTO `vehicles`
  (`id`,`tenant_id`,`brand`,`model`,`version`,`year`,`plate_number`,`vin`,`color`,`category_id`,`transmission`,`fuel_type`,`mileage`,`passengers`,`doors`,`luggage_capacity`,`daily_price`,`weekly_price`,`monthly_price`,`deposit_amount`,`insurance_price`,`status`,`location_id`,`description`,`features`,`main_image`,`slug`,`insurance_expires`,`marbete_expires`,`is_featured`,`is_public`)
 VALUES
-(1,1,'Toyota','Corolla','LE',2023,'A123456','VIN0000000000001','Blanco',3,'automatic','gasoline',18500,5,4,2,2200.00,13000.00,48000.00,10000.00,500.00,'available',1,'Sedan confiable y economico, ideal para ciudad.',JSON_ARRAY('Bluetooth','Camara reversa','A/C','Pantalla tactil'),NULL,'toyota-corolla-le-2023',DATE_ADD(CURDATE(),INTERVAL 60 DAY),DATE_ADD(CURDATE(),INTERVAL 200 DAY),1,1),
-(2,1,'Honda','Civic','Sport',2022,'B234567','VIN0000000000002','Gris',3,'automatic','gasoline',32000,5,4,2,2400.00,14000.00,52000.00,10000.00,500.00,'available',1,'Civic Sport con excelente rendimiento.',JSON_ARRAY('Bluetooth','CarPlay','A/C','Rines deportivos'),NULL,'honda-civic-sport-2022',DATE_ADD(CURDATE(),INTERVAL 90 DAY),DATE_ADD(CURDATE(),INTERVAL 180 DAY),1,1),
-(3,1,'Hyundai','Tucson','GLS',2023,'C345678','VIN0000000000003','Negro',4,'automatic','gasoline',15000,5,5,3,3200.00,19000.00,70000.00,15000.00,700.00,'rented',1,'SUV espaciosa y comoda para viajes familiares.',JSON_ARRAY('Bluetooth','Camara 360','Sunroof','A/C dual'),NULL,'hyundai-tucson-gls-2023',DATE_ADD(CURDATE(),INTERVAL 45 DAY),DATE_ADD(CURDATE(),INTERVAL 150 DAY),1,1),
-(4,1,'Kia','Sportage','EX',2022,'D456789','VIN0000000000004','Rojo',4,'automatic','gasoline',28000,5,5,3,3000.00,18000.00,66000.00,15000.00,700.00,'available',1,'SUV moderna con tecnologia avanzada.',JSON_ARRAY('Bluetooth','CarPlay','Camara reversa','A/C'),NULL,'kia-sportage-ex-2022',DATE_ADD(CURDATE(),INTERVAL 30 DAY),DATE_ADD(CURDATE(),INTERVAL 120 DAY),0,1),
-(5,1,'Toyota','Hilux','SRV 4x4',2023,'E567890','VIN0000000000005','Plata',7,'automatic','diesel',22000,5,4,4,4000.00,24000.00,88000.00,20000.00,900.00,'maintenance',1,'Pickup 4x4 robusta para cualquier terreno.',JSON_ARRAY('4x4','Bluetooth','Cama protegida','A/C'),NULL,'toyota-hilux-srv-4x4-2023',DATE_ADD(CURDATE(),INTERVAL 10 DAY),DATE_ADD(CURDATE(),INTERVAL 90 DAY),1,1),
-(6,1,'Nissan','Versa','Sense',2021,'F678901','VIN0000000000006','Azul',1,'automatic','gasoline',45000,5,4,2,1800.00,10500.00,39000.00,8000.00,400.00,'available',1,'Economico y eficiente en combustible.',JSON_ARRAY('Bluetooth','A/C','USB'),NULL,'nissan-versa-sense-2021',DATE_ADD(CURDATE(),INTERVAL 5 DAY),DATE_ADD(CURDATE(),INTERVAL 75 DAY),0,1),
-(7,1,'Mercedes-Benz','C300','AMG Line',2023,'G789012','VIN0000000000007','Negro',8,'automatic','gasoline',12000,5,4,2,7500.00,45000.00,165000.00,40000.00,1500.00,'available',1,'Lujo y rendimiento en un solo vehiculo.',JSON_ARRAY('Cuero','Sunroof','Burmester audio','Asientos ventilados'),NULL,'mercedes-benz-c300-amg-line-2023',DATE_ADD(CURDATE(),INTERVAL 120 DAY),DATE_ADD(CURDATE(),INTERVAL 220 DAY),1,1),
-(8,1,'Toyota','Sienna','XLE',2022,'H890123','VIN0000000000008','Gris',6,'automatic','hybrid',26000,8,4,4,4500.00,27000.00,99000.00,20000.00,1000.00,'available',2,'Van familiar hibrida, ideal para grupos.',JSON_ARRAY('8 pasajeros','Puertas electricas','Hibrido','A/C tri-zona'),NULL,'toyota-sienna-xle-2022',DATE_ADD(CURDATE(),INTERVAL 70 DAY),DATE_ADD(CURDATE(),INTERVAL 160 DAY),0,1),
-(9,1,'Tesla','Model 3','Long Range',2023,'I901234','VIN0000000000009','Blanco',10,'automatic','electric',9000,5,4,2,6000.00,36000.00,132000.00,35000.00,1200.00,'available',1,'100% electrico, autonomia extendida.',JSON_ARRAY('Autopilot','Pantalla 15"','Carga rapida','Glass roof'),NULL,'tesla-model-3-long-range-2023',DATE_ADD(CURDATE(),INTERVAL 150 DAY),DATE_ADD(CURDATE(),INTERVAL 240 DAY),1,1),
-(10,1,'Chevrolet','Camaro','SS',2022,'J012345','VIN0000000000010','Amarillo',9,'automatic','gasoline',18000,4,2,1,8000.00,48000.00,176000.00,45000.00,1800.00,'available',1,'Deportivo V8 para una experiencia unica.',JSON_ARRAY('V8','Modo sport','Escape deportivo','Cuero'),NULL,'chevrolet-camaro-ss-2022',DATE_ADD(CURDATE(),INTERVAL 100 DAY),DATE_ADD(CURDATE(),INTERVAL 200 DAY),1,1);
+(1,1,'Toyota','Corolla','SE',2021,'A123456','VIN0000000000001','Negro',3,'automatic','gasoline',18500,5,4,2,2200.00,13000.00,48000.00,10000.00,500.00,'available',1,'Sedan compacto y eficiente para uso urbano.',JSON_ARRAY('Bluetooth','Camara reversa','A/C','Pantalla tactil'),'/assets/demo/vehicles/toyota-corolla.jpg','toyota-corolla-se-2021',DATE_ADD(CURDATE(),INTERVAL 60 DAY),DATE_ADD(CURDATE(),INTERVAL 200 DAY),1,1),
+(2,1,'Honda','Civic','Sport',2022,'B234567','VIN0000000000002','Gris',3,'automatic','gasoline',32000,5,4,2,2400.00,14000.00,52000.00,10000.00,500.00,'available',1,'Civic Sport con excelente rendimiento.',JSON_ARRAY('Bluetooth','CarPlay','A/C','Rines deportivos'),'/assets/demo/vehicles/honda-civic.jpg','honda-civic-sport-2022',DATE_ADD(CURDATE(),INTERVAL 90 DAY),DATE_ADD(CURDATE(),INTERVAL 180 DAY),1,1),
+(3,1,'Hyundai','Tucson','Limited',2023,'C345678','VIN0000000000003','Negro',4,'automatic','gasoline',15000,5,5,3,3200.00,19000.00,70000.00,15000.00,700.00,'rented',1,'SUV espaciosa y comoda para viajes familiares.',JSON_ARRAY('Bluetooth','Camara 360','Sunroof','A/C dual'),'/assets/demo/vehicles/hyundai-tucson.jpg','hyundai-tucson-limited-2023',DATE_ADD(CURDATE(),INTERVAL 45 DAY),DATE_ADD(CURDATE(),INTERVAL 150 DAY),1,1),
+(4,1,'Kia','Sportage','HEV',2023,'D456789','VIN0000000000004','Negro',4,'automatic','hybrid',28000,5,5,3,3000.00,18000.00,66000.00,15000.00,700.00,'available',1,'SUV hibrida moderna con tecnologia avanzada.',JSON_ARRAY('Bluetooth','CarPlay','Camara reversa','A/C'),'/assets/demo/vehicles/kia-sportage.jpg','kia-sportage-hev-2023',DATE_ADD(CURDATE(),INTERVAL 30 DAY),DATE_ADD(CURDATE(),INTERVAL 120 DAY),0,1),
+(5,1,'Toyota','Hilux','Doble Cabina',2021,'E567890','VIN0000000000005','Negro',7,'automatic','diesel',22000,5,4,4,4000.00,24000.00,88000.00,20000.00,900.00,'maintenance',1,'Pickup robusta para carga ligera y caminos exigentes.',JSON_ARRAY('4x4','Bluetooth','Cama protegida','A/C'),'/assets/demo/vehicles/toyota-hilux-real.jpg','toyota-hilux-doble-cabina-2021',DATE_ADD(CURDATE(),INTERVAL 10 DAY),DATE_ADD(CURDATE(),INTERVAL 90 DAY),1,1),
+(6,1,'Mercedes-Benz','C-Class','C300',2022,'F678901','VIN0000000000006','Blanco',8,'automatic','gasoline',45000,5,4,2,7500.00,45000.00,165000.00,40000.00,1500.00,'available',1,'Sedan premium con acabados de lujo y manejo refinado.',JSON_ARRAY('Cuero','Sunroof','Audio premium','Asientos ventilados'),'/assets/demo/vehicles/mercedes-c-class.jpg','mercedes-benz-c-class-c300-2022',DATE_ADD(CURDATE(),INTERVAL 5 DAY),DATE_ADD(CURDATE(),INTERVAL 75 DAY),1,1),
+(7,1,'Tesla','Model 3','Long Range',2023,'G789012','VIN0000000000007','Blanco',10,'automatic','electric',12000,5,4,2,6000.00,36000.00,132000.00,35000.00,1200.00,'available',1,'100% electrico, autonomia extendida.',JSON_ARRAY('Autopilot','Pantalla 15\"','Carga rapida','Glass roof'),'/assets/demo/vehicles/tesla-model-3.jpg','tesla-model-3-long-range-2023',DATE_ADD(CURDATE(),INTERVAL 120 DAY),DATE_ADD(CURDATE(),INTERVAL 220 DAY),1,1),
+(8,1,'Chevrolet','Camaro','LT',2021,'H890123','VIN0000000000008','Azul',9,'automatic','gasoline',26000,4,2,1,8000.00,48000.00,176000.00,45000.00,1800.00,'available',2,'Coupe deportivo para una experiencia de manejo especial.',JSON_ARRAY('Modo sport','Escape deportivo','CarPlay','Cuero'),'/assets/demo/vehicles/chevrolet-camaro.jpg','chevrolet-camaro-lt-2021',DATE_ADD(CURDATE(),INTERVAL 70 DAY),DATE_ADD(CURDATE(),INTERVAL 160 DAY),1,1),
+(9,1,'Ford','Mustang','EcoBoost',2020,'I901234','VIN0000000000009','Negro',9,'automatic','gasoline',9000,4,2,1,7200.00,43200.00,158000.00,40000.00,1500.00,'available',1,'Muscle car coupe con respuesta deportiva.',JSON_ARRAY('Modo sport','Camara reversa','CarPlay','Asientos deportivos'),'/assets/demo/vehicles/ford-mustang.jpg','ford-mustang-ecoboost-2020',DATE_ADD(CURDATE(),INTERVAL 150 DAY),DATE_ADD(CURDATE(),INTERVAL 240 DAY),1,1),
+(10,1,'BMW','4 Series','420i M Sport',2022,'J012345','VIN0000000000010','Negro',8,'automatic','gasoline',18000,4,2,2,8500.00,51000.00,187000.00,45000.00,1800.00,'available',1,'Coupe premium con paquete M Sport.',JSON_ARRAY('M Sport','Cuero','Audio premium','Modo sport'),'/assets/demo/vehicles/bmw-4-series.jpg','bmw-4-series-420i-m-sport-2022',DATE_ADD(CURDATE(),INTERVAL 100 DAY),DATE_ADD(CURDATE(),INTERVAL 200 DAY),1,1);
 
 -- ---------------------------------------------------------------------
 -- CUSTOMERS (5)
@@ -154,16 +154,27 @@ VALUES
 (1,3,'tires','Rotacion y balanceo de gomas','Goodyear Service',4200.00,14000,DATE_SUB(CURDATE(),INTERVAL 30 DAY),DATE_SUB(CURDATE(),INTERVAL 30 DAY),DATE_ADD(CURDATE(),INTERVAL 150 DAY),30000,'completed');
 
 -- ---------------------------------------------------------------------
--- VEHICLE IMAGES (placeholders - main_image points to public asset)
+-- VEHICLE IMAGES (real demo photos - main_image points to public asset)
 -- ---------------------------------------------------------------------
 DELETE FROM `vehicle_images` WHERE `tenant_id` = 1;
+INSERT INTO `vehicle_images` (`tenant_id`,`vehicle_id`,`path`,`is_main`,`sort_order`) VALUES
+(1,1,'/assets/demo/vehicles/toyota-corolla.jpg',1,1),
+(1,2,'/assets/demo/vehicles/honda-civic.jpg',1,1),
+(1,3,'/assets/demo/vehicles/hyundai-tucson.jpg',1,1),
+(1,4,'/assets/demo/vehicles/kia-sportage.jpg',1,1),
+(1,5,'/assets/demo/vehicles/toyota-hilux-real.jpg',1,1),
+(1,6,'/assets/demo/vehicles/mercedes-c-class.jpg',1,1),
+(1,7,'/assets/demo/vehicles/tesla-model-3.jpg',1,1),
+(1,8,'/assets/demo/vehicles/chevrolet-camaro.jpg',1,1),
+(1,9,'/assets/demo/vehicles/ford-mustang.jpg',1,1),
+(1,10,'/assets/demo/vehicles/bmw-4-series.jpg',1,1);
 
 -- ---------------------------------------------------------------------
 -- NOTIFICATIONS (sample for owner)
 -- ---------------------------------------------------------------------
 DELETE FROM `notifications` WHERE `tenant_id` = 1;
 INSERT INTO `notifications` (`tenant_id`,`user_id`,`title`,`message`,`type`,`is_read`,`action_url`) VALUES
-(1,1,'Nueva reserva publica','John Smith solicito una reserva del Mercedes-Benz C300','reservation',0,'/admin/reservations'),
+(1,1,'Nueva reserva publica','John Smith solicito una reserva del Mercedes-Benz C-Class','reservation',0,'/admin/reservations'),
 (1,1,'Documento por vencer','El marbete del Nissan Versa vence en 5 dias','document',0,'/admin/vehicles/edit/6'),
 (1,1,'Contrato en mora','El contrato CTR-2026-0004 esta vencido','contract',0,'/admin/contracts');
 

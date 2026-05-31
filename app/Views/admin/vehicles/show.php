@@ -1,4 +1,4 @@
-<?php $v=$vehicle; $docs=[
+<?php $v=$vehicle; $galleryUrls = array_map('media', $gallery ?? []); $docs=[
   ['Seguro',$v['insurance_expires']], ['Marbete',$v['marbete_expires']],
   ['Matrícula',$v['plate_expires']], ['Inspección',$v['inspection_expires']],
 ]; ?>
@@ -19,16 +19,16 @@
 
 <div class="grid lg:grid-cols-3 gap-5">
   <!-- LEFT: gallery + specs -->
-  <div class="lg:col-span-2 space-y-5" x-data="{ main: <?= json_encode($gallery[0] ?? '') ?> }">
+  <div class="lg:col-span-2 space-y-5" x-data="{ main: <?= json_encode($galleryUrls[0] ?? '') ?> }">
     <div class="card p-5">
       <div class="aspect-[16/10] bg-paper rounded-xl grid place-items-center overflow-hidden">
-        <?php if (!empty($gallery)): ?><img :src="main" class="w-full h-full object-contain p-4">
+        <?php if (!empty($gallery)): ?><img :src="main" class="w-full h-full object-cover" alt="<?= e($v['brand'].' '.$v['model']) ?>">
         <?php else: ?><i data-lucide="car" class="w-20 h-20 text-slate-200"></i><?php endif; ?>
       </div>
       <?php if (count($gallery) > 1): ?>
       <div class="flex gap-2 mt-3">
         <?php foreach ($gallery as $g): ?>
-          <button type="button" @click="main=<?= json_encode($g) ?>" class="w-20 h-14 rounded-lg overflow-hidden border-2 bg-paper" :class="main===<?= json_encode($g) ?>?'border-brand':'border-transparent'"><img src="<?= e(media($g)) ?>" class="w-full h-full object-contain p-1"></button>
+          <button type="button" @click="main=<?= json_encode(media($g)) ?>" class="w-20 h-14 rounded-lg overflow-hidden border-2 bg-paper" :class="main===<?= json_encode(media($g)) ?>?'border-brand':'border-transparent'"><img src="<?= e(media($g)) ?>" class="w-full h-full object-cover" alt="<?= e($v['brand'].' '.$v['model']) ?>"></button>
         <?php endforeach; ?>
       </div>
       <?php endif; ?>

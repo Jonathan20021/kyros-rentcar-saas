@@ -1,0 +1,2487 @@
+<!DOCTYPE html>
+<html lang="es" class="dark" x-data="{scrolled:false,mobile:false}" @scroll.window="scrolled = window.scrollY > 20" x-cloak>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Kyros Rent Car · El sistema operativo de tu rent car</title>
+<meta name="description" content="Kyros Rent Car — software para administrar tu negocio de alquiler de vehiculos.">
+<meta name="theme-color" content="#0E1422">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23F23645%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22M19%2017h8.6l7%2011.2L41.7%2017H50L37.6%2035.6%2050.4%2047H42l-7.6-12L26.7%2047H19l13-19.2L19%2017z%22%2F%3E%3C%2Fsvg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23F23645%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22M19%2017h8.6l7%2011.2L41.7%2017H50L37.6%2035.6%2050.4%2047H42l-7.6-12L26.7%2047H19l13-19.2L19%2017z%22%2F%3E%3C%2Fsvg%3E">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: { extend: {
+    colors: {
+      brand: '#F23645', brand2: '#FF5C72',
+      ink: '#1C2433', navy: '#1C2433',
+      paper: '#EEF2F8', line: '#E6EAF1',
+    },
+    fontFamily: {
+      sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      display: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+    },
+    boxShadow: {
+      xs: '0 1px 2px rgba(28,36,51,.06)',
+      card: '0 1px 3px rgba(28,36,51,.05), 0 6px 16px -10px rgba(28,36,51,.12)',
+      soft: '0 12px 36px -16px rgba(28,36,51,.20)',
+      lift: '0 26px 64px -24px rgba(28,36,51,.34)',
+    },
+    borderRadius: { lg:'.65rem', xl:'.85rem', '2xl':'1.1rem', '3xl':'1.4rem', '4xl':'1.8rem' },
+  }}
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{ --brand:#F23645; --brand2:#FF5C72; --navy:#1C2433; --grad:linear-gradient(120deg,var(--brand),var(--brand2)); }
+  *{ -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
+  html{ scroll-behavior:smooth; }
+  body{ font-family:'Inter',sans-serif; letter-spacing:-.011em; }
+  h1,h2,h3,h4,.font-display{ font-family:'Plus Jakarta Sans','Inter',sans-serif; letter-spacing:-.022em; text-wrap:balance; }
+  .display-xl{ letter-spacing:-.035em; line-height:1.02; }
+  /* Pretty wrap for body paragraphs prevents last-line orphans without affecting headlines */
+  main p{ text-wrap:pretty; }
+  [x-cloak]{ display:none !important; }
+  .tnum{ font-variant-numeric:tabular-nums; font-feature-settings:'tnum'; }
+  main table td, main table th{ font-variant-numeric:tabular-nums; }
+  svg.lucide{ stroke-width:1.75; }
+
+  .hairline{ border-color:#E6EAF1; } .dark .hairline{ border-color:rgba(255,255,255,.08); }
+
+  ::-webkit-scrollbar{ width:10px; height:10px; }
+  ::-webkit-scrollbar-thumb{ background:#CFD6E2; border-radius:8px; border:3px solid transparent; background-clip:content-box; }
+  ::-webkit-scrollbar-thumb:hover{ background:#B6BFCF; background-clip:content-box; }
+  .dark ::-webkit-scrollbar-thumb{ background:#2A3142; background-clip:content-box; }
+
+  .text-grad{ background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .grad-bg{ background:var(--grad); }
+
+  /* Buttons */
+  .k-btn{ display:inline-flex; align-items:center; justify-content:center; gap:.5rem; height:40px; padding:0 1.05rem; font-weight:600; font-size:14px; line-height:1; border-radius:.75rem; transition:.16s ease; white-space:nowrap; cursor:pointer; border:1px solid transparent; }
+  .k-btn:active{ transform:translateY(.5px); }
+  .k-btn-grad{ background:var(--brand); color:#fff; box-shadow:0 6px 16px -8px color-mix(in srgb,var(--brand) 70%, transparent); }
+  .k-btn-grad:hover{ background:color-mix(in srgb,var(--brand) 88%, #000); }
+  .k-btn-dark{ background:var(--navy); color:#fff; } .k-btn-dark:hover{ background:#2c3550; }
+  .k-btn-light{ background:#fff; color:var(--navy); box-shadow:0 1px 2px rgba(28,36,51,.14); } .k-btn-light:hover{ background:#f2f4f8; }
+  .k-btn-outline{ border-color:#E2E6EE; color:#2b3346; background:#fff; } .k-btn-outline:hover{ background:#F7F9FC; border-color:#D3D9E4; }
+  .k-btn-ghost{ color:#5a6377; } .k-btn-ghost:hover{ background:#EEF1F6; color:var(--navy); }
+  .k-btn-glass{ background:rgba(255,255,255,.07); color:#fff; border-color:rgba(255,255,255,.16); }
+  .k-btn-glass:hover{ background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.26); }
+
+  /* Light surfaces */
+  .card{ background:#fff; border:1px solid #EAEEF4; border-radius:1.1rem; box-shadow:0 1px 3px rgba(28,36,51,.04), 0 8px 20px -16px rgba(28,36,51,.18); }
+  .icon-btn{ display:inline-grid; place-items:center; width:42px; height:42px; border-radius:.8rem; background:#fff; border:1px solid #EAEEF4; color:#5a6377; transition:.15s; box-shadow:0 1px 2px rgba(28,36,51,.04); }
+  .icon-btn:hover{ color:var(--navy); border-color:#D7DDE8; }
+  .fld{ width:100%; height:42px; padding:0 .9rem; font-size:14px; border-radius:.7rem; border:1px solid #E2E6EE; background:#fff; outline:none; transition:.14s; color:var(--navy); }
+  textarea.fld{ height:auto; padding:.6rem .9rem; }
+  select.fld{ padding-right:2rem; }
+  .fld:focus{ border-color:var(--brand); box-shadow:0 0 0 3px color-mix(in srgb,var(--brand) 16%, transparent); }
+  .fld::placeholder{ color:#97a0b2; }
+
+  /* Trend pills */
+  .trend{ display:inline-flex; align-items:center; gap:3px; font-size:11px; font-weight:700; padding:3px 8px; border-radius:99px; }
+  .trend-up{ background:#E6F7EE; color:#0E9F6E; }
+  .trend-down{ background:#FDECEE; color:#E11D48; }
+
+  /* Progress */
+  .progress{ height:7px; border-radius:99px; background:#EEF1F6; overflow:hidden; }
+  .progress > i{ display:block; height:100%; border-radius:99px; background:var(--navy); }
+
+  /* Dark surfaces (landing/auth) */
+  .surface{ background:#141A28; border:1px solid rgba(255,255,255,.07); border-radius:1.1rem; }
+  .glass{ background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.09); border-radius:1.1rem; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); }
+  .fld-dark{ width:100%; height:46px; padding:0 1rem; font-size:14px; border-radius:.7rem; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.05); outline:none; transition:.14s; color:#fff; }
+  .fld-dark:focus{ border-color:var(--brand); box-shadow:0 0 0 3px color-mix(in srgb,var(--brand) 26%, transparent); }
+  .fld-dark::placeholder{ color:rgba(255,255,255,.4); }
+
+  /* Backdrops */
+  .mesh-dark{ position:relative; background:#0E1422; }
+  .mesh-dark::before{ content:""; position:absolute; inset:0; pointer-events:none;
+    background:radial-gradient(50rem 32rem at 50% -6%, color-mix(in srgb,var(--brand) 28%, transparent), transparent 60%); }
+  .grid-dark{ background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px); background-size:60px 60px; -webkit-mask-image:radial-gradient(64% 56% at 50% 22%,#000,transparent); mask-image:radial-gradient(64% 56% at 50% 22%,#000,transparent); }
+  .orb{ position:absolute; border-radius:50%; filter:blur(90px); opacity:.30; pointer-events:none; }
+  .aurora{ position:absolute; inset:-20%; pointer-events:none; opacity:.5;
+    background:conic-gradient(from 180deg at 50% 50%, color-mix(in srgb,var(--brand) 50%,transparent), transparent 30%, color-mix(in srgb,var(--brand2) 50%,transparent) 60%, transparent 80%, color-mix(in srgb,var(--brand) 50%,transparent));
+    filter:blur(70px); animation:spin 24s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg) } }
+
+  /* Motion */
+  .reveal{ opacity:0; transform:translateY(16px); transition:opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
+  .reveal.in{ opacity:1; transform:none; }
+  .reveal-s{ opacity:0; transform:scale(.96); transition:opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
+  .reveal-s.in{ opacity:1; transform:none; }
+  .floaty{ animation:floaty 7s ease-in-out infinite; } @keyframes floaty{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+  .marquee{ display:flex; gap:2.5rem; animation:marq 34s linear infinite; }
+  @keyframes marq{ to{ transform:translateX(-50%) } }
+  .tilt{ transition:transform .25s cubic-bezier(.16,1,.3,1); transform-style:preserve-3d; }
+  @media (prefers-reduced-motion:reduce){ *{ animation:none !important } .reveal,.reveal-s{ opacity:1; transform:none; transition:none } }
+
+  /* ---- Dark mode (admin panel only; scoped to .panel-shell so the
+        always-dark landing/auth pages are never affected) ---- */
+  .dark .panel-shell{ background:#0B1120; }
+  .dark .panel-shell .card{ background:#121A2B; border-color:rgba(255,255,255,.07); box-shadow:0 1px 3px rgba(0,0,0,.3), 0 10px 24px -18px rgba(0,0,0,.6); }
+  .dark .panel-shell .icon-btn{ background:#121A2B; border-color:rgba(255,255,255,.08); color:#9aa6bd; }
+  .dark .panel-shell .icon-btn:hover{ color:#fff; border-color:rgba(255,255,255,.18); }
+  .dark .panel-shell .fld{ background:#0F1726; border-color:rgba(255,255,255,.10); color:#e8edf6; }
+  .dark .panel-shell .fld::placeholder{ color:#5c6781; }
+  .dark .panel-shell .fld:focus{ border-color:var(--brand); box-shadow:0 0 0 3px color-mix(in srgb,var(--brand) 24%, transparent); }
+  .dark .panel-shell select.fld option{ background:#0F1726; color:#e8edf6; }
+  .dark .panel-shell .k-btn-outline{ background:#121A2B; border-color:rgba(255,255,255,.12); color:#cdd5e4; }
+  .dark .panel-shell .k-btn-outline:hover{ background:#1a2336; border-color:rgba(255,255,255,.2); }
+  .dark .panel-shell .k-btn-light{ background:#1a2336; color:#fff; box-shadow:none; }
+  .dark .panel-shell .k-btn-light:hover{ background:#222c43; }
+  .dark .panel-shell .k-btn-ghost{ color:#9aa6bd; } .dark .panel-shell .k-btn-ghost:hover{ background:rgba(255,255,255,.06); color:#fff; }
+  .dark .panel-shell .k-btn-dark{ background:#27314a; } .dark .panel-shell .k-btn-dark:hover{ background:#313c5a; }
+  .dark .panel-shell .progress{ background:rgba(255,255,255,.08); }
+  .dark .panel-shell .progress > i{ background:var(--brand); }
+  .dark .panel-shell .seg{ background:rgba(255,255,255,.06); }
+  .dark .panel-shell .seg label{ color:#9aa6bd; }
+  .dark .panel-shell .seg input:checked + label{ background:#1a2336; color:#fff; box-shadow:none; }
+  .dark .panel-shell .bg-paper{ background:#0F1726 !important; }
+  .dark .panel-shell .bg-white:not(.dark\:bg-slate-900):not(.dark\:bg-slate-800){ background:#121A2B !important; }
+  .dark .panel-shell .text-navy{ color:#e8edf6 !important; }
+  .dark .panel-shell input[type=color]{ background:#0F1726; }
+  .dark .panel-shell .hairline{ border-color:rgba(255,255,255,.08); }
+
+  /* =================== Responsive tables =====================
+     Use: <table class="k-table"> with <td data-label="Columna">.
+     Desktop = standard table. Mobile = each row becomes a card.
+  */
+  .k-table{ width:100%; border-collapse:collapse; font-size:14px; }
+  .k-table th{ font-weight:500; color:#94a3b8; text-align:left; padding:.75rem 1.5rem; background:#F8FAFC; }
+  .k-table td{ padding:.85rem 1.5rem; border-top:1px solid #EAEEF4; vertical-align:middle; }
+  .k-table tbody tr:hover{ background:#F8FAFC; }
+  .dark .panel-shell .k-table th{ background:rgba(255,255,255,.03); color:#7a849b; }
+  .dark .panel-shell .k-table td{ border-color:rgba(255,255,255,.06); }
+  .dark .panel-shell .k-table tbody tr:hover{ background:rgba(255,255,255,.025); }
+  @media (max-width: 640px){
+    .k-table{ display:block; }
+    .k-table thead{ display:none; }
+    .k-table tbody, .k-table tfoot{ display:block; }
+    .k-table tr{ display:flex; flex-direction:column; padding:1rem 1.1rem; border-top:1px solid #EAEEF4; gap:.55rem; }
+    .dark .panel-shell .k-table tr{ border-color:rgba(255,255,255,.06); }
+    .k-table tr:hover{ background:transparent; }
+    .k-table tr:first-child{ border-top:0; }
+    .k-table td{ display:flex; justify-content:space-between; align-items:center; gap:1rem;
+                 padding:0; border:0; min-height:24px; }
+    .k-table td[data-label]::before{ content:attr(data-label); color:#94a3b8; font-size:11px;
+                 font-weight:700; text-transform:uppercase; letter-spacing:.04em; flex-shrink:0; }
+    .k-table td.k-td-actions{ justify-content:flex-end; padding-top:.5rem;
+                 border-top:1px dashed #EAEEF4; margin-top:.25rem; }
+    .dark .panel-shell .k-table td.k-td-actions{ border-color:rgba(255,255,255,.06); }
+    .k-table td.k-td-actions::before{ display:none; }
+    .k-table td.k-td-primary{ flex-direction:column; align-items:flex-start; gap:.15rem; }
+    .k-table td.k-td-primary::before{ display:none; }
+  }
+
+  /* Sticky-actions bar — wrap form footers in <div class="k-sticky"> for
+     a docked save/cancel toolbar on mobile that hovers above the bottom nav. */
+  @media (max-width: 768px){
+    .k-sticky{ position:sticky; bottom:0; z-index:20;
+               background:rgba(255,255,255,.92); backdrop-filter:blur(12px);
+               padding:.85rem 1rem; margin:0 -1rem -1rem;
+               border-top:1px solid #EAEEF4; }
+    .dark .panel-shell .k-sticky{ background:rgba(11,17,32,.92); border-color:rgba(255,255,255,.08); }
+    .k-sticky .k-btn{ flex:1; min-height:46px; }
+  }
+
+  /* =================== Mobile bottom dock =====================
+     5 quick actions visible only on mobile. */
+  .mob-dock{ display:none; }
+  @media (max-width: 1023px){
+    .mob-dock{ display:grid; position:fixed; bottom:0; left:0; right:0; z-index:30;
+               grid-template-columns:repeat(5, 1fr); gap:2px;
+               background:rgba(255,255,255,.96); backdrop-filter:blur(20px);
+               border-top:1px solid #EAEEF4; padding:.45rem .25rem calc(.45rem + env(safe-area-inset-bottom));
+               box-shadow:0 -10px 30px -18px rgba(28,36,51,.25); }
+    .dark .panel-shell .mob-dock{ background:rgba(11,17,32,.95); border-color:rgba(255,255,255,.08); }
+    .mob-dock a, .mob-dock button{ display:flex; flex-direction:column; align-items:center;
+               gap:2px; padding:.4rem .25rem; border-radius:.65rem; color:#5a6377;
+               font-size:10.5px; font-weight:600; transition:.15s; min-height:48px; justify-content:center;
+               background:transparent; border:0; cursor:pointer; }
+    .mob-dock a.is-active{ color:var(--brand); background:color-mix(in srgb,var(--brand) 9%,transparent); }
+    .mob-dock a:active, .mob-dock button:active{ transform:scale(.94); }
+    .mob-dock svg{ width:20px; height:20px; }
+    .mob-dock .mob-dock-fab{ position:relative; }
+    .mob-dock .mob-dock-fab > span{ position:absolute; top:-22px; left:50%; transform:translateX(-50%);
+               width:48px; height:48px; border-radius:50%; background:var(--brand); color:#fff;
+               display:grid; place-items:center;
+               box-shadow:0 10px 24px -8px color-mix(in srgb,var(--brand) 50%, transparent); }
+    .mob-dock .mob-dock-fab > span svg{ width:22px; height:22px; }
+    .mob-dock .mob-dock-fab > b{ visibility:hidden; }
+    /* Pad main so it doesn't get hidden behind the dock */
+    body.panel-shell main{ padding-bottom:5.5rem !important; }
+    .dark .panel-shell .mob-dock a.is-active{ color:var(--brand); background:color-mix(in srgb,var(--brand) 16%,transparent); }
+  }
+
+  /* Tighter spacing on small screens */
+  @media (max-width: 640px){
+    body.panel-shell main{ padding-left:.85rem !important; padding-right:.85rem !important; padding-top:.85rem !important; }
+    .card{ border-radius:.95rem; }
+    .card.\!p-6, .card.p-6{ padding:1rem !important; }
+    .card.\!p-5, .card.p-5{ padding:.9rem !important; }
+  }
+
+  /* Bigger touch targets on mobile */
+  @media (max-width: 640px){
+    .k-btn{ min-height:44px; padding:0 1rem; }
+    .icon-btn{ min-width:42px; min-height:42px; }
+    .fld{ min-height:44px; }
+  }
+
+  /* Truncation utility for long single-line content */
+  .truncate-2{ display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+
+  /* Segmented + dual range */
+  .seg{ display:inline-flex; padding:3px; gap:2px; background:#EEF1F6; border-radius:.7rem; }
+  .seg input{ position:absolute; opacity:0; pointer-events:none; }
+  .seg label{ cursor:pointer; padding:6px 13px; border-radius:.55rem; font-size:13px; font-weight:600; color:#6b7385; transition:.15s; }
+  .seg input:checked + label{ background:#fff; color:var(--navy); box-shadow:0 1px 2px rgba(28,36,51,.12); }
+  .range-wrap{ position:relative; height:28px; }
+  .range-track{ position:absolute; top:12px; left:0; right:0; height:4px; background:#E2E6EE; border-radius:99px; }
+  .range-fill{ position:absolute; top:12px; height:4px; background:var(--brand); border-radius:99px; }
+  .range-wrap input[type=range]{ position:absolute; top:0; left:0; width:100%; height:28px; margin:0; background:none; pointer-events:none; -webkit-appearance:none; appearance:none; }
+  .range-wrap input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; pointer-events:auto; width:16px; height:16px; border-radius:50%; background:#fff; border:2px solid var(--brand); box-shadow:0 1px 3px rgba(28,36,51,.25); cursor:pointer; }
+  .range-wrap input[type=range]::-moz-range-thumb{ pointer-events:auto; width:16px; height:16px; border-radius:50%; background:#fff; border:2px solid var(--brand); cursor:pointer; }
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', function(){
+    // The marketing layout opts into a GSAP+ScrollTrigger driven system. When
+    // it does, this legacy IntersectionObserver stands down so the two don't
+    // double-animate. Admin/auth pages keep using this lightweight fallback.
+    if (window.__USE_GSAP__) return;
+    var els=document.querySelectorAll('.reveal,.reveal-s');
+    if(!('IntersectionObserver' in window)){ els.forEach(e=>e.classList.add('in')); return; }
+    var io=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target);} }); },{threshold:.12});
+    els.forEach(function(e,i){ e.style.transitionDelay=(Math.min(i,6)*55)+'ms'; io.observe(e); });
+    // count-up
+    document.querySelectorAll('[data-count]').forEach(function(el){
+      var io2=new IntersectionObserver(function(es){ es.forEach(function(en){ if(!en.isIntersecting) return; io2.unobserve(el);
+        var end=parseFloat(el.getAttribute('data-count')), pre=el.getAttribute('data-pre')||'', suf=el.getAttribute('data-suf')||'', dec=parseInt(el.getAttribute('data-dec')||'0'), t0=null, dur=1400;
+        function step(ts){ if(!t0)t0=ts; var p=Math.min((ts-t0)/dur,1); var e=1-Math.pow(1-p,3); var v=end*e; el.textContent=pre+v.toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec})+suf; if(p<1)requestAnimationFrame(step);} requestAnimationFrame(step);
+      }); },{threshold:.5}); io2.observe(el);
+    });
+  });
+</script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<!-- GSAP + ScrollTrigger for the landing page — loads only here, NOT in the admin panel -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<!-- Mark the page so the legacy IntersectionObserver in _assets.php stands down -->
+<script>window.__USE_GSAP__ = true;</script>
+</head>
+<body class="bg-[#0E1422] text-white antialiased selection:bg-brand/40">
+
+<!-- Scroll progress -->
+<div class="fixed top-0 left-0 right-0 h-[3px] z-[60]"><div id="kprogress" class="h-full origin-left grad-bg" style="transform:scaleX(0)"></div></div>
+
+<!-- Nav -->
+<header class="fixed top-0 inset-x-0 z-50 transition-all duration-300" :class="scrolled ? 'py-2' : 'py-4'"
+        x-data="{sec:''}" x-init="
+          const ids=['features','showcase','planes','faq'];
+          const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting) sec=e.target.id;}),{rootMargin:'-45% 0px -50% 0px'});
+          ids.forEach(i=>{const el=document.getElementById(i); if(el) io.observe(el);});
+        ">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="flex items-center justify-between rounded-xl px-3 sm:px-4 h-14 transition-all duration-300"
+         :class="scrolled ? 'bg-[#141E30]/85 backdrop-blur-xl border border-white/[0.08] shadow-soft' : ''">
+      <a href="/kyros-rentcar-saas/public/" class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg grad-bg grid place-items-center font-black text-white text-sm">K</div>
+        <span class="font-display font-extrabold text-[17px] tracking-tight">Kyros Rent Car</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-1 text-[14px] font-medium">
+        <a href="#showcase" :class="sec==='showcase'?'text-white bg-white/10':'text-white/55 hover:text-white'" class="px-3 py-1.5 rounded-lg transition">Producto</a>
+        <a href="#modulos" :class="sec==='modulos'?'text-white bg-white/10':'text-white/55 hover:text-white'" class="px-3 py-1.5 rounded-lg transition">Módulos</a>
+        <a href="#storefront" :class="sec==='storefront'?'text-white bg-white/10':'text-white/55 hover:text-white'" class="px-3 py-1.5 rounded-lg transition">Tu página</a>
+        <a href="#planes" :class="sec==='planes'?'text-white bg-white/10':'text-white/55 hover:text-white'" class="px-3 py-1.5 rounded-lg transition">Planes</a>
+        <a href="#faq" :class="sec==='faq'?'text-white bg-white/10':'text-white/55 hover:text-white'" class="px-3 py-1.5 rounded-lg transition">FAQ</a>
+      </nav>
+      <div class="flex items-center gap-2">
+        <a href="/kyros-rentcar-saas/public/login" class="hidden sm:inline-flex k-btn k-btn-ghost !h-9 !px-3 !text-[14px] !text-white/70 hover:!bg-white/10 hover:!text-white">Iniciar sesión</a>
+        <a href="/kyros-rentcar-saas/public/register" class="k-btn k-btn-light !h-9 !px-4 !text-[14px]">Crear mi rent car</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  /* ========================================================
+     Landing — "Kyros Atlas" edition
+     Premium, confident, restrained. Stripe / Linear feel.
+  ======================================================== */
+  @keyframes kShimmer { 0%{background-position:0% 50%} 100%{background-position:200% 50%} }
+  @keyframes kFloat   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+  @keyframes kPulse   { 0%,100%{opacity:.55} 50%{opacity:1} }
+  @keyframes kMarq    { to{ transform:translateX(-50%) } }
+
+  /* Type system */
+  .display-hero { letter-spacing:-.045em; line-height:.96; }
+  .display-xl   { letter-spacing:-.038em; line-height:1.02; }
+  .display-lg   { letter-spacing:-.028em; line-height:1.08; }
+  .eyebrow      { font-size:11.5px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; }
+
+  /* Refined gradient text — slower, more luxurious */
+  .text-grad-pro {
+    background:linear-gradient(110deg, #FFF 0%, #FF8A9B 35%, var(--brand) 55%, #FF8A9B 75%, #FFF 100%);
+    background-size:220% auto; -webkit-background-clip:text; background-clip:text; color:transparent;
+    animation:kShimmer 8s linear infinite;
+  }
+
+  /* Atmospheric backdrop */
+  .scene { position:relative; overflow:hidden; isolation:isolate; }
+  /* Brand-dominant atmosphere: one strong red glow at the top, one warmer
+     coral wash low-right. Removed the indigo/emerald spill so the accent
+     never competes with itself. */
+  .scene::before{
+    content:""; position:absolute; inset:0; z-index:-1;
+    background:
+      radial-gradient(72rem 46rem at 50% -12%, color-mix(in srgb,var(--brand) 26%, transparent), transparent 62%),
+      radial-gradient(54rem 38rem at 92% 78%, color-mix(in srgb,var(--brand2) 14%, transparent), transparent 65%);
+  }
+  .grid-floor{
+    position:absolute; inset:0; background-image:
+      linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+    background-size:50px 50px;
+    mask-image:radial-gradient(70% 60% at 50% 28%, #000 30%, transparent 80%);
+    -webkit-mask-image:radial-gradient(70% 60% at 50% 28%, #000 30%, transparent 80%);
+  }
+
+  /* Magnetic shine CTA */
+  .magnetic{ position:relative; overflow:hidden; will-change:transform; }
+  .magnetic::after{ content:""; position:absolute; inset:0;
+    background:linear-gradient(120deg,transparent 30%, rgba(255,255,255,.32) 50%, transparent 70%);
+    transform:translateX(-100%); transition:none; }
+  .magnetic:hover::after{ transform:translateX(100%); transition:transform .9s ease; }
+
+  /* Pill / badge — softer corners (not full pill) for a more editorial feel,
+     since pure rounded-full badges are the default-AI signature. */
+  .pill{ display:inline-flex; align-items:center; gap:.55rem;
+    padding:.4rem .8rem; border-radius:.55rem;
+    background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.09);
+    font-size:12.5px; font-weight:500; color:rgba(255,255,255,.78);
+    backdrop-filter:blur(8px);
+  }
+  .pill .dot{ position:relative; width:6px; height:6px; border-radius:99px; background:var(--brand); }
+  .pill .dot::after{ content:""; position:absolute; inset:-4px; border-radius:99px; background:var(--brand); opacity:.4; animation:kPulse 2.4s ease-in-out infinite; }
+
+  /* Bento card */
+  .bento { position:relative; border-radius:1.5rem; background:rgba(255,255,255,.024); border:1px solid rgba(255,255,255,.07); transition:border-color .3s ease, transform .35s cubic-bezier(.2,1,.3,1), background .3s ease; overflow:hidden; }
+  .bento:hover{ border-color:rgba(255,255,255,.16); transform:translateY(-3px); background:rgba(255,255,255,.035); }
+  .bento::before{ content:""; position:absolute; inset:0; background:radial-gradient(720px circle at var(--mx,50%) var(--my,50%), color-mix(in srgb, var(--brand) 14%, transparent), transparent 40%); opacity:0; transition:opacity .35s ease; pointer-events:none; }
+  .bento:hover::before{ opacity:1; }
+
+  /* Stat ticker */
+  .ticker{ font-variant-numeric:tabular-nums; }
+
+  /* Showcase progress bar */
+  .kbar{ height:2px; border-radius:99px; background:rgba(255,255,255,.08); overflow:hidden; }
+  .kbar > i{ display:block; height:100%; background:var(--brand); width:0; }
+
+  /* Plan card */
+  .plan-card{ transition:transform .35s cubic-bezier(.2,1,.3,1), box-shadow .35s ease, border-color .25s ease; }
+  .plan-card:hover{ transform:translateY(-4px); }
+  .plan-popular{ box-shadow:0 30px 60px -28px color-mix(in srgb,var(--brand) 50%, transparent); }
+
+  /* Soft section divider */
+  .div-soft{ height:1px; background:linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent); }
+
+  /* Logo strip lockups (synthetic monochrome marks) */
+  .logo-mark{ display:inline-flex; align-items:center; gap:.6rem; opacity:.55; transition:opacity .25s; }
+  .logo-mark:hover{ opacity:.95; }
+  .logo-mark .glyph{ width:24px; height:24px; border-radius:6px; background:rgba(255,255,255,.85); color:#0E1422; display:grid; place-items:center; font-weight:900; font-size:11px; letter-spacing:.02em; }
+  .logo-mark .name{ font-family:'Plus Jakarta Sans','Inter',sans-serif; font-weight:700; letter-spacing:-.018em; font-size:15px; color:#fff; }
+
+  /* Persona card */
+  .persona{ position:relative; overflow:hidden; border-radius:1.4rem;
+    background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+    border:1px solid rgba(255,255,255,.07);
+    transition:transform .35s ease, border-color .25s ease; }
+  .persona:hover{ transform:translateY(-3px); border-color:rgba(255,255,255,.14); }
+
+  /* Marquee */
+  .marquee-track{ display:flex; gap:3rem; animation:kMarq 40s linear infinite; will-change:transform; }
+
+  /* Compare table */
+  .ctbl{ width:100%; border-collapse:separate; border-spacing:0; font-size:14px; }
+  .ctbl th, .ctbl td{ padding:14px 18px; text-align:left; border-bottom:1px solid rgba(255,255,255,.06); }
+  .ctbl thead th{ color:rgba(255,255,255,.5); font-weight:600; font-size:12px; letter-spacing:.05em; text-transform:uppercase; }
+  .ctbl tbody td{ color:rgba(255,255,255,.75); }
+  .ctbl tbody tr:hover td{ background:rgba(255,255,255,.02); }
+  .ctbl td.feat{ color:rgba(255,255,255,.85); font-weight:500; }
+  .ctbl th.col-pop, .ctbl td.col-pop{ background:color-mix(in srgb, var(--brand) 6%, transparent); }
+  .ctbl td .yes{ color:#10B981; font-weight:600; }
+  .ctbl td .no { color:rgba(255,255,255,.25); }
+  @media (max-width: 768px){
+    .ctbl thead{ display:none; }
+    .ctbl, .ctbl tbody, .ctbl tr, .ctbl td{ display:block; width:100%; }
+    .ctbl tr{ padding:1rem 0; border-bottom:1px solid rgba(255,255,255,.06); }
+    .ctbl td{ display:flex; justify-content:space-between; padding:.25rem 0; border:0; }
+    .ctbl td.feat{ font-weight:600; color:#fff; padding-bottom:.5rem; }
+  }
+
+  /* Reduce motion */
+  @media (prefers-reduced-motion:reduce){ *{ animation:none !important } }
+</style>
+
+<!-- ==============================================================
+     HERO
+     ============================================================== -->
+<section class="scene pt-32 pb-28 sm:pt-36 sm:pb-32">
+  <div class="grid-floor"></div>
+
+  <div class="relative max-w-7xl mx-auto px-5 sm:px-6">
+    <div class="text-center max-w-[1080px] mx-auto">
+
+      <a href="#planes" class="pill mb-7 reveal">
+        <span class="dot"></span>
+        <span>Disponible para rent cars en LATAM · v1.0</span>
+        <i data-lucide="arrow-right" class="w-3.5 h-3.5 opacity-60"></i>
+      </a>
+
+      <h1 class="font-display display-hero text-[44px] sm:text-[72px] lg:text-[96px] font-extrabold reveal">
+        El sistema operativo<br>
+        <span class="text-grad-pro">de tu rent car</span>
+      </h1>
+
+      <p class="mt-7 sm:mt-9 text-[17px] sm:text-[20px] text-white/55 max-w-[640px] mx-auto leading-[1.55] reveal">
+        Flotilla, reservas, contratos, pagos y tu página pública de alquiler — en una sola plataforma.
+        <span class="text-white/80">Veloz, segura y hecha para vender.</span>
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-3 justify-center mt-10 reveal">
+        <a href="/kyros-rentcar-saas/public/register" class="k-btn k-btn-grad magnetic px-7 !rounded-2xl text-[15px]" style="height:54px">
+          Crear mi rent car gratis <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </a>
+        <a href="/kyros-rentcar-saas/public/login#demo" class="k-btn k-btn-glass px-7 !rounded-2xl text-[15px]" style="height:54px">
+          <i data-lucide="play" class="w-4 h-4"></i> Probar demo · 5h
+        </a>
+      </div>
+
+      <div class="mt-6 flex items-center justify-center gap-x-5 gap-y-2 flex-wrap text-[12.5px] text-white/45 reveal">
+        <span class="inline-flex items-center gap-1.5"><i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400/70"></i>Sin tarjeta</span>
+        <span class="text-white/15">·</span>
+        <span class="inline-flex items-center gap-1.5"><i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400/70"></i>3 minutos para publicar</span>
+        <span class="text-white/15">·</span>
+        <span class="inline-flex items-center gap-1.5"><i data-lucide="shield" class="w-3.5 h-3.5 text-indigo-400/70"></i>Multi-tenant seguro</span>
+      </div>
+
+      <!-- Quick capability chips: scrollable on mobile, wrap on desktop -->
+      <div class="mt-9 flex flex-wrap justify-center gap-1.5 reveal max-w-[820px] mx-auto">
+                  <span class="text-[11.5px] px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.07] text-white/65 font-medium hover:bg-white/[0.07] hover:border-white/[0.12] hover:text-white transition">Reservas online</span>
+                  <span class="text-[11.5px] px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.07] text-white/65 font-medium hover:bg-white/[0.07] hover:border-white/[0.12] hover:text-white transition">Contratos con firma</span>
+                  <span class="text-[11.5px] px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.07] text-white/65 font-medium hover:bg-white/[0.07] hover:border-white/[0.12] hover:text-white transition">PDF profesional</span>
+                  <span class="text-[11.5px] px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.07] text-white/65 font-medium hover:bg-white/[0.07] hover:border-white/[0.12] hover:text-white transition">Pagos</span>
+                  <span class="text-[11.5px] px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.07] text-white/65 font-medium hover:bg-white/[0.07] hover:border-white/[0.12] hover:text-white transition">Facturas</span>
+                  <span class="text-[11.5px] px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.07] text-white/65 font-medium hover:bg-white/[0.07] hover:border-white/[0.12] hover:text-white transition">Multi-sucursal</span>
+                  <span class="text-[11.5px] px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.07] text-white/65 font-medium hover:bg-white/[0.07] hover:border-white/[0.12] hover:text-white transition">Choferes</span>
+                  <span class="text-[11.5px] px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.07] text-white/65 font-medium hover:bg-white/[0.07] hover:border-white/[0.12] hover:text-white transition">Mantenimiento</span>
+                  <span class="text-[11.5px] px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.07] text-white/65 font-medium hover:bg-white/[0.07] hover:border-white/[0.12] hover:text-white transition">Incidencias</span>
+                  <span class="text-[11.5px] px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.07] text-white/65 font-medium hover:bg-white/[0.07] hover:border-white/[0.12] hover:text-white transition">Promociones</span>
+                  <span class="text-[11.5px] px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.07] text-white/65 font-medium hover:bg-white/[0.07] hover:border-white/[0.12] hover:text-white transition">Reportes P&amp;L</span>
+                  <span class="text-[11.5px] px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.07] text-white/65 font-medium hover:bg-white/[0.07] hover:border-white/[0.12] hover:text-white transition">Cierre de caja</span>
+                  <span class="text-[11.5px] px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.07] text-white/65 font-medium hover:bg-white/[0.07] hover:border-white/[0.12] hover:text-white transition">API REST</span>
+                  <span class="text-[11.5px] px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.07] text-white/65 font-medium hover:bg-white/[0.07] hover:border-white/[0.12] hover:text-white transition">Tu marca</span>
+              </div>
+    </div>
+
+    <!-- Product mockup -->
+    <div class="relative max-w-[1180px] mx-auto mt-16 sm:mt-20" x-data="{px:0, py:0}" @mousemove.window="if($event.target.closest('#heroShot')){let r=$event.target.closest('#heroShot').getBoundingClientRect(); px=(($event.clientX-r.left)/r.width-.5)*6; py=(($event.clientY-r.top)/r.height-.5)*6;}">
+      <div class="absolute -inset-x-10 -top-10 h-44 grad-bg opacity-25 blur-3xl rounded-full"></div>
+
+      <!-- Floating notification cards -->
+      <div class="hidden lg:flex absolute -left-14 top-24 z-20 items-center gap-3 p-3.5 rounded-2xl shadow-lift reveal-s"
+           style="background:rgba(20,30,48,.78); backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,.1); animation:kFloat 7s ease-in-out infinite">
+        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 grid place-items-center"><i data-lucide="calendar-check" class="w-5 h-5"></i></div>
+        <div>
+          <p class="text-[12.5px] font-semibold text-white">Nueva reserva</p>
+          <p class="text-[11px] text-white/55">Honda Civic · 3 días</p>
+        </div>
+      </div>
+
+      <div class="hidden lg:block absolute -right-12 top-44 z-20 p-4 rounded-2xl shadow-lift reveal-s"
+           style="background:rgba(20,30,48,.78); backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,.1); animation:kFloat 9s ease-in-out infinite reverse; animation-delay:.4s">
+        <p class="text-[11px] text-white/55 font-medium">Ingreso recibido · Tarjeta</p>
+        <p class="text-xl font-extrabold ticker text-white mt-0.5">RD$ 18,880</p>
+        <p class="text-[11px] text-emerald-400 font-semibold flex items-center gap-1 mt-0.5">
+          <i data-lucide="trending-up" class="w-3 h-3"></i> +24% vs. mes anterior
+        </p>
+      </div>
+
+      <div class="hidden lg:flex absolute -left-8 bottom-12 z-20 items-center gap-3 p-3.5 rounded-2xl shadow-lift reveal-s"
+           style="background:rgba(20,30,48,.78); backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,.1); animation:kFloat 11s ease-in-out infinite">
+        <div class="w-10 h-10 rounded-xl bg-brand/20 text-brand grid place-items-center"><i data-lucide="car" class="w-5 h-5"></i></div>
+        <div>
+          <p class="text-[12.5px] font-semibold text-white">Flotilla activa</p>
+          <p class="text-[11px] text-white/55">23 / 30 vehículos</p>
+        </div>
+      </div>
+
+      <!-- Dashboard frame -->
+      <div id="heroShot" class="relative will-change-transform reveal-s"
+           :style="'transform: perspective(2000px) rotateX(' + (6 - py) + 'deg) rotateY(' + px + 'deg)'">
+        <div class="rounded-3xl overflow-hidden border border-white/10 bg-[#0B1120] shadow-lift">
+          <!-- macOS-style chrome -->
+          <div class="h-10 flex items-center gap-1.5 px-4 border-b border-white/[0.05] bg-gradient-to-b from-white/[0.025] to-transparent">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#FF5F57]"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-[#FEBC2E]"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-[#28C840]"></span>
+            <span class="mx-auto text-[11px] text-white/30 tnum">rentcar.kyrosrd.com/admin/dashboard</span>
+            <i data-lucide="circle-user" class="w-4 h-4 text-white/30"></i>
+          </div>
+          <div class="grid grid-cols-[220px_1fr]">
+            <!-- sidebar -->
+            <div class="border-r border-white/[0.05] py-4 px-3 space-y-0.5 hidden sm:block bg-white/[0.012]">
+              <div class="flex items-center gap-2 mb-4 px-2">
+                <div class="w-6 h-6 rounded-md grad-bg"></div>
+                <div class="h-2.5 w-14 rounded bg-white/15"></div>
+              </div>
+                            <div class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg bg-brand/15">
+                <div class="w-3.5 h-3.5 rounded bg-brand"></div>
+                <div class="h-2 w-16 rounded bg-brand/60"></div>
+              </div>
+                            <div class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg ">
+                <div class="w-3.5 h-3.5 rounded bg-white/15"></div>
+                <div class="h-2 w-16 rounded bg-white/10"></div>
+              </div>
+                            <div class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg ">
+                <div class="w-3.5 h-3.5 rounded bg-white/15"></div>
+                <div class="h-2 w-16 rounded bg-white/10"></div>
+              </div>
+                            <div class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg ">
+                <div class="w-3.5 h-3.5 rounded bg-white/15"></div>
+                <div class="h-2 w-16 rounded bg-white/10"></div>
+              </div>
+                            <div class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg ">
+                <div class="w-3.5 h-3.5 rounded bg-white/15"></div>
+                <div class="h-2 w-16 rounded bg-white/10"></div>
+              </div>
+                            <div class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg ">
+                <div class="w-3.5 h-3.5 rounded bg-white/15"></div>
+                <div class="h-2 w-16 rounded bg-white/10"></div>
+              </div>
+                            <div class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg ">
+                <div class="w-3.5 h-3.5 rounded bg-white/15"></div>
+                <div class="h-2 w-16 rounded bg-white/10"></div>
+              </div>
+                            <div class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg ">
+                <div class="w-3.5 h-3.5 rounded bg-white/15"></div>
+                <div class="h-2 w-16 rounded bg-white/10"></div>
+              </div>
+                            <div class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg ">
+                <div class="w-3.5 h-3.5 rounded bg-white/15"></div>
+                <div class="h-2 w-16 rounded bg-white/10"></div>
+              </div>
+                          </div>
+            <!-- main -->
+            <div class="p-5 sm:p-6">
+              <div class="flex items-center justify-between mb-5">
+                <div class="h-3 w-40 rounded bg-white/15"></div>
+                <div class="flex gap-2">
+                  <div class="h-7 w-7 rounded-lg bg-white/[0.06]"></div>
+                  <div class="h-7 w-20 rounded-lg grad-bg"></div>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                                                <div class="rounded-xl border border-white/[0.06] p-3 bg-white/[0.018]">
+                  <div class="flex items-center gap-2 mb-1.5">
+                    <div class="w-6 h-6 rounded-md bg-brand/15 text-brand grid place-items-center text-[10px] font-bold">★</div>
+                    <div class="h-2 w-10 rounded bg-white/15"></div>
+                  </div>
+                  <div class="text-white font-bold text-base ticker">184k</div>
+                  <div class="h-2 w-14 rounded bg-white/10 mt-1.5"></div>
+                </div>
+                                <div class="rounded-xl border border-white/[0.06] p-3 bg-white/[0.018]">
+                  <div class="flex items-center gap-2 mb-1.5">
+                    <div class="w-6 h-6 rounded-md bg-indigo-500/15 text-indigo-300 grid place-items-center text-[10px] font-bold">★</div>
+                    <div class="h-2 w-10 rounded bg-white/15"></div>
+                  </div>
+                  <div class="text-white font-bold text-base ticker">42</div>
+                  <div class="h-2 w-14 rounded bg-white/10 mt-1.5"></div>
+                </div>
+                                <div class="rounded-xl border border-white/[0.06] p-3 bg-white/[0.018]">
+                  <div class="flex items-center gap-2 mb-1.5">
+                    <div class="w-6 h-6 rounded-md bg-emerald-500/15 text-emerald-300 grid place-items-center text-[10px] font-bold">★</div>
+                    <div class="h-2 w-10 rounded bg-white/15"></div>
+                  </div>
+                  <div class="text-white font-bold text-base ticker">12</div>
+                  <div class="h-2 w-14 rounded bg-white/10 mt-1.5"></div>
+                </div>
+                                <div class="rounded-xl border border-white/[0.06] p-3 bg-white/[0.018]">
+                  <div class="flex items-center gap-2 mb-1.5">
+                    <div class="w-6 h-6 rounded-md bg-amber-500/15 text-amber-300 grid place-items-center text-[10px] font-bold">★</div>
+                    <div class="h-2 w-10 rounded bg-white/15"></div>
+                  </div>
+                  <div class="text-white font-bold text-base ticker">98%</div>
+                  <div class="h-2 w-14 rounded bg-white/10 mt-1.5"></div>
+                </div>
+                              </div>
+              <div class="rounded-xl border border-white/[0.06] p-4 h-40 flex items-end gap-1.5 bg-gradient-to-b from-white/[0.018] to-transparent">
+                                <div class="flex-1 rounded-t transition-all duration-500"
+                     style="height:42%; background: rgba(255,255,255,.10);
+                            box-shadow: none"></div>
+                                <div class="flex-1 rounded-t transition-all duration-500"
+                     style="height:58%; background: rgba(255,255,255,.10);
+                            box-shadow: none"></div>
+                                <div class="flex-1 rounded-t transition-all duration-500"
+                     style="height:48%; background: rgba(255,255,255,.10);
+                            box-shadow: none"></div>
+                                <div class="flex-1 rounded-t transition-all duration-500"
+                     style="height:72%; background: rgba(255,255,255,.10);
+                            box-shadow: none"></div>
+                                <div class="flex-1 rounded-t transition-all duration-500"
+                     style="height:55%; background: rgba(255,255,255,.10);
+                            box-shadow: none"></div>
+                                <div class="flex-1 rounded-t transition-all duration-500"
+                     style="height:82%; background: rgba(255,255,255,.10);
+                            box-shadow: none"></div>
+                                <div class="flex-1 rounded-t transition-all duration-500"
+                     style="height:66%; background: rgba(255,255,255,.10);
+                            box-shadow: none"></div>
+                                <div class="flex-1 rounded-t transition-all duration-500"
+                     style="height:90%; background: rgba(255,255,255,.10);
+                            box-shadow: none"></div>
+                                <div class="flex-1 rounded-t transition-all duration-500"
+                     style="height:68%; background: rgba(255,255,255,.10);
+                            box-shadow: none"></div>
+                                <div class="flex-1 rounded-t transition-all duration-500"
+                     style="height:96%; background: linear-gradient(180deg, #F23645, #FF5C72);
+                            box-shadow: 0 0 26px rgba(242,54,69,.4)"></div>
+                                <div class="flex-1 rounded-t transition-all duration-500"
+                     style="height:80%; background: rgba(255,255,255,.10);
+                            box-shadow: none"></div>
+                                <div class="flex-1 rounded-t transition-all duration-500"
+                     style="height:64%; background: rgba(255,255,255,.10);
+                            box-shadow: none"></div>
+                                <div class="flex-1 rounded-t transition-all duration-500"
+                     style="height:86%; background: rgba(255,255,255,.10);
+                            box-shadow: none"></div>
+                                <div class="flex-1 rounded-t transition-all duration-500"
+                     style="height:72%; background: rgba(255,255,255,.10);
+                            box-shadow: none"></div>
+                                <div class="flex-1 rounded-t transition-all duration-500"
+                     style="height:88%; background: rgba(255,255,255,.10);
+                            box-shadow: none"></div>
+                                <div class="flex-1 rounded-t transition-all duration-500"
+                     style="height:95%; background: linear-gradient(180deg, #F23645, #FF5C72);
+                            box-shadow: 0 0 26px rgba(242,54,69,.4)"></div>
+                              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     TRUSTED BY / LOGO STRIP
+     ============================================================== -->
+<section class="border-y border-white/[0.06] py-10 bg-[#0B1120]">
+  <div class="max-w-7xl mx-auto px-5 sm:px-6">
+    <p class="text-center eyebrow text-white/35 mb-6">Empresas que confían en Kyros</p>
+    <div class="overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_10%,#000_90%,transparent)]">
+      <div class="marquee-track shrink-0">
+                  <span class="logo-mark">
+            <span class="glyph">SR</span>
+            <span class="name">SpeedRent</span>
+          </span>
+                  <span class="logo-mark">
+            <span class="glyph">LX</span>
+            <span class="name">LuxDrive</span>
+          </span>
+                  <span class="logo-mark">
+            <span class="glyph">CC</span>
+            <span class="name">CaribeCars</span>
+          </span>
+                  <span class="logo-mark">
+            <span class="glyph">MV</span>
+            <span class="name">MoveMobility</span>
+          </span>
+                  <span class="logo-mark">
+            <span class="glyph">AC</span>
+            <span class="name">AutoCaribe</span>
+          </span>
+                  <span class="logo-mark">
+            <span class="glyph">PR</span>
+            <span class="name">PuntaRent</span>
+          </span>
+                  <span class="logo-mark">
+            <span class="glyph">NX</span>
+            <span class="name">NexoCars</span>
+          </span>
+                  <span class="logo-mark">
+            <span class="glyph">VR</span>
+            <span class="name">VistaRentals</span>
+          </span>
+                  <span class="logo-mark">
+            <span class="glyph">SR</span>
+            <span class="name">SpeedRent</span>
+          </span>
+                  <span class="logo-mark">
+            <span class="glyph">LX</span>
+            <span class="name">LuxDrive</span>
+          </span>
+                  <span class="logo-mark">
+            <span class="glyph">CC</span>
+            <span class="name">CaribeCars</span>
+          </span>
+                  <span class="logo-mark">
+            <span class="glyph">MV</span>
+            <span class="name">MoveMobility</span>
+          </span>
+                  <span class="logo-mark">
+            <span class="glyph">AC</span>
+            <span class="name">AutoCaribe</span>
+          </span>
+                  <span class="logo-mark">
+            <span class="glyph">PR</span>
+            <span class="name">PuntaRent</span>
+          </span>
+                  <span class="logo-mark">
+            <span class="glyph">NX</span>
+            <span class="name">NexoCars</span>
+          </span>
+                  <span class="logo-mark">
+            <span class="glyph">VR</span>
+            <span class="name">VistaRentals</span>
+          </span>
+              </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     STATS BAND (animated counters)
+     ============================================================== -->
+<section class="relative overflow-hidden" style="background:var(--grad)">
+  <div class="absolute inset-0 grid-dark opacity-25"></div>
+  <div class="relative max-w-7xl mx-auto px-5 sm:px-6 py-14 sm:py-16 grid grid-cols-2 md:grid-cols-4 gap-y-8 gap-x-4 text-white text-center">
+        <div class="reveal">
+      <p class="font-display text-[44px] sm:text-[60px] font-extrabold ticker display-xl" data-count="1240" data-suf="+" data-dec="0">0</p>
+      <p class="text-[12.5px] text-white/85 mt-1.5 font-medium">Reservas gestionadas</p>
+    </div>
+        <div class="reveal">
+      <p class="font-display text-[44px] sm:text-[60px] font-extrabold ticker display-xl" data-count="98" data-suf="%" data-dec="0">0</p>
+      <p class="text-[12.5px] text-white/85 mt-1.5 font-medium">Uptime de plataforma</p>
+    </div>
+        <div class="reveal">
+      <p class="font-display text-[44px] sm:text-[60px] font-extrabold ticker display-xl" data-count="4.9" data-suf="" data-dec="1">0</p>
+      <p class="text-[12.5px] text-white/85 mt-1.5 font-medium">Calificación promedio</p>
+    </div>
+        <div class="reveal">
+      <p class="font-display text-[44px] sm:text-[60px] font-extrabold ticker display-xl" data-count="3" data-suf=" min" data-dec="0">0</p>
+      <p class="text-[12.5px] text-white/85 mt-1.5 font-medium">Para publicar</p>
+    </div>
+      </div>
+</section>
+
+<!-- ==============================================================
+     PRODUCT SHOWCASE (auto-rotating tabs)
+     ============================================================== -->
+<section id="showcase" class="bg-[#0B1120] py-24 sm:py-32"
+         x-data="{ t:0, p:0, paused:false, go(i){ this.t=i; this.p=0; }, tick(){ if(this.paused) return; this.p+=1.5; if(this.p>=100){ this.p=0; this.t=(this.t+1)%4; } } }"
+         x-init="setInterval(()=>tick(),100)" @mouseenter="paused=true" @mouseleave="paused=false">
+  <div class="max-w-7xl mx-auto px-5 sm:px-6">
+    <div class="text-center max-w-2xl mx-auto mb-14 reveal">
+      <p class="eyebrow text-brand mb-3">Recorre el producto</p>
+      <h2 class="font-display display-lg text-[34px] sm:text-[52px] font-extrabold">Todo lo que necesitas,<br>en un solo clic</h2>
+    </div>
+
+    <div class="grid lg:grid-cols-[400px_1fr] gap-6 lg:gap-10">
+      <!-- Tabs -->
+      <div class="space-y-3">
+                <button type="button" @click="go(0)"
+                :class="t===0?'bg-white/[0.06] border-white/15':'border-transparent hover:bg-white/[0.03] hover:border-white/[0.06]'"
+                class="w-full text-left p-5 rounded-2xl border transition-all duration-300 reveal">
+          <div class="flex items-start gap-3.5">
+            <div class="w-11 h-11 rounded-xl grid place-items-center shrink-0 transition-all"
+                 :class="t===0?'grad-bg text-white scale-105':'bg-white/[0.05] text-white/55'">
+              <i data-lucide="calendar-check" class="w-5 h-5"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="font-display font-bold text-[15.5px] text-white">Reservas inteligentes</p>
+              <p class="text-[13px] text-white/55 mt-1 leading-relaxed">Recibe reservas online y créalas internas con disponibilidad en tiempo real. Calendario, estados, conversión a contrato.</p>
+            </div>
+          </div>
+          <div class="kbar mt-3.5" x-show="t===0" x-cloak><i :style="'width:'+p+'%'"></i></div>
+        </button>
+                <button type="button" @click="go(1)"
+                :class="t===1?'bg-white/[0.06] border-white/15':'border-transparent hover:bg-white/[0.03] hover:border-white/[0.06]'"
+                class="w-full text-left p-5 rounded-2xl border transition-all duration-300 reveal">
+          <div class="flex items-start gap-3.5">
+            <div class="w-11 h-11 rounded-xl grid place-items-center shrink-0 transition-all"
+                 :class="t===1?'grad-bg text-white scale-105':'bg-white/[0.05] text-white/55'">
+              <i data-lucide="car" class="w-5 h-5"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="font-display font-bold text-[15.5px] text-white">Flotilla controlada</p>
+              <p class="text-[13px] text-white/55 mt-1 leading-relaxed">Vehículos con fotos, vencimientos de documentos, mantenimiento, estados y multi-sucursal.</p>
+            </div>
+          </div>
+          <div class="kbar mt-3.5" x-show="t===1" x-cloak><i :style="'width:'+p+'%'"></i></div>
+        </button>
+                <button type="button" @click="go(2)"
+                :class="t===2?'bg-white/[0.06] border-white/15':'border-transparent hover:bg-white/[0.03] hover:border-white/[0.06]'"
+                class="w-full text-left p-5 rounded-2xl border transition-all duration-300 reveal">
+          <div class="flex items-start gap-3.5">
+            <div class="w-11 h-11 rounded-xl grid place-items-center shrink-0 transition-all"
+                 :class="t===2?'grad-bg text-white scale-105':'bg-white/[0.05] text-white/55'">
+              <i data-lucide="file-text" class="w-5 h-5"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="font-display font-bold text-[15.5px] text-white">Contratos con firma</p>
+              <p class="text-[13px] text-white/55 mt-1 leading-relaxed">Genera contratos con firma digital, fotos de entrega/devolución, cierre con penalidades y PDF listo.</p>
+            </div>
+          </div>
+          <div class="kbar mt-3.5" x-show="t===2" x-cloak><i :style="'width:'+p+'%'"></i></div>
+        </button>
+                <button type="button" @click="go(3)"
+                :class="t===3?'bg-white/[0.06] border-white/15':'border-transparent hover:bg-white/[0.03] hover:border-white/[0.06]'"
+                class="w-full text-left p-5 rounded-2xl border transition-all duration-300 reveal">
+          <div class="flex items-start gap-3.5">
+            <div class="w-11 h-11 rounded-xl grid place-items-center shrink-0 transition-all"
+                 :class="t===3?'grad-bg text-white scale-105':'bg-white/[0.05] text-white/55'">
+              <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="font-display font-bold text-[15.5px] text-white">Finanzas en vivo</p>
+              <p class="text-[13px] text-white/55 mt-1 leading-relaxed">Pagos, facturas, gastos, cierre de caja diario y reportes con P&amp;L mensual. Todo conectado.</p>
+            </div>
+          </div>
+          <div class="kbar mt-3.5" x-show="t===3" x-cloak><i :style="'width:'+p+'%'"></i></div>
+        </button>
+              </div>
+
+      <!-- Panel -->
+      <div class="rounded-3xl p-6 lg:p-10 relative overflow-hidden reveal-s min-h-[420px]"
+           style="background:linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,.01)); border:1px solid rgba(255,255,255,.07);">
+        <div class="absolute -top-12 -right-12 w-56 h-56 grad-bg opacity-15 blur-3xl rounded-full"></div>
+        <div class="absolute -bottom-12 -left-12 w-48 h-48 bg-indigo-500/20 blur-3xl rounded-full"></div>
+
+        <!-- Reservas -->
+        <div x-show="t===0" x-transition.opacity.duration.300ms class="relative">
+          <div class="flex items-center justify-between mb-5">
+            <p class="font-display font-bold text-lg text-white">Reservas de la semana</p>
+            <span class="text-[11px] px-2.5 py-1 rounded-lg bg-white/5 text-white/55 font-medium">7 días</span>
+          </div>
+          <div class="space-y-2.5">
+                        <div class="flex items-center justify-between p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.05] transition">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-10 h-10 rounded-lg bg-white/5 grid place-items-center shrink-0"><i data-lucide="car" class="w-4 h-4 text-white/50"></i></div>
+                <div class="min-w-0">
+                  <p class="text-sm font-semibold text-white truncate">Honda Civic 2022</p>
+                  <p class="text-[11px] text-white/45 tnum">RSV-0042 · 15 Jun → 18 Jun</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 shrink-0">
+                <span class="text-xs px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 font-semibold">Confirmada</span>
+                <span class="text-sm font-bold text-white tnum hidden sm:inline">RD$ 7,788</span>
+              </div>
+            </div>
+                        <div class="flex items-center justify-between p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.05] transition">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-10 h-10 rounded-lg bg-white/5 grid place-items-center shrink-0"><i data-lucide="car" class="w-4 h-4 text-white/50"></i></div>
+                <div class="min-w-0">
+                  <p class="text-sm font-semibold text-white truncate">Tesla Model 3</p>
+                  <p class="text-[11px] text-white/45 tnum">RSV-0041 · 12 Jun → 14 Jun</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 shrink-0">
+                <span class="text-xs px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-400 font-semibold">Pendiente</span>
+                <span class="text-sm font-bold text-white tnum hidden sm:inline">RD$ 12,400</span>
+              </div>
+            </div>
+                        <div class="flex items-center justify-between p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.05] transition">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-10 h-10 rounded-lg bg-white/5 grid place-items-center shrink-0"><i data-lucide="car" class="w-4 h-4 text-white/50"></i></div>
+                <div class="min-w-0">
+                  <p class="text-sm font-semibold text-white truncate">Mercedes C300</p>
+                  <p class="text-[11px] text-white/45 tnum">RSV-0040 · 10 Jun → 16 Jun</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 shrink-0">
+                <span class="text-xs px-2.5 py-1 rounded-full bg-indigo-500/15 text-indigo-300 font-semibold">En proceso</span>
+                <span class="text-sm font-bold text-white tnum hidden sm:inline">RD$ 51,000</span>
+              </div>
+            </div>
+                        <div class="flex items-center justify-between p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.05] transition">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-10 h-10 rounded-lg bg-white/5 grid place-items-center shrink-0"><i data-lucide="car" class="w-4 h-4 text-white/50"></i></div>
+                <div class="min-w-0">
+                  <p class="text-sm font-semibold text-white truncate">Toyota Corolla</p>
+                  <p class="text-[11px] text-white/45 tnum">RSV-0039 · 08 Jun → 11 Jun</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 shrink-0">
+                <span class="text-xs px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 font-semibold">Confirmada</span>
+                <span class="text-sm font-bold text-white tnum hidden sm:inline">RD$ 6,600</span>
+              </div>
+            </div>
+                      </div>
+        </div>
+
+        <!-- Flotilla -->
+        <div x-show="t===1" x-cloak x-transition.opacity.duration.300ms class="relative">
+          <div class="flex items-center justify-between mb-5">
+            <p class="font-display font-bold text-lg text-white">Flotilla en tiempo real</p>
+            <span class="text-[11px] px-2.5 py-1 rounded-lg bg-white/5 text-white/55 font-medium">23 vehículos</span>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        <div class="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4 hover:bg-white/[0.05] transition group">
+              <div class="h-20 rounded-lg bg-emerald-500/10 mb-3 grid place-items-center group-hover:scale-105 transition-transform"><i data-lucide="car-front" class="w-8 h-8" style="color:#10B981"></i></div>
+              <p class="text-[12.5px] font-semibold text-white truncate">Toyota Corolla</p>
+              <p class="text-[11px] mt-0.5" style="color:#10B981">Disponible</p>
+            </div>
+                        <div class="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4 hover:bg-white/[0.05] transition group">
+              <div class="h-20 rounded-lg bg-indigo-500/10 mb-3 grid place-items-center group-hover:scale-105 transition-transform"><i data-lucide="car-front" class="w-8 h-8" style="color:#6366F1"></i></div>
+              <p class="text-[12.5px] font-semibold text-white truncate">Honda Civic</p>
+              <p class="text-[11px] mt-0.5" style="color:#6366F1">Rentado</p>
+            </div>
+                        <div class="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4 hover:bg-white/[0.05] transition group">
+              <div class="h-20 rounded-lg bg-amber-500/10 mb-3 grid place-items-center group-hover:scale-105 transition-transform"><i data-lucide="car-front" class="w-8 h-8" style="color:#F59E0B"></i></div>
+              <p class="text-[12.5px] font-semibold text-white truncate">Hyundai Tucson</p>
+              <p class="text-[11px] mt-0.5" style="color:#F59E0B">Mantenimiento</p>
+            </div>
+                        <div class="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4 hover:bg-white/[0.05] transition group">
+              <div class="h-20 rounded-lg bg-emerald-500/10 mb-3 grid place-items-center group-hover:scale-105 transition-transform"><i data-lucide="car-front" class="w-8 h-8" style="color:#10B981"></i></div>
+              <p class="text-[12.5px] font-semibold text-white truncate">Kia Picanto</p>
+              <p class="text-[11px] mt-0.5" style="color:#10B981">Disponible</p>
+            </div>
+                        <div class="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4 hover:bg-white/[0.05] transition group">
+              <div class="h-20 rounded-lg bg-cyan-500/10 mb-3 grid place-items-center group-hover:scale-105 transition-transform"><i data-lucide="car-front" class="w-8 h-8" style="color:#06B6D4"></i></div>
+              <p class="text-[12.5px] font-semibold text-white truncate">Mercedes C300</p>
+              <p class="text-[11px] mt-0.5" style="color:#06B6D4">Limpieza</p>
+            </div>
+                        <div class="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4 hover:bg-white/[0.05] transition group">
+              <div class="h-20 rounded-lg bg-emerald-500/10 mb-3 grid place-items-center group-hover:scale-105 transition-transform"><i data-lucide="car-front" class="w-8 h-8" style="color:#10B981"></i></div>
+              <p class="text-[12.5px] font-semibold text-white truncate">Tesla Model 3</p>
+              <p class="text-[11px] mt-0.5" style="color:#10B981">Disponible</p>
+            </div>
+                      </div>
+        </div>
+
+        <!-- Contratos -->
+        <div x-show="t===2" x-cloak x-transition.opacity.duration.300ms class="relative">
+          <div class="rounded-2xl bg-white/[0.03] border border-white/[0.06] p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-[11px] text-white/45 uppercase tracking-wide font-bold">Contrato</p>
+                <p class="font-display font-extrabold text-white text-xl tnum mt-0.5">CTR-2026-0042</p>
+              </div>
+              <span class="text-xs px-3 py-1.5 rounded-full bg-emerald-500/15 text-emerald-400 font-semibold">Activo</span>
+            </div>
+            <div class="grid grid-cols-2 gap-3 mt-6 text-sm">
+              <div><p class="text-white/40 text-xs">Cliente</p><p class="font-semibold text-white mt-0.5">Pedro Martínez</p></div>
+              <div><p class="text-white/40 text-xs">Vehículo</p><p class="font-semibold text-white mt-0.5">Honda Civic 2022</p></div>
+              <div><p class="text-white/40 text-xs">Total</p><p class="font-bold text-white tnum mt-0.5">RD$ 18,880</p></div>
+              <div><p class="text-white/40 text-xs">Balance</p><p class="font-bold text-brand tnum mt-0.5">RD$ 0.00</p></div>
+            </div>
+            <div class="mt-6 pt-5 border-t border-white/[0.06] flex items-center gap-3">
+              <div class="flex-1 h-14 rounded-xl bg-white/[0.04] grid place-items-center text-white/40 text-xs font-medium border border-dashed border-white/[0.08]">
+                <i data-lucide="pen-line" class="w-4 h-4 inline mr-1.5"></i> Firma digital del cliente
+              </div>
+              <span class="text-xs px-3 py-1.5 rounded-full bg-white/5 text-white/55 font-medium">PDF listo</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Finanzas -->
+        <div x-show="t===3" x-cloak x-transition.opacity.duration.300ms class="relative">
+          <div class="rounded-2xl grad-bg p-6 text-white">
+            <p class="text-xs text-white/85 font-medium">Ingresos del mes</p>
+            <p class="text-4xl font-extrabold ticker mt-1">RD$ 184,500</p>
+            <p class="text-xs text-white/85 mt-1 flex items-center gap-1"><i data-lucide="trending-up" class="w-3 h-3"></i> +24% vs. mes anterior</p>
+          </div>
+          <div class="grid grid-cols-2 gap-3 mt-4">
+            <div class="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4">
+              <p class="text-[11px] text-white/45">Gastos del mes</p>
+              <p class="text-lg font-bold text-white tnum mt-1">RD$ 42,180</p>
+            </div>
+            <div class="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-4">
+              <p class="text-[11px] text-emerald-300">Margen neto</p>
+              <p class="text-lg font-bold text-emerald-300 tnum mt-1">RD$ 142,320</p>
+            </div>
+          </div>
+          <div class="space-y-2 mt-3">
+                        <div class="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+              <div class="flex items-center gap-2.5">
+                <span class="w-2 h-2 rounded-full" style="background:#6366F1"></span>
+                <p class="text-sm font-medium text-white tnum">PAY-0099</p>
+                <span class="text-[11px] text-white/45">Tarjeta</span>
+              </div>
+              <span class="font-bold text-emerald-400 tnum">RD$ 10,000</span>
+            </div>
+                        <div class="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+              <div class="flex items-center gap-2.5">
+                <span class="w-2 h-2 rounded-full" style="background:#10B981"></span>
+                <p class="text-sm font-medium text-white tnum">PAY-0098</p>
+                <span class="text-[11px] text-white/45">Efectivo</span>
+              </div>
+              <span class="font-bold text-emerald-400 tnum">RD$ 6,372</span>
+            </div>
+                        <div class="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+              <div class="flex items-center gap-2.5">
+                <span class="w-2 h-2 rounded-full" style="background:#F59E0B"></span>
+                <p class="text-sm font-medium text-white tnum">PAY-0097</p>
+                <span class="text-[11px] text-white/45">Transferencia</span>
+              </div>
+              <span class="font-bold text-emerald-400 tnum">RD$ 5,000</span>
+            </div>
+                      </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     PERSONAS — Made for
+     ============================================================== -->
+<section class="bg-[#0B1120] pb-24 sm:pb-32">
+  <div class="max-w-7xl mx-auto px-5 sm:px-6">
+    <div class="text-center max-w-2xl mx-auto mb-14 reveal">
+      <p class="eyebrow text-brand mb-3">Hecho para</p>
+      <h2 class="font-display display-lg text-[34px] sm:text-[52px] font-extrabold">Cada rol, su panel</h2>
+      <p class="mt-4 text-white/55 leading-relaxed">Roles y permisos granulares: cada miembro de tu equipo ve solo lo que necesita.</p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-4 sm:gap-5">
+            <div class="persona p-7 sm:p-8 reveal">
+        <div class="w-12 h-12 rounded-2xl bg-brand/10 text-brand grid place-items-center mb-5"><i data-lucide="crown" class="w-5.5 h-5.5"></i></div>
+        <h3 class="font-display font-extrabold text-white text-xl mb-2">Dueño</h3>
+        <p class="text-white/55 text-[14.5px] leading-relaxed mb-5">Toma decisiones con visibilidad total: dashboard, reportes financieros, gestión de planes y todo el negocio.</p>
+        <div class="space-y-2">
+                    <p class="flex items-center gap-2 text-[13.5px] text-white/70">
+            <i data-lucide="check" class="w-3.5 h-3.5 text-brand shrink-0"></i>Reportes en vivo          </p>
+                    <p class="flex items-center gap-2 text-[13.5px] text-white/70">
+            <i data-lucide="check" class="w-3.5 h-3.5 text-brand shrink-0"></i>Multi-sucursal          </p>
+                    <p class="flex items-center gap-2 text-[13.5px] text-white/70">
+            <i data-lucide="check" class="w-3.5 h-3.5 text-brand shrink-0"></i>Planes y facturación          </p>
+                  </div>
+      </div>
+            <div class="persona p-7 sm:p-8 reveal">
+        <div class="w-12 h-12 rounded-2xl bg-brand/10 text-brand grid place-items-center mb-5"><i data-lucide="users-round" class="w-5.5 h-5.5"></i></div>
+        <h3 class="font-display font-extrabold text-white text-xl mb-2">Equipo operativo</h3>
+        <p class="text-white/55 text-[14.5px] leading-relaxed mb-5">Tu staff atiende reservas, cobra, genera contratos y cierra caja sin tocar lo que no debe.</p>
+        <div class="space-y-2">
+                    <p class="flex items-center gap-2 text-[13.5px] text-white/70">
+            <i data-lucide="check" class="w-3.5 h-3.5 text-brand shrink-0"></i>Reservas + clientes          </p>
+                    <p class="flex items-center gap-2 text-[13.5px] text-white/70">
+            <i data-lucide="check" class="w-3.5 h-3.5 text-brand shrink-0"></i>Contratos con firma          </p>
+                    <p class="flex items-center gap-2 text-[13.5px] text-white/70">
+            <i data-lucide="check" class="w-3.5 h-3.5 text-brand shrink-0"></i>Cierre de caja diario          </p>
+                  </div>
+      </div>
+            <div class="persona p-7 sm:p-8 reveal">
+        <div class="w-12 h-12 rounded-2xl bg-brand/10 text-brand grid place-items-center mb-5"><i data-lucide="shield" class="w-5.5 h-5.5"></i></div>
+        <h3 class="font-display font-extrabold text-white text-xl mb-2">Flotilla &amp; mantenimiento</h3>
+        <p class="text-white/55 text-[14.5px] leading-relaxed mb-5">Tu equipo de taller programa servicios, registra vencimientos y mantiene cada vehículo listo para rentar.</p>
+        <div class="space-y-2">
+                    <p class="flex items-center gap-2 text-[13.5px] text-white/70">
+            <i data-lucide="check" class="w-3.5 h-3.5 text-brand shrink-0"></i>Estados de vehículo          </p>
+                    <p class="flex items-center gap-2 text-[13.5px] text-white/70">
+            <i data-lucide="check" class="w-3.5 h-3.5 text-brand shrink-0"></i>Mantenimiento          </p>
+                    <p class="flex items-center gap-2 text-[13.5px] text-white/70">
+            <i data-lucide="check" class="w-3.5 h-3.5 text-brand shrink-0"></i>Vencimientos automáticos          </p>
+                  </div>
+      </div>
+          </div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     BENTO FEATURES
+     ============================================================== -->
+<section id="features" class="bg-[#0B1120] pb-24 sm:pb-32">
+  <div class="max-w-7xl mx-auto px-5 sm:px-6">
+    <div class="text-center max-w-2xl mx-auto mb-14 reveal">
+      <p class="eyebrow text-brand mb-3">Todo en uno</p>
+      <h2 class="font-display display-lg text-[34px] sm:text-[52px] font-extrabold">Una plataforma para toda tu operación</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-6 gap-4 auto-rows-[160px]">
+      <!-- Storefront -->
+      <div class="bento md:col-span-4 md:row-span-2 p-7 lg:p-9 reveal-s flex flex-col justify-between"
+           onmousemove="this.style.setProperty('--mx', (event.offsetX)+'px'); this.style.setProperty('--my', (event.offsetY)+'px')">
+        <div class="relative z-10">
+          <p class="eyebrow text-brand">Tu marca, online</p>
+          <h3 class="font-display font-extrabold text-white text-2xl lg:text-3xl mt-3 display-lg">Página pública con tu propio slug</h3>
+          <p class="text-white/55 mt-3 max-w-md leading-relaxed">Buscador, filtros, histograma de precios, galería de vehículos y reservas online — listo sin escribir una línea de código.</p>
+          <div class="mt-6 inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-white/75 tnum">
+            <i data-lucide="link-2" class="w-4 h-4 text-white/40"></i> rentcar.kyrosrd.com/r/tu-rentcar
+          </div>
+        </div>
+        <div class="relative z-10 mt-6 grid grid-cols-4 gap-2.5">
+                    <div class="rounded-lg border border-white/[0.07] bg-white/[0.025] p-2.5 hover:border-white/[0.14] transition">
+            <div class="h-14 rounded bg-white/[0.04] mb-2 grid place-items-center"><i data-lucide="car-front" class="w-6 h-6 text-white/15"></i></div>
+            <div class="h-2 w-10 rounded bg-white/15"></div>
+            <div class="h-2 w-7 rounded bg-brand/60 mt-1.5"></div>
+          </div>
+                    <div class="rounded-lg border border-white/[0.07] bg-white/[0.025] p-2.5 hover:border-white/[0.14] transition">
+            <div class="h-14 rounded bg-white/[0.04] mb-2 grid place-items-center"><i data-lucide="car-front" class="w-6 h-6 text-white/15"></i></div>
+            <div class="h-2 w-10 rounded bg-white/15"></div>
+            <div class="h-2 w-7 rounded bg-brand/60 mt-1.5"></div>
+          </div>
+                    <div class="rounded-lg border border-white/[0.07] bg-white/[0.025] p-2.5 hover:border-white/[0.14] transition">
+            <div class="h-14 rounded bg-white/[0.04] mb-2 grid place-items-center"><i data-lucide="car-front" class="w-6 h-6 text-white/15"></i></div>
+            <div class="h-2 w-10 rounded bg-white/15"></div>
+            <div class="h-2 w-7 rounded bg-brand/60 mt-1.5"></div>
+          </div>
+                    <div class="rounded-lg border border-white/[0.07] bg-white/[0.025] p-2.5 hover:border-white/[0.14] transition">
+            <div class="h-14 rounded bg-white/[0.04] mb-2 grid place-items-center"><i data-lucide="car-front" class="w-6 h-6 text-white/15"></i></div>
+            <div class="h-2 w-10 rounded bg-white/15"></div>
+            <div class="h-2 w-7 rounded bg-brand/60 mt-1.5"></div>
+          </div>
+                  </div>
+      </div>
+
+      <div class="bento md:col-span-2 p-6 reveal" onmousemove="this.style.setProperty('--mx', (event.offsetX)+'px'); this.style.setProperty('--my', (event.offsetY)+'px')">
+        <div class="w-10 h-10 rounded-xl bg-white/[0.05] text-white/80 border border-white/[0.09] grid place-items-center mb-3"><i data-lucide="lock-keyhole" class="w-5 h-5"></i></div>
+        <h3 class="font-display font-bold text-white text-lg">Seguridad real</h3>
+        <p class="text-sm text-white/55 mt-1.5 leading-relaxed">Multi-tenant aislado, CSRF, prepared statements y roles.</p>
+      </div>
+
+      <div class="bento md:col-span-2 p-6 reveal" onmousemove="this.style.setProperty('--mx', (event.offsetX)+'px'); this.style.setProperty('--my', (event.offsetY)+'px')">
+        <div class="w-10 h-10 rounded-xl bg-brand/10 text-brand grid place-items-center mb-3"><i data-lucide="activity" class="w-5 h-5"></i></div>
+        <h3 class="font-display font-bold text-white text-lg">Dashboard en vivo</h3>
+        <p class="text-sm text-white/55 mt-1.5 leading-relaxed">KPIs, ingresos, ocupación de flotilla y alertas al instante.</p>
+      </div>
+
+      <div class="bento md:col-span-3 p-7 reveal-s flex flex-col justify-between"
+           onmousemove="this.style.setProperty('--mx', (event.offsetX)+'px'); this.style.setProperty('--my', (event.offsetY)+'px')">
+        <div>
+          <p class="eyebrow text-brand">Plan Premium</p>
+          <h3 class="font-display text-xl font-extrabold text-white mt-2">API REST · Conecta con todo</h3>
+        </div>
+        <div class="font-mono text-[11px] leading-relaxed bg-[#06090F] rounded-xl border border-white/[0.06] p-3.5 mt-3">
+          <p class="text-white/40"><span class="text-emerald-400">GET</span> /api/v1/vehicles</p>
+          <p class="text-white/30 mt-1">Authorization: Bearer kyro_***</p>
+        </div>
+      </div>
+
+      <div class="bento md:col-span-3 p-7 reveal-s flex flex-col justify-between"
+           onmousemove="this.style.setProperty('--mx', (event.offsetX)+'px'); this.style.setProperty('--my', (event.offsetY)+'px')">
+        <div>
+          <p class="eyebrow text-brand">Hecho para LATAM</p>
+          <h3 class="font-display text-xl font-extrabold text-white mt-2">Multi-sucursal, multi-moneda</h3>
+          <p class="text-sm text-white/55 mt-2 leading-relaxed">DOP por defecto, ITBIS configurable, múltiples sucursales con stock independiente.</p>
+        </div>
+        <div class="flex items-center gap-2 mt-3">
+                      <span class="text-xl">🇩🇴</span>
+                      <span class="text-xl">🇲🇽</span>
+                      <span class="text-xl">🇨🇴</span>
+                      <span class="text-xl">🇵🇦</span>
+                      <span class="text-xl">🇨🇷</span>
+                      <span class="text-xl">🇵🇷</span>
+                  </div>
+      </div>
+
+      <!-- Storage tile: full width, shows quota + extras model -->
+      <div class="bento md:col-span-6 p-7 lg:p-9 reveal-s"
+           onmousemove="this.style.setProperty('--mx', (event.offsetX)+'px'); this.style.setProperty('--my', (event.offsetY)+'px')">
+        <div class="grid lg:grid-cols-[1fr_auto] gap-6 items-center">
+          <div>
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-400 grid place-items-center"><i data-lucide="hard-drive" class="w-5 h-5"></i></div>
+              <p class="eyebrow text-brand">Almacenamiento incluido + flexible</p>
+            </div>
+            <h3 class="font-display text-xl lg:text-2xl font-extrabold text-white">Fotos, contratos firmados y evidencia — todo en tu cuota</h3>
+            <p class="text-sm text-white/55 mt-2 leading-relaxed max-w-2xl">
+              Cada plan incluye espacio para tu catálogo y operación.
+              <span class="text-white/85">¿Necesitas más?</span>
+              Pides una ampliación desde el panel y la activamos en horas — sin migrar ni tocar tus datos.
+              Aviso en vivo al 80 % y bloqueo limpio al 100 % para evitar sorpresas.
+            </p>
+          </div>
+          <!-- Mini quota visualization -->
+          <div class="flex flex-col sm:flex-row lg:flex-col gap-2.5 lg:w-56">
+                        <div class="flex-1 lg:flex-none rounded-xl p-3 border border-white/[0.07] bg-white/[0.03]">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[11px] font-semibold text-white/65">Starter</span>
+                <span class="text-[11px] font-mono text-white tnum">500 MB</span>
+              </div>
+              <div class="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+                <div class="h-full bg-slate-200/60" style="width:25%"></div>
+              </div>
+            </div>
+                        <div class="flex-1 lg:flex-none rounded-xl p-3 border border-white/[0.07] bg-white/[0.03]">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[11px] font-semibold text-white/65">Business</span>
+                <span class="text-[11px] font-mono text-white tnum">5 GB</span>
+              </div>
+              <div class="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+                <div class="h-full bg-indigo-400/60" style="width:60%"></div>
+              </div>
+            </div>
+                        <div class="flex-1 lg:flex-none rounded-xl p-3 border border-white/[0.07] bg-white/[0.03]">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[11px] font-semibold text-white/65">Premium</span>
+                <span class="text-[11px] font-mono text-white tnum">25 GB</span>
+              </div>
+              <div class="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+                <div class="h-full grad-bg" style="width:100%"></div>
+              </div>
+            </div>
+                      </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     PLATAFORMA COMPLETA — every module the SaaS ships with
+     ============================================================== -->
+<section id="modulos" class="bg-[#0B1120] pb-24 sm:pb-32">
+  <div class="max-w-7xl mx-auto px-5 sm:px-6">
+    <div class="text-center max-w-2xl mx-auto mb-14 reveal">
+      <p class="eyebrow text-brand mb-3">Plataforma completa</p>
+      <h2 class="font-display display-lg text-[34px] sm:text-[52px] font-extrabold">Más de 20 módulos<br>listos para usar</h2>
+      <p class="mt-4 text-white/55 leading-relaxed">No tienes que armar tu stack — todo viene integrado y conectado entre sí.</p>
+    </div>
+
+        <div class="mt-10 first:mt-0 reveal">
+      <div class="flex items-center gap-3 mb-5">
+        <span class="w-9 h-9 rounded-xl bg-white/[0.04] border border-white/[0.08] grid place-items-center text-brand">
+          <i data-lucide="calendar-check" class="w-4 h-4"></i>
+        </span>
+        <h3 class="font-display font-bold text-white text-lg">Operación diaria</h3>
+        <span class="flex-1 h-px bg-gradient-to-r from-white/[0.07] to-transparent"></span>
+        <span class="text-[11px] font-mono text-white/35 tnum">6 módulos</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                <div class="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5"
+             style="background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.06);">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] grid place-items-center text-white/70 group-hover:text-brand group-hover:border-brand/30 transition">
+              <i data-lucide="layout-dashboard" class="w-[18px] h-[18px]"></i>
+            </div>
+            <span class="text-[9.5px] font-bold tracking-wide uppercase px-2 py-1 rounded-full border bg-emerald-500/10 text-emerald-300 border-emerald-500/20">Starter</span>
+          </div>
+          <p class="font-display font-bold text-white text-[15px]">Dashboard en vivo</p>
+          <p class="text-[12.5px] text-white/55 mt-1 leading-relaxed">KPIs de ingresos, ocupación, reservas, alertas y vencimientos en tiempo real.</p>
+        </div>
+                <div class="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5"
+             style="background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.06);">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] grid place-items-center text-white/70 group-hover:text-brand group-hover:border-brand/30 transition">
+              <i data-lucide="calendar-check" class="w-[18px] h-[18px]"></i>
+            </div>
+            <span class="text-[9.5px] font-bold tracking-wide uppercase px-2 py-1 rounded-full border bg-emerald-500/10 text-emerald-300 border-emerald-500/20">Starter</span>
+          </div>
+          <p class="font-display font-bold text-white text-[15px]">Reservas</p>
+          <p class="text-[12.5px] text-white/55 mt-1 leading-relaxed">Reservas online + internas, calendario visual, conversión a contrato 1-clic.</p>
+        </div>
+                <div class="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5"
+             style="background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.06);">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] grid place-items-center text-white/70 group-hover:text-brand group-hover:border-brand/30 transition">
+              <i data-lucide="car" class="w-[18px] h-[18px]"></i>
+            </div>
+            <span class="text-[9.5px] font-bold tracking-wide uppercase px-2 py-1 rounded-full border bg-emerald-500/10 text-emerald-300 border-emerald-500/20">Starter</span>
+          </div>
+          <p class="font-display font-bold text-white text-[15px]">Flotilla</p>
+          <p class="text-[12.5px] text-white/55 mt-1 leading-relaxed">Vehículos con fotos, VIN, kilometraje, características, estados y galería.</p>
+        </div>
+                <div class="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5"
+             style="background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.06);">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] grid place-items-center text-white/70 group-hover:text-brand group-hover:border-brand/30 transition">
+              <i data-lucide="id-card" class="w-[18px] h-[18px]"></i>
+            </div>
+            <span class="text-[9.5px] font-bold tracking-wide uppercase px-2 py-1 rounded-full border bg-indigo-500/10 text-indigo-300 border-indigo-500/20">Business</span>
+          </div>
+          <p class="font-display font-bold text-white text-[15px]">Choferes</p>
+          <p class="text-[12.5px] text-white/55 mt-1 leading-relaxed">Equipo de chóferes con licencia, tarifa diaria/hora, rating y asignación.</p>
+        </div>
+                <div class="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5"
+             style="background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.06);">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] grid place-items-center text-white/70 group-hover:text-brand group-hover:border-brand/30 transition">
+              <i data-lucide="users" class="w-[18px] h-[18px]"></i>
+            </div>
+            <span class="text-[9.5px] font-bold tracking-wide uppercase px-2 py-1 rounded-full border bg-emerald-500/10 text-emerald-300 border-emerald-500/20">Starter</span>
+          </div>
+          <p class="font-display font-bold text-white text-[15px]">Clientes</p>
+          <p class="text-[12.5px] text-white/55 mt-1 leading-relaxed">Ficha completa, historial de reservas, documentos, licencias y notas.</p>
+        </div>
+                <div class="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5"
+             style="background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.06);">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] grid place-items-center text-white/70 group-hover:text-brand group-hover:border-brand/30 transition">
+              <i data-lucide="file-text" class="w-[18px] h-[18px]"></i>
+            </div>
+            <span class="text-[9.5px] font-bold tracking-wide uppercase px-2 py-1 rounded-full border bg-indigo-500/10 text-indigo-300 border-indigo-500/20">Business</span>
+          </div>
+          <p class="font-display font-bold text-white text-[15px]">Contratos</p>
+          <p class="text-[12.5px] text-white/55 mt-1 leading-relaxed">Generación automática, firma digital, fotos de entrega y PDF profesional.</p>
+        </div>
+              </div>
+    </div>
+        <div class="mt-10 first:mt-0 reveal">
+      <div class="flex items-center gap-3 mb-5">
+        <span class="w-9 h-9 rounded-xl bg-white/[0.04] border border-white/[0.08] grid place-items-center text-brand">
+          <i data-lucide="wrench" class="w-4 h-4"></i>
+        </span>
+        <h3 class="font-display font-bold text-white text-lg">Mantenimiento &amp; control</h3>
+        <span class="flex-1 h-px bg-gradient-to-r from-white/[0.07] to-transparent"></span>
+        <span class="text-[11px] font-mono text-white/35 tnum">4 módulos</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                <div class="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5"
+             style="background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.06);">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] grid place-items-center text-white/70 group-hover:text-brand group-hover:border-brand/30 transition">
+              <i data-lucide="wrench" class="w-[18px] h-[18px]"></i>
+            </div>
+            <span class="text-[9.5px] font-bold tracking-wide uppercase px-2 py-1 rounded-full border bg-indigo-500/10 text-indigo-300 border-indigo-500/20">Business</span>
+          </div>
+          <p class="font-display font-bold text-white text-[15px]">Mantenimiento</p>
+          <p class="text-[12.5px] text-white/55 mt-1 leading-relaxed">Programa servicios por vehículo: aceite, llantas, frenos, alineación.</p>
+        </div>
+                <div class="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5"
+             style="background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.06);">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] grid place-items-center text-white/70 group-hover:text-brand group-hover:border-brand/30 transition">
+              <i data-lucide="shield-alert" class="w-[18px] h-[18px]"></i>
+            </div>
+            <span class="text-[9.5px] font-bold tracking-wide uppercase px-2 py-1 rounded-full border bg-indigo-500/10 text-indigo-300 border-indigo-500/20">Business</span>
+          </div>
+          <p class="font-display font-bold text-white text-[15px]">Incidencias</p>
+          <p class="text-[12.5px] text-white/55 mt-1 leading-relaxed">Multas de tránsito, daños, combustible, llaves perdidas — con evidencia.</p>
+        </div>
+                <div class="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5"
+             style="background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.06);">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] grid place-items-center text-white/70 group-hover:text-brand group-hover:border-brand/30 transition">
+              <i data-lucide="calendar-clock" class="w-[18px] h-[18px]"></i>
+            </div>
+            <span class="text-[9.5px] font-bold tracking-wide uppercase px-2 py-1 rounded-full border bg-indigo-500/10 text-indigo-300 border-indigo-500/20">Business</span>
+          </div>
+          <p class="font-display font-bold text-white text-[15px]">Vencimientos</p>
+          <p class="text-[12.5px] text-white/55 mt-1 leading-relaxed">Alertas automáticas de seguro, marbete, placa e inspección por vehículo.</p>
+        </div>
+                <div class="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5"
+             style="background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.06);">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] grid place-items-center text-white/70 group-hover:text-brand group-hover:border-brand/30 transition">
+              <i data-lucide="map-pin" class="w-[18px] h-[18px]"></i>
+            </div>
+            <span class="text-[9.5px] font-bold tracking-wide uppercase px-2 py-1 rounded-full border bg-indigo-500/10 text-indigo-300 border-indigo-500/20">Business</span>
+          </div>
+          <p class="font-display font-bold text-white text-[15px]">Multi-sucursal</p>
+          <p class="text-[12.5px] text-white/55 mt-1 leading-relaxed">Stock independiente por sucursal, manager y datos de contacto.</p>
+        </div>
+              </div>
+    </div>
+        <div class="mt-10 first:mt-0 reveal">
+      <div class="flex items-center gap-3 mb-5">
+        <span class="w-9 h-9 rounded-xl bg-white/[0.04] border border-white/[0.08] grid place-items-center text-brand">
+          <i data-lucide="wallet" class="w-4 h-4"></i>
+        </span>
+        <h3 class="font-display font-bold text-white text-lg">Finanzas</h3>
+        <span class="flex-1 h-px bg-gradient-to-r from-white/[0.07] to-transparent"></span>
+        <span class="text-[11px] font-mono text-white/35 tnum">5 módulos</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                <div class="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5"
+             style="background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.06);">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] grid place-items-center text-white/70 group-hover:text-brand group-hover:border-brand/30 transition">
+              <i data-lucide="credit-card" class="w-[18px] h-[18px]"></i>
+            </div>
+            <span class="text-[9.5px] font-bold tracking-wide uppercase px-2 py-1 rounded-full border bg-indigo-500/10 text-indigo-300 border-indigo-500/20">Business</span>
+          </div>
+          <p class="font-display font-bold text-white text-[15px]">Pagos</p>
+          <p class="text-[12.5px] text-white/55 mt-1 leading-relaxed">Efectivo, tarjeta, transferencia, Azul, Cardnet, Stripe — todo trazable.</p>
+        </div>
+                <div class="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5"
+             style="background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.06);">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] grid place-items-center text-white/70 group-hover:text-brand group-hover:border-brand/30 transition">
+              <i data-lucide="receipt" class="w-[18px] h-[18px]"></i>
+            </div>
+            <span class="text-[9.5px] font-bold tracking-wide uppercase px-2 py-1 rounded-full border bg-indigo-500/10 text-indigo-300 border-indigo-500/20">Business</span>
+          </div>
+          <p class="font-display font-bold text-white text-[15px]">Facturas</p>
+          <p class="text-[12.5px] text-white/55 mt-1 leading-relaxed">Emisión y seguimiento con estados (borrador, emitida, pagada, anulada).</p>
+        </div>
+                <div class="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5"
+             style="background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.06);">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] grid place-items-center text-white/70 group-hover:text-brand group-hover:border-brand/30 transition">
+              <i data-lucide="trending-down" class="w-[18px] h-[18px]"></i>
+            </div>
+            <span class="text-[9.5px] font-bold tracking-wide uppercase px-2 py-1 rounded-full border bg-indigo-500/10 text-indigo-300 border-indigo-500/20">Business</span>
+          </div>
+          <p class="font-display font-bold text-white text-[15px]">Gastos</p>
+          <p class="text-[12.5px] text-white/55 mt-1 leading-relaxed">Combustible, nómina, alquiler, marketing — por sucursal o vehículo.</p>
+        </div>
+                <div class="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5"
+             style="background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.06);">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] grid place-items-center text-white/70 group-hover:text-brand group-hover:border-brand/30 transition">
+              <i data-lucide="calculator" class="w-[18px] h-[18px]"></i>
+            </div>
+            <span class="text-[9.5px] font-bold tracking-wide uppercase px-2 py-1 rounded-full border bg-indigo-500/10 text-indigo-300 border-indigo-500/20">Business</span>
+          </div>
+          <p class="font-display font-bold text-white text-[15px]">Cierre de caja</p>
+          <p class="text-[12.5px] text-white/55 mt-1 leading-relaxed">Cierre diario con conteo de efectivo y conciliación de métodos.</p>
+        </div>
+                <div class="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5"
+             style="background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.06);">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] grid place-items-center text-white/70 group-hover:text-brand group-hover:border-brand/30 transition">
+              <i data-lucide="bar-chart-3" class="w-[18px] h-[18px]"></i>
+            </div>
+            <span class="text-[9.5px] font-bold tracking-wide uppercase px-2 py-1 rounded-full border bg-indigo-500/10 text-indigo-300 border-indigo-500/20">Business</span>
+          </div>
+          <p class="font-display font-bold text-white text-[15px]">Reportes &amp; P&amp;L</p>
+          <p class="text-[12.5px] text-white/55 mt-1 leading-relaxed">P&amp;L mensual, ingresos vs. gastos, ocupación, top vehículos y clientes.</p>
+        </div>
+              </div>
+    </div>
+        <div class="mt-10 first:mt-0 reveal">
+      <div class="flex items-center gap-3 mb-5">
+        <span class="w-9 h-9 rounded-xl bg-white/[0.04] border border-white/[0.08] grid place-items-center text-brand">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+        </span>
+        <h3 class="font-display font-bold text-white text-lg">Catálogo &amp; ventas</h3>
+        <span class="flex-1 h-px bg-gradient-to-r from-white/[0.07] to-transparent"></span>
+        <span class="text-[11px] font-mono text-white/35 tnum">4 módulos</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                <div class="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5"
+             style="background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.06);">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] grid place-items-center text-white/70 group-hover:text-brand group-hover:border-brand/30 transition">
+              <i data-lucide="globe" class="w-[18px] h-[18px]"></i>
+            </div>
+            <span class="text-[9.5px] font-bold tracking-wide uppercase px-2 py-1 rounded-full border bg-emerald-500/10 text-emerald-300 border-emerald-500/20">Starter</span>
+          </div>
+          <p class="font-display font-bold text-white text-[15px]">Página pública</p>
+          <p class="text-[12.5px] text-white/55 mt-1 leading-relaxed">Tu propio /r/slug con buscador, filtros, galería y reservas online.</p>
+        </div>
+                <div class="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5"
+             style="background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.06);">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] grid place-items-center text-white/70 group-hover:text-brand group-hover:border-brand/30 transition">
+              <i data-lucide="tags" class="w-[18px] h-[18px]"></i>
+            </div>
+            <span class="text-[9.5px] font-bold tracking-wide uppercase px-2 py-1 rounded-full border bg-emerald-500/10 text-emerald-300 border-emerald-500/20">Starter</span>
+          </div>
+          <p class="font-display font-bold text-white text-[15px]">Categorías</p>
+          <p class="text-[12.5px] text-white/55 mt-1 leading-relaxed">Sedán, SUV, Pickup, Van, Lujo — con sus iconos y filtros públicos.</p>
+        </div>
+                <div class="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5"
+             style="background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.06);">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] grid place-items-center text-white/70 group-hover:text-brand group-hover:border-brand/30 transition">
+              <i data-lucide="sparkles" class="w-[18px] h-[18px]"></i>
+            </div>
+            <span class="text-[9.5px] font-bold tracking-wide uppercase px-2 py-1 rounded-full border bg-emerald-500/10 text-emerald-300 border-emerald-500/20">Starter</span>
+          </div>
+          <p class="font-display font-bold text-white text-[15px]">Extras / Servicios</p>
+          <p class="text-[12.5px] text-white/55 mt-1 leading-relaxed">GPS, silla de bebé, WiFi, chofer adicional — facturados automáticamente.</p>
+        </div>
+                <div class="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5"
+             style="background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.06);">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] grid place-items-center text-white/70 group-hover:text-brand group-hover:border-brand/30 transition">
+              <i data-lucide="ticket-percent" class="w-[18px] h-[18px]"></i>
+            </div>
+            <span class="text-[9.5px] font-bold tracking-wide uppercase px-2 py-1 rounded-full border bg-indigo-500/10 text-indigo-300 border-indigo-500/20">Business</span>
+          </div>
+          <p class="font-display font-bold text-white text-[15px]">Promociones</p>
+          <p class="text-[12.5px] text-white/55 mt-1 leading-relaxed">Códigos % o monto fijo, mínimos, máximos de uso y vigencia.</p>
+        </div>
+              </div>
+    </div>
+        <div class="mt-10 first:mt-0 reveal">
+      <div class="flex items-center gap-3 mb-5">
+        <span class="w-9 h-9 rounded-xl bg-white/[0.04] border border-white/[0.08] grid place-items-center text-brand">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+        </span>
+        <h3 class="font-display font-bold text-white text-lg">Sistema &amp; equipo</h3>
+        <span class="flex-1 h-px bg-gradient-to-r from-white/[0.07] to-transparent"></span>
+        <span class="text-[11px] font-mono text-white/35 tnum">5 módulos</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                <div class="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5"
+             style="background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.06);">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] grid place-items-center text-white/70 group-hover:text-brand group-hover:border-brand/30 transition">
+              <i data-lucide="users-round" class="w-[18px] h-[18px]"></i>
+            </div>
+            <span class="text-[9.5px] font-bold tracking-wide uppercase px-2 py-1 rounded-full border bg-emerald-500/10 text-emerald-300 border-emerald-500/20">Starter</span>
+          </div>
+          <p class="font-display font-bold text-white text-[15px]">Equipo &amp; roles</p>
+          <p class="text-[12.5px] text-white/55 mt-1 leading-relaxed">Usuarios con permisos granulares: dueño, operador, taller, solo lectura.</p>
+        </div>
+                <div class="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5"
+             style="background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.06);">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] grid place-items-center text-white/70 group-hover:text-brand group-hover:border-brand/30 transition">
+              <i data-lucide="history" class="w-[18px] h-[18px]"></i>
+            </div>
+            <span class="text-[9.5px] font-bold tracking-wide uppercase px-2 py-1 rounded-full border bg-emerald-500/10 text-emerald-300 border-emerald-500/20">Starter</span>
+          </div>
+          <p class="font-display font-bold text-white text-[15px]">Actividad</p>
+          <p class="text-[12.5px] text-white/55 mt-1 leading-relaxed">Audit log de cada acción: quién, qué, cuándo. Búsqueda y filtro.</p>
+        </div>
+                <div class="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5"
+             style="background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.06);">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] grid place-items-center text-white/70 group-hover:text-brand group-hover:border-brand/30 transition">
+              <i data-lucide="mail" class="w-[18px] h-[18px]"></i>
+            </div>
+            <span class="text-[9.5px] font-bold tracking-wide uppercase px-2 py-1 rounded-full border bg-indigo-500/10 text-indigo-300 border-indigo-500/20">Business</span>
+          </div>
+          <p class="font-display font-bold text-white text-[15px]">Plantillas email</p>
+          <p class="text-[12.5px] text-white/55 mt-1 leading-relaxed">Confirmación de reserva, recordatorios y avisos con marcadores dinámicos.</p>
+        </div>
+                <div class="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5"
+             style="background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.06);">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] grid place-items-center text-white/70 group-hover:text-brand group-hover:border-brand/30 transition">
+              <i data-lucide="plug" class="w-[18px] h-[18px]"></i>
+            </div>
+            <span class="text-[9.5px] font-bold tracking-wide uppercase px-2 py-1 rounded-full border bg-brand/10 text-brand border-brand/20">Premium</span>
+          </div>
+          <p class="font-display font-bold text-white text-[15px]">API REST</p>
+          <p class="text-[12.5px] text-white/55 mt-1 leading-relaxed">Tokens por empresa, endpoints REST con aislamiento total entre tenants.</p>
+        </div>
+                <div class="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-0.5"
+             style="background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.06);">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] grid place-items-center text-white/70 group-hover:text-brand group-hover:border-brand/30 transition">
+              <i data-lucide="settings" class="w-[18px] h-[18px]"></i>
+            </div>
+            <span class="text-[9.5px] font-bold tracking-wide uppercase px-2 py-1 rounded-full border bg-emerald-500/10 text-emerald-300 border-emerald-500/20">Starter</span>
+          </div>
+          <p class="font-display font-bold text-white text-[15px]">Branding</p>
+          <p class="text-[12.5px] text-white/55 mt-1 leading-relaxed">Logo, colores, datos legales, NCF, ITBIS y configuración por tenant.</p>
+        </div>
+              </div>
+    </div>
+    
+    <div class="mt-14 text-center reveal">
+      <p class="text-white/45 text-sm">¿Te falta algún módulo? <a href="mailto:soporte@kyrosrd.com" class="text-white font-medium hover:underline">Dínoslo</a> — escuchamos a nuestras rent cars.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     STOREFRONT PREVIEW — what the customer sees
+     ============================================================== -->
+<section id="storefront" class="bg-[#0B1120] pb-24 sm:pb-32">
+  <div class="max-w-7xl mx-auto px-5 sm:px-6">
+    <div class="grid lg:grid-cols-[1fr_1.4fr] gap-10 lg:gap-14 items-center">
+      <div class="reveal order-2 lg:order-1">
+        <p class="eyebrow text-brand mb-3">Tu marca, online</p>
+        <h2 class="font-display display-lg text-[32px] sm:text-[44px] font-extrabold text-white">
+          Una página pública<br>tan buena como un sitio dedicado
+        </h2>
+        <p class="mt-5 text-white/60 text-[15px] leading-relaxed max-w-xl">
+          Sin código, sin diseñadores, sin esperar semanas. En el momento que creas tu rent car, ya tienes un <span class="font-mono text-white/85 text-[13.5px] bg-white/[0.05] px-1.5 py-0.5 rounded">rentcar.kyrosrd.com/r/tu-slug</span> con catálogo, filtros, galería y motor de reservas.
+        </p>
+        <div class="mt-7 space-y-3.5">
+                    <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-xl bg-brand/10 text-brand border border-brand/20 grid place-items-center shrink-0">
+              <i data-lucide="search" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <p class="font-display font-bold text-white text-[14.5px]">Buscador con filtros</p>
+              <p class="text-[13px] text-white/55 mt-0.5 leading-relaxed">Categoría, precio, transmisión, pasajeros, sucursal.</p>
+            </div>
+          </div>
+                    <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-xl bg-brand/10 text-brand border border-brand/20 grid place-items-center shrink-0">
+              <i data-lucide="layout-grid" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <p class="font-display font-bold text-white text-[14.5px]">Catálogo con galería</p>
+              <p class="text-[13px] text-white/55 mt-0.5 leading-relaxed">Cada vehículo con fotos múltiples, precio, badges de disponibilidad.</p>
+            </div>
+          </div>
+                    <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-xl bg-brand/10 text-brand border border-brand/20 grid place-items-center shrink-0">
+              <i data-lucide="calendar-check" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <p class="font-display font-bold text-white text-[14.5px]">Reservas online 24/7</p>
+              <p class="text-[13px] text-white/55 mt-0.5 leading-relaxed">El cliente reserva sin llamarte. El lead llega a tu panel al instante.</p>
+            </div>
+          </div>
+                    <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-xl bg-brand/10 text-brand border border-brand/20 grid place-items-center shrink-0">
+              <i data-lucide="palette" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <p class="font-display font-bold text-white text-[14.5px]">Tu identidad de marca</p>
+              <p class="text-[13px] text-white/55 mt-0.5 leading-relaxed">Logo, colores y datos — el cliente nunca ve &quot;Kyros&quot;, ve tu rent car.</p>
+            </div>
+          </div>
+                  </div>
+        <a href="/kyros-rentcar-saas/public/register" class="k-btn k-btn-grad magnetic mt-8 px-6 !rounded-xl">
+          Crear mi página <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </a>
+      </div>
+
+      <!-- Storefront mockup: browser frame -->
+      <div class="order-1 lg:order-2 reveal-s">
+        <div class="relative">
+          <div class="absolute -inset-12 grad-bg opacity-20 blur-3xl rounded-full"></div>
+          <div class="relative rounded-2xl overflow-hidden border border-white/[0.08] bg-[#0F172A] shadow-lift">
+            <!-- Browser chrome -->
+            <div class="h-9 flex items-center gap-1.5 px-4 border-b border-white/[0.05] bg-white/[0.018]">
+              <span class="w-2 h-2 rounded-full bg-[#FF5F57]"></span>
+              <span class="w-2 h-2 rounded-full bg-[#FEBC2E]"></span>
+              <span class="w-2 h-2 rounded-full bg-[#28C840]"></span>
+              <span class="mx-auto text-[10.5px] text-white/30 tnum truncate">rentcar.kyrosrd.com/r/luxdrive</span>
+            </div>
+            <!-- Storefront body -->
+            <div class="p-5 sm:p-6">
+              <!-- Top brand bar -->
+              <div class="flex items-center justify-between mb-5">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-lg grad-bg text-white grid place-items-center font-extrabold text-sm">L</div>
+                  <div>
+                    <p class="text-white font-display font-extrabold text-[13.5px] leading-none">LuxDrive</p>
+                    <p class="text-[10px] text-white/40 mt-0.5">Santo Domingo · 4.9 ★</p>
+                  </div>
+                </div>
+                <div class="hidden sm:flex items-center gap-1.5">
+                  <span class="text-[10px] text-white/50 px-2 py-1 rounded-md bg-white/[0.04]">Inicio</span>
+                  <span class="text-[10px] text-white/50 px-2 py-1 rounded-md bg-white/[0.04]">Catálogo</span>
+                  <span class="text-[10px] text-white font-semibold px-2 py-1 rounded-md grad-bg">Reservar</span>
+                </div>
+              </div>
+              <!-- Search bar -->
+              <div class="rounded-xl border border-white/[0.07] bg-white/[0.025] p-2.5 flex items-center gap-2 mb-4">
+                <i data-lucide="search" class="w-3.5 h-3.5 text-white/40 ml-1.5"></i>
+                <div class="h-2 w-24 rounded bg-white/15"></div>
+                <span class="ml-auto text-[10px] text-white/45 px-2 py-1 rounded bg-white/[0.04]">SUV ▾</span>
+                <span class="text-[10px] text-white/45 px-2 py-1 rounded bg-white/[0.04]">Auto ▾</span>
+              </div>
+              <!-- Vehicle cards -->
+              <div class="grid grid-cols-2 gap-2.5">
+                                <div class="rounded-xl border border-white/[0.07] bg-white/[0.02] overflow-hidden hover:border-white/[0.16] hover:-translate-y-0.5 transition-all">
+                  <div class="h-20 sm:h-24 grid place-items-center bg-amber-500/15">
+                    <img src="/kyros-rentcar-saas/public/assets/demo/vehicles/economico.svg" class="h-full w-full object-cover opacity-90" alt="">
+                  </div>
+                  <div class="p-2.5">
+                    <p class="text-white font-semibold text-[11.5px] truncate">Kia Picanto</p>
+                    <div class="flex items-center justify-between mt-1">
+                      <p class="text-white tnum text-[12.5px] font-extrabold">RD$ 1,800<span class="text-white/40 font-normal text-[9px]">/día</span></p>
+                      <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 font-semibold">Libre</span>
+                    </div>
+                  </div>
+                </div>
+                                <div class="rounded-xl border border-white/[0.07] bg-white/[0.02] overflow-hidden hover:border-white/[0.16] hover:-translate-y-0.5 transition-all">
+                  <div class="h-20 sm:h-24 grid place-items-center bg-emerald-500/15">
+                    <img src="/kyros-rentcar-saas/public/assets/demo/vehicles/suv.svg" class="h-full w-full object-cover opacity-90" alt="">
+                  </div>
+                  <div class="p-2.5">
+                    <p class="text-white font-semibold text-[11.5px] truncate">Hyundai Tucson</p>
+                    <div class="flex items-center justify-between mt-1">
+                      <p class="text-white tnum text-[12.5px] font-extrabold">RD$ 3,500<span class="text-white/40 font-normal text-[9px]">/día</span></p>
+                      <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 font-semibold">Libre</span>
+                    </div>
+                  </div>
+                </div>
+                                <div class="rounded-xl border border-white/[0.07] bg-white/[0.02] overflow-hidden hover:border-white/[0.16] hover:-translate-y-0.5 transition-all">
+                  <div class="h-20 sm:h-24 grid place-items-center bg-brand/15">
+                    <img src="/kyros-rentcar-saas/public/assets/demo/vehicles/lujo.svg" class="h-full w-full object-cover opacity-90" alt="">
+                  </div>
+                  <div class="p-2.5">
+                    <p class="text-white font-semibold text-[11.5px] truncate">Mercedes C300</p>
+                    <div class="flex items-center justify-between mt-1">
+                      <p class="text-white tnum text-[12.5px] font-extrabold">RD$ 8,500<span class="text-white/40 font-normal text-[9px]">/día</span></p>
+                      <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 font-semibold">Libre</span>
+                    </div>
+                  </div>
+                </div>
+                                <div class="rounded-xl border border-white/[0.07] bg-white/[0.02] overflow-hidden hover:border-white/[0.16] hover:-translate-y-0.5 transition-all">
+                  <div class="h-20 sm:h-24 grid place-items-center bg-indigo-500/15">
+                    <img src="/kyros-rentcar-saas/public/assets/demo/vehicles/pickup.svg" class="h-full w-full object-cover opacity-90" alt="">
+                  </div>
+                  <div class="p-2.5">
+                    <p class="text-white font-semibold text-[11.5px] truncate">Ford F-150</p>
+                    <div class="flex items-center justify-between mt-1">
+                      <p class="text-white tnum text-[12.5px] font-extrabold">RD$ 4,500<span class="text-white/40 font-normal text-[9px]">/día</span></p>
+                      <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 font-semibold">Libre</span>
+                    </div>
+                  </div>
+                </div>
+                              </div>
+              <!-- Footer hint -->
+              <p class="text-center text-[10px] text-white/35 mt-4 tnum">Vista previa · Tu catálogo real puede tener cientos de vehículos</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     HOW IT WORKS
+     ============================================================== -->
+<section class="border-y border-white/[0.06] py-24 sm:py-32" style="background:linear-gradient(180deg,#101828,#0B1120);">
+  <div class="max-w-7xl mx-auto px-5 sm:px-6">
+    <div class="text-center max-w-2xl mx-auto mb-14 reveal">
+      <p class="eyebrow text-brand mb-3">Cómo funciona</p>
+      <h2 class="font-display display-lg text-[34px] sm:text-[52px] font-extrabold">En línea en tres pasos</h2>
+    </div>
+    <div class="grid md:grid-cols-3 gap-4 relative">
+      <div class="hidden md:block absolute top-12 left-[20%] right-[20%] h-px bg-gradient-to-r from-transparent via-white/12 to-transparent"></div>
+            <div class="p-7 sm:p-8 rounded-3xl relative z-10 reveal" style="background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012));border:1px solid rgba(255,255,255,.07);">
+        <span class="w-12 h-12 rounded-2xl grad-bg grid place-items-center text-base font-extrabold text-white tnum shadow-lift mb-5">01</span>
+        <h3 class="font-display font-bold text-lg text-white">Crea tu rent car</h3>
+        <p class="text-white/55 mt-2 text-sm leading-relaxed">Registra tu empresa, elige colores y recibe tu página pública con slug propio.</p>
+      </div>
+            <div class="p-7 sm:p-8 rounded-3xl relative z-10 reveal" style="background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012));border:1px solid rgba(255,255,255,.07);">
+        <span class="w-12 h-12 rounded-2xl grad-bg grid place-items-center text-base font-extrabold text-white tnum shadow-lift mb-5">02</span>
+        <h3 class="font-display font-bold text-lg text-white">Carga tu flotilla</h3>
+        <p class="text-white/55 mt-2 text-sm leading-relaxed">Vehículos, fotos, precios, categorías y disponibilidad — listo en minutos.</p>
+      </div>
+            <div class="p-7 sm:p-8 rounded-3xl relative z-10 reveal" style="background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012));border:1px solid rgba(255,255,255,.07);">
+        <span class="w-12 h-12 rounded-2xl grad-bg grid place-items-center text-base font-extrabold text-white tnum shadow-lift mb-5">03</span>
+        <h3 class="font-display font-bold text-lg text-white">Recibe reservas</h3>
+        <p class="text-white/55 mt-2 text-sm leading-relaxed">Tus clientes reservan online, tú gestionas todo desde un solo panel.</p>
+      </div>
+          </div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     DEMO LICENSE
+     ============================================================== -->
+<section class="bg-[#0B1120] py-20 sm:py-24">
+  <div class="max-w-7xl mx-auto px-5 sm:px-6">
+    <div class="rounded-3xl overflow-hidden relative reveal-s" style="background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.012));border:1px solid rgba(255,255,255,.08);">
+      <div class="absolute inset-0 grid-dark opacity-25"></div>
+      <div class="relative p-8 lg:p-12 grid lg:grid-cols-[1fr_auto] gap-8 items-center">
+        <div class="max-w-xl">
+          <span class="pill mb-3"><span class="dot"></span>Sin registro</span>
+          <h2 class="font-display display-lg text-[28px] sm:text-[38px] font-extrabold text-white leading-tight">Pruébalo con un código demo de 5 horas</h2>
+          <p class="text-white/55 mt-3 leading-relaxed text-[15px]">Cuenta nueva, datos seed cargados, todas las funciones del plan. Al expirar se borra automáticamente.</p>
+          <a href="/kyros-rentcar-saas/public/login#demo" class="k-btn k-btn-grad magnetic mt-6 px-6 !rounded-xl">
+            Probar ahora <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </a>
+        </div>
+        <div class="grid sm:grid-cols-3 lg:grid-cols-1 gap-2.5 w-full lg:w-80">
+                    <div class="rounded-xl p-3.5 hover:border-white/20 transition" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);">
+            <p class="eyebrow text-white/45">Starter</p>
+            <p class="font-mono font-bold text-white text-sm mt-0.5 truncate">KYROS-DEMO-STARTER</p>
+            <p class="text-[11px] text-white/55 mt-1">5h · 10 vehículos</p>
+          </div>
+                    <div class="rounded-xl p-3.5 hover:border-white/20 transition" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);">
+            <p class="eyebrow text-white/45">Business</p>
+            <p class="font-mono font-bold text-white text-sm mt-0.5 truncate">KYROS-DEMO-BUSINESS</p>
+            <p class="text-[11px] text-white/55 mt-1">5h · 50 vehículos</p>
+          </div>
+                    <div class="rounded-xl p-3.5 hover:border-white/20 transition" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);">
+            <p class="eyebrow text-white/45">Premium</p>
+            <p class="font-mono font-bold text-white text-sm mt-0.5 truncate">KYROS-DEMO-PREMIUM</p>
+            <p class="text-[11px] text-white/55 mt-1">5h · ∞ vehículos</p>
+          </div>
+                  </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     SOCIAL PROOF — testimonials
+     ============================================================== -->
+<section class="bg-[#0B1120] py-24 sm:py-32">
+  <div class="max-w-7xl mx-auto px-5 sm:px-6">
+    <div class="text-center max-w-xl mx-auto mb-14 reveal">
+      <p class="eyebrow text-brand mb-3">Casos reales</p>
+      <h2 class="font-display display-lg text-[34px] sm:text-[48px] font-extrabold">Lo que dicen las rent cars</h2>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-4">
+            <div class="rounded-3xl p-7 reveal hover:translate-y-[-3px] transition-transform" style="background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012));border:1px solid rgba(255,255,255,.07);">
+        <div class="flex items-center gap-1.5 mb-4">
+          <div class="flex gap-0.5 text-amber-400">
+            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i><i data-lucide="star" class="w-4 h-4 fill-amber-400"></i><i data-lucide="star" class="w-4 h-4 fill-amber-400"></i><i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>            <i data-lucide="star-half" class="w-4 h-4 fill-amber-400"></i>                      </div>
+          <span class="text-[12px] font-semibold text-white/70 tnum ml-1">4.9</span>
+        </div>
+        <p class="text-white/85 leading-relaxed text-[15px]">&quot;Montamos nuestra rent car online en una tarde. La página pública nos trae reservas todos los días.&quot;</p>
+        <div class="flex items-center gap-3 mt-7 pt-5 border-t border-white/[0.06]">
+          <div class="w-10 h-10 rounded-xl grid place-items-center text-white text-sm font-bold font-display" style="background:#1f2937">C</div>
+          <div>
+            <p class="text-sm font-semibold text-white">Carlos Méndez</p>
+            <p class="text-[12px] text-white/45">CEO · Speed Rent Car · Santo Domingo, RD</p>
+          </div>
+        </div>
+      </div>
+            <div class="rounded-3xl p-7 reveal hover:translate-y-[-3px] transition-transform" style="background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012));border:1px solid rgba(255,255,255,.07);">
+        <div class="flex items-center gap-1.5 mb-4">
+          <div class="flex gap-0.5 text-amber-400">
+            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i><i data-lucide="star" class="w-4 h-4 fill-amber-400"></i><i data-lucide="star" class="w-4 h-4 fill-amber-400"></i><i data-lucide="star" class="w-4 h-4 fill-amber-400"></i><i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>                                  </div>
+          <span class="text-[12px] font-semibold text-white/70 tnum ml-1">5.0</span>
+        </div>
+        <p class="text-white/85 leading-relaxed text-[15px]">&quot;Los contratos con firma y las fotos de entrega nos ahorraron muchísimos problemas con clientes.&quot;</p>
+        <div class="flex items-center gap-3 mt-7 pt-5 border-t border-white/[0.06]">
+          <div class="w-10 h-10 rounded-xl grid place-items-center text-white text-sm font-bold font-display" style="background:#4a5063">A</div>
+          <div>
+            <p class="text-sm font-semibold text-white">Ana Reyes</p>
+            <p class="text-[12px] text-white/45">Fundadora · Luxury Drive · Santiago, RD</p>
+          </div>
+        </div>
+      </div>
+            <div class="rounded-3xl p-7 reveal hover:translate-y-[-3px] transition-transform" style="background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012));border:1px solid rgba(255,255,255,.07);">
+        <div class="flex items-center gap-1.5 mb-4">
+          <div class="flex gap-0.5 text-amber-400">
+            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i><i data-lucide="star" class="w-4 h-4 fill-amber-400"></i><i data-lucide="star" class="w-4 h-4 fill-amber-400"></i><i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>            <i data-lucide="star-half" class="w-4 h-4 fill-amber-400"></i>                      </div>
+          <span class="text-[12px] font-semibold text-white/70 tnum ml-1">4.8</span>
+        </div>
+        <p class="text-white/85 leading-relaxed text-[15px]">&quot;Por fin veo mis ingresos y mi flotilla en tiempo real. Cambió cómo administramos el negocio.&quot;</p>
+        <div class="flex items-center gap-3 mt-7 pt-5 border-t border-white/[0.06]">
+          <div class="w-10 h-10 rounded-xl grid place-items-center text-white text-sm font-bold font-display" style="background:#10B981">J</div>
+          <div>
+            <p class="text-sm font-semibold text-white">José Paulino</p>
+            <p class="text-[12px] text-white/45">Operations · Caribe Cars · Punta Cana, RD</p>
+          </div>
+        </div>
+      </div>
+          </div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     PRICING — toggle + plans + comparison table
+     ============================================================== -->
+<section id="planes" class="border-y border-white/[0.06] py-24 sm:py-32" style="background:linear-gradient(180deg,#101828,#0B1120);"
+         x-data="{yearly:false}">
+  <div class="max-w-7xl mx-auto px-5 sm:px-6">
+    <div class="text-center max-w-2xl mx-auto mb-10 reveal">
+      <p class="eyebrow text-brand mb-3">Precios</p>
+      <h2 class="font-display display-lg text-[34px] sm:text-[52px] font-extrabold">Empieza gratis. Escala cuando quieras.</h2>
+      <p class="mt-4 text-white/55 leading-relaxed">Sin tarjeta de crédito. Cancela o cambia de plan cuando quieras.</p>
+    </div>
+
+    <div class="flex justify-center mb-10 reveal">
+      <div class="inline-flex p-1 rounded-2xl bg-white/[0.04] border border-white/[0.08]">
+        <button @click="yearly=false" :class="!yearly?'bg-white text-navy shadow-sm':'text-white/60'" class="px-5 py-2 rounded-xl text-sm font-semibold transition">Mensual</button>
+        <button @click="yearly=true" :class="yearly?'bg-white text-navy shadow-sm':'text-white/60'" class="px-5 py-2 rounded-xl text-sm font-semibold transition">Anual <span class="ml-1 text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">-17%</span></button>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-4 max-w-5xl mx-auto mb-16">
+            <div class="plan-card relative rounded-3xl p-7 reveal-s "
+           style="background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.012));border:1px solid rgba(255,255,255,.08);">
+                <h3 class="font-display font-bold text-white text-lg">Starter</h3>
+        <p class="mt-4 tnum">
+          <span class="font-display text-[48px] font-extrabold text-white" x-show="!yearly">RD$ 990.00</span>
+          <span class="font-display text-[48px] font-extrabold text-white" x-show="yearly" x-cloak>RD$ 825.00</span>
+          <span class="text-white/35 text-sm">/mes</span>
+        </p>
+        <p class="text-xs text-white/45 mt-1">
+          <span x-show="!yearly">facturado mensualmente</span>
+          <span x-show="yearly" x-cloak>facturado anualmente · RD$ 9,900.00</span>
+        </p>
+
+        <ul class="mt-6 space-y-3 text-sm text-white/65">
+          <li class="flex items-center gap-2.5"><i data-lucide="car" class="w-4 h-4 text-brand"></i>10 vehículos</li>
+          <li class="flex items-center gap-2.5"><i data-lucide="users" class="w-4 h-4 text-brand"></i>2 usuarios</li>
+          <li class="flex items-center gap-2.5"><i data-lucide="hard-drive" class="w-4 h-4 text-brand"></i>500 MB de almacenamiento</li>
+                      <li class="flex items-start gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand mt-0.5 shrink-0"></i><span>Pagina publica con slug</span></li>
+                      <li class="flex items-start gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand mt-0.5 shrink-0"></i><span>Reservas basicas</span></li>
+                      <li class="flex items-start gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand mt-0.5 shrink-0"></i><span>Gestion de flotilla</span></li>
+                      <li class="flex items-start gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand mt-0.5 shrink-0"></i><span>Soporte por email</span></li>
+                  </ul>
+        <a href="/kyros-rentcar-saas/public/register" class="k-btn w-full mt-7 k-btn-glass">
+          Empezar con Starter <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </a>
+      </div>
+            <div class="plan-card relative rounded-3xl p-7 reveal-s bg-white text-navy plan-popular"
+           style="">
+                  <span class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase bg-brand text-white shadow-card">Más popular</span>
+                <h3 class="font-display font-bold text-navy text-lg">Business</h3>
+        <p class="mt-4 tnum">
+          <span class="font-display text-[48px] font-extrabold text-navy" x-show="!yearly">RD$ 2,490.00</span>
+          <span class="font-display text-[48px] font-extrabold text-navy" x-show="yearly" x-cloak>RD$ 2,075.00</span>
+          <span class="text-slate-400 text-sm">/mes</span>
+        </p>
+        <p class="text-xs text-slate-500 mt-1">
+          <span x-show="!yearly">facturado mensualmente</span>
+          <span x-show="yearly" x-cloak>facturado anualmente · RD$ 24,900.00</span>
+        </p>
+
+        <ul class="mt-6 space-y-3 text-sm text-slate-600">
+          <li class="flex items-center gap-2.5"><i data-lucide="car" class="w-4 h-4 text-brand"></i>50 vehículos</li>
+          <li class="flex items-center gap-2.5"><i data-lucide="users" class="w-4 h-4 text-brand"></i>10 usuarios</li>
+          <li class="flex items-center gap-2.5"><i data-lucide="hard-drive" class="w-4 h-4 text-brand"></i>4.9 GB de almacenamiento</li>
+                      <li class="flex items-start gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand mt-0.5 shrink-0"></i><span>Todo lo de Starter</span></li>
+                      <li class="flex items-start gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand mt-0.5 shrink-0"></i><span>Contratos PDF</span></li>
+                      <li class="flex items-start gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand mt-0.5 shrink-0"></i><span>Pagos</span></li>
+                      <li class="flex items-start gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand mt-0.5 shrink-0"></i><span>Mantenimiento</span></li>
+                      <li class="flex items-start gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand mt-0.5 shrink-0"></i><span>Reportes</span></li>
+                      <li class="flex items-start gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand mt-0.5 shrink-0"></i><span>Multi-sucursal</span></li>
+                  </ul>
+        <a href="/kyros-rentcar-saas/public/register" class="k-btn w-full mt-7 k-btn-grad magnetic">
+          Empezar con Business <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </a>
+      </div>
+            <div class="plan-card relative rounded-3xl p-7 reveal-s "
+           style="background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.012));border:1px solid rgba(255,255,255,.08);">
+                <h3 class="font-display font-bold text-white text-lg">Premium</h3>
+        <p class="mt-4 tnum">
+          <span class="font-display text-[48px] font-extrabold text-white" x-show="!yearly">RD$ 4,990.00</span>
+          <span class="font-display text-[48px] font-extrabold text-white" x-show="yearly" x-cloak>RD$ 4,158.33</span>
+          <span class="text-white/35 text-sm">/mes</span>
+        </p>
+        <p class="text-xs text-white/45 mt-1">
+          <span x-show="!yearly">facturado mensualmente</span>
+          <span x-show="yearly" x-cloak>facturado anualmente · RD$ 49,900.00</span>
+        </p>
+
+        <ul class="mt-6 space-y-3 text-sm text-white/65">
+          <li class="flex items-center gap-2.5"><i data-lucide="car" class="w-4 h-4 text-brand"></i>Vehículos ilimitados</li>
+          <li class="flex items-center gap-2.5"><i data-lucide="users" class="w-4 h-4 text-brand"></i>Usuarios ilimitados</li>
+          <li class="flex items-center gap-2.5"><i data-lucide="hard-drive" class="w-4 h-4 text-brand"></i>24.4 GB de almacenamiento</li>
+                      <li class="flex items-start gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand mt-0.5 shrink-0"></i><span>Todo lo de Business</span></li>
+                      <li class="flex items-start gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand mt-0.5 shrink-0"></i><span>Vehiculos ilimitados</span></li>
+                      <li class="flex items-start gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand mt-0.5 shrink-0"></i><span>Usuarios ilimitados</span></li>
+                      <li class="flex items-start gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand mt-0.5 shrink-0"></i><span>API REST</span></li>
+                      <li class="flex items-start gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand mt-0.5 shrink-0"></i><span>Dominio personalizado</span></li>
+                      <li class="flex items-start gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand mt-0.5 shrink-0"></i><span>WhatsApp</span></li>
+                      <li class="flex items-start gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand mt-0.5 shrink-0"></i><span>Automatizaciones</span></li>
+                      <li class="flex items-start gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand mt-0.5 shrink-0"></i><span>Reportes avanzados</span></li>
+                  </ul>
+        <a href="/kyros-rentcar-saas/public/register" class="k-btn w-full mt-7 k-btn-glass">
+          Empezar con Premium <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </a>
+      </div>
+          </div>
+
+    <!-- Comparison table -->
+    <div class="rounded-3xl overflow-hidden reveal" style="background:rgba(255,255,255,.018);border:1px solid rgba(255,255,255,.07);">
+      <div class="px-6 py-4 border-b border-white/[0.06]">
+        <p class="font-display font-bold text-white text-lg">Comparativa completa</p>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="ctbl">
+          <thead>
+            <tr>
+              <th>Función</th>
+              <th class="text-center">Starter</th>
+              <th class="text-center col-pop">Business</th>
+              <th class="text-center">Premium</th>
+            </tr>
+          </thead>
+          <tbody>
+                        <tr>
+              <td class="feat" data-label="Función">Página pública con slug</td>
+              <td data-label="Starter" class="text-center"><span class="yes">✓</span></td>
+              <td data-label="Business" class="text-center col-pop"><span class="yes">✓</span></td>
+              <td data-label="Premium" class="text-center"><span class="yes">✓</span></td>
+            </tr>
+                        <tr>
+              <td class="feat" data-label="Función">Reservas online</td>
+              <td data-label="Starter" class="text-center"><span class="yes">✓</span></td>
+              <td data-label="Business" class="text-center col-pop"><span class="yes">✓</span></td>
+              <td data-label="Premium" class="text-center"><span class="yes">✓</span></td>
+            </tr>
+                        <tr>
+              <td class="feat" data-label="Función">Flotilla y categorías</td>
+              <td data-label="Starter" class="text-center"><span class="yes">✓</span></td>
+              <td data-label="Business" class="text-center col-pop"><span class="yes">✓</span></td>
+              <td data-label="Premium" class="text-center"><span class="yes">✓</span></td>
+            </tr>
+                        <tr>
+              <td class="feat" data-label="Función">Contratos con firma + PDF</td>
+              <td data-label="Starter" class="text-center"><span class="no">—</span></td>
+              <td data-label="Business" class="text-center col-pop"><span class="yes">✓</span></td>
+              <td data-label="Premium" class="text-center"><span class="yes">✓</span></td>
+            </tr>
+                        <tr>
+              <td class="feat" data-label="Función">Pagos y facturas</td>
+              <td data-label="Starter" class="text-center"><span class="no">—</span></td>
+              <td data-label="Business" class="text-center col-pop"><span class="yes">✓</span></td>
+              <td data-label="Premium" class="text-center"><span class="yes">✓</span></td>
+            </tr>
+                        <tr>
+              <td class="feat" data-label="Función">Reportes y P&amp;L</td>
+              <td data-label="Starter" class="text-center"><span class="no">—</span></td>
+              <td data-label="Business" class="text-center col-pop"><span class="yes">✓</span></td>
+              <td data-label="Premium" class="text-center"><span class="yes">✓</span></td>
+            </tr>
+                        <tr>
+              <td class="feat" data-label="Función">Multi-sucursal</td>
+              <td data-label="Starter" class="text-center"><span class="no">—</span></td>
+              <td data-label="Business" class="text-center col-pop"><span class="yes">✓</span></td>
+              <td data-label="Premium" class="text-center"><span class="yes">✓</span></td>
+            </tr>
+                        <tr>
+              <td class="feat" data-label="Función">Mantenimiento e incidencias</td>
+              <td data-label="Starter" class="text-center"><span class="no">—</span></td>
+              <td data-label="Business" class="text-center col-pop"><span class="yes">✓</span></td>
+              <td data-label="Premium" class="text-center"><span class="yes">✓</span></td>
+            </tr>
+                        <tr>
+              <td class="feat" data-label="Función">Cierre de caja diario</td>
+              <td data-label="Starter" class="text-center"><span class="no">—</span></td>
+              <td data-label="Business" class="text-center col-pop"><span class="yes">✓</span></td>
+              <td data-label="Premium" class="text-center"><span class="yes">✓</span></td>
+            </tr>
+                        <tr>
+              <td class="feat" data-label="Función">Promociones y choferes</td>
+              <td data-label="Starter" class="text-center"><span class="no">—</span></td>
+              <td data-label="Business" class="text-center col-pop"><span class="yes">✓</span></td>
+              <td data-label="Premium" class="text-center"><span class="yes">✓</span></td>
+            </tr>
+                        <tr>
+              <td class="feat" data-label="Función">API REST</td>
+              <td data-label="Starter" class="text-center"><span class="no">—</span></td>
+              <td data-label="Business" class="text-center col-pop"><span class="no">—</span></td>
+              <td data-label="Premium" class="text-center"><span class="yes">✓</span></td>
+            </tr>
+                        <tr>
+              <td class="feat" data-label="Función">Vehículos ilimitados</td>
+              <td data-label="Starter" class="text-center"><span class="text-white">10</span></td>
+              <td data-label="Business" class="text-center col-pop"><span class="text-white">50</span></td>
+              <td data-label="Premium" class="text-center"><span class="text-white">∞</span></td>
+            </tr>
+                        <tr>
+              <td class="feat" data-label="Función">Usuarios ilimitados</td>
+              <td data-label="Starter" class="text-center"><span class="text-white">2</span></td>
+              <td data-label="Business" class="text-center col-pop"><span class="text-white">10</span></td>
+              <td data-label="Premium" class="text-center"><span class="text-white">∞</span></td>
+            </tr>
+                        <tr>
+              <td class="feat" data-label="Función">Almacenamiento incluido</td>
+              <td data-label="Starter" class="text-center"><span class="text-white">500 MB</span></td>
+              <td data-label="Business" class="text-center col-pop"><span class="text-white">5 GB</span></td>
+              <td data-label="Premium" class="text-center"><span class="text-white">25 GB</span></td>
+            </tr>
+                        <tr>
+              <td class="feat" data-label="Función">Storage extra a demanda</td>
+              <td data-label="Starter" class="text-center"><span class="yes">✓</span></td>
+              <td data-label="Business" class="text-center col-pop"><span class="yes">✓</span></td>
+              <td data-label="Premium" class="text-center"><span class="yes">✓</span></td>
+            </tr>
+                        <tr>
+              <td class="feat" data-label="Función">Soporte</td>
+              <td data-label="Starter" class="text-center"><span class="text-white">Email</span></td>
+              <td data-label="Business" class="text-center col-pop"><span class="text-white">Email</span></td>
+              <td data-label="Premium" class="text-center"><span class="text-white">Prioritario</span></td>
+            </tr>
+                      </tbody>
+        </table>
+      </div>
+    </div>
+
+    <p class="text-center text-white/45 text-sm mt-8">
+      ¿Necesitas algo a medida? <a href="mailto:soporte@kyrosrd.com" class="text-white font-medium hover:underline">Escríbenos</a>.
+    </p>
+  </div>
+</section>
+
+<!-- ==============================================================
+     FAQ
+     ============================================================== -->
+<section id="faq" class="bg-[#0B1120] py-24 sm:py-32" x-data="{open:0}">
+  <div class="max-w-3xl mx-auto px-5 sm:px-6">
+    <div class="text-center mb-12 reveal">
+      <p class="eyebrow text-brand mb-3">FAQ</p>
+      <h2 class="font-display display-lg text-[34px] sm:text-[48px] font-extrabold">Preguntas frecuentes</h2>
+    </div>
+    <div class="space-y-1">
+            <div class="border-b border-white/[0.07] reveal">
+        <button type="button" @click="open===0?open=null:open=0" class="w-full flex items-center justify-between text-left py-5 group">
+          <span class="font-medium text-[15.5px] text-white group-hover:text-brand transition-colors">¿Necesito conocimientos técnicos?</span>
+          <i data-lucide="plus" class="w-4 h-4 text-white/40 transition-transform shrink-0 ml-4" :class="open===0?'rotate-45 text-brand':''"></i>
+        </button>
+        <div x-show="open===0" x-collapse x-cloak class="text-sm text-white/55 pb-5 leading-relaxed -mt-1">No. Creas tu cuenta y empiezas a cargar tu flotilla en minutos. Todo es visual y guiado.</div>
+      </div>
+            <div class="border-b border-white/[0.07] reveal">
+        <button type="button" @click="open===1?open=null:open=1" class="w-full flex items-center justify-between text-left py-5 group">
+          <span class="font-medium text-[15.5px] text-white group-hover:text-brand transition-colors">¿Cómo funciona la demo de 5 horas?</span>
+          <i data-lucide="plus" class="w-4 h-4 text-white/40 transition-transform shrink-0 ml-4" :class="open===1?'rotate-45 text-brand':''"></i>
+        </button>
+        <div x-show="open===1" x-collapse x-cloak class="text-sm text-white/55 pb-5 leading-relaxed -mt-1">En la página de login eliges un código de plan (Starter, Business o Premium). Te creamos una cuenta nueva con datos de ejemplo y la podrás usar 5 horas. Al expirar se elimina automáticamente — junto con todo lo que registres.</div>
+      </div>
+            <div class="border-b border-white/[0.07] reveal">
+        <button type="button" @click="open===2?open=null:open=2" class="w-full flex items-center justify-between text-left py-5 group">
+          <span class="font-medium text-[15.5px] text-white group-hover:text-brand transition-colors">¿Mis datos están seguros?</span>
+          <i data-lucide="plus" class="w-4 h-4 text-white/40 transition-transform shrink-0 ml-4" :class="open===2?'rotate-45 text-brand':''"></i>
+        </button>
+        <div x-show="open===2" x-collapse x-cloak class="text-sm text-white/55 pb-5 leading-relaxed -mt-1">Sí. Cada empresa está aislada (multi-tenant), con prepared statements, CSRF en todas las acciones, control de roles y headers de seguridad endurecidos.</div>
+      </div>
+            <div class="border-b border-white/[0.07] reveal">
+        <button type="button" @click="open===3?open=null:open=3" class="w-full flex items-center justify-between text-left py-5 group">
+          <span class="font-medium text-[15.5px] text-white group-hover:text-brand transition-colors">¿Cómo funciona el almacenamiento?</span>
+          <i data-lucide="plus" class="w-4 h-4 text-white/40 transition-transform shrink-0 ml-4" :class="open===3?'rotate-45 text-brand':''"></i>
+        </button>
+        <div x-show="open===3" x-collapse x-cloak class="text-sm text-white/55 pb-5 leading-relaxed -mt-1">Cada plan incluye espacio para fotos, contratos firmados, evidencia de incidencias y branding (500 MB Starter · 5 GB Business · 25 GB Premium). Verás tu uso en vivo desde el panel y puedes pedir más espacio en cualquier momento — un administrador revisa la solicitud y aprueba el extra.</div>
+      </div>
+            <div class="border-b border-white/[0.07] reveal">
+        <button type="button" @click="open===4?open=null:open=4" class="w-full flex items-center justify-between text-left py-5 group">
+          <span class="font-medium text-[15.5px] text-white group-hover:text-brand transition-colors">¿Qué pasa si me quedo sin almacenamiento?</span>
+          <i data-lucide="plus" class="w-4 h-4 text-white/40 transition-transform shrink-0 ml-4" :class="open===4?'rotate-45 text-brand':''"></i>
+        </button>
+        <div x-show="open===4" x-collapse x-cloak class="text-sm text-white/55 pb-5 leading-relaxed -mt-1">Al 80 % de uso te avisamos en el dashboard. Al 100 % bloqueamos cargas nuevas (las existentes siguen intactas). En segundos puedes solicitar más espacio sin migrar nada.</div>
+      </div>
+            <div class="border-b border-white/[0.07] reveal">
+        <button type="button" @click="open===5?open=null:open=5" class="w-full flex items-center justify-between text-left py-5 group">
+          <span class="font-medium text-[15.5px] text-white group-hover:text-brand transition-colors">¿Puedo personalizar mi página pública?</span>
+          <i data-lucide="plus" class="w-4 h-4 text-white/40 transition-transform shrink-0 ml-4" :class="open===5?'rotate-45 text-brand':''"></i>
+        </button>
+        <div x-show="open===5" x-collapse x-cloak class="text-sm text-white/55 pb-5 leading-relaxed -mt-1">Sí. Configuras logo, colores, descripción, datos de contacto y horario. Cada cliente reserva en `/r/tu-rentcar`.</div>
+      </div>
+            <div class="border-b border-white/[0.07] reveal">
+        <button type="button" @click="open===6?open=null:open=6" class="w-full flex items-center justify-between text-left py-5 group">
+          <span class="font-medium text-[15.5px] text-white group-hover:text-brand transition-colors">¿Puedo cambiar de plan?</span>
+          <i data-lucide="plus" class="w-4 h-4 text-white/40 transition-transform shrink-0 ml-4" :class="open===6?'rotate-45 text-brand':''"></i>
+        </button>
+        <div x-show="open===6" x-collapse x-cloak class="text-sm text-white/55 pb-5 leading-relaxed -mt-1">Sí, en cualquier momento desde tu panel. Conservas todos tus datos.</div>
+      </div>
+            <div class="border-b border-white/[0.07] reveal">
+        <button type="button" @click="open===7?open=null:open=7" class="w-full flex items-center justify-between text-left py-5 group">
+          <span class="font-medium text-[15.5px] text-white group-hover:text-brand transition-colors">¿Tienen API REST?</span>
+          <i data-lucide="plus" class="w-4 h-4 text-white/40 transition-transform shrink-0 ml-4" :class="open===7?'rotate-45 text-brand':''"></i>
+        </button>
+        <div x-show="open===7" x-collapse x-cloak class="text-sm text-white/55 pb-5 leading-relaxed -mt-1">Sí, en el plan Premium. Con tokens por empresa, aislamiento total entre tenants y respuestas JSON limpias.</div>
+      </div>
+            <div class="border-b border-white/[0.07] reveal">
+        <button type="button" @click="open===8?open=null:open=8" class="w-full flex items-center justify-between text-left py-5 group">
+          <span class="font-medium text-[15.5px] text-white group-hover:text-brand transition-colors">¿Quién aprueba las cuentas nuevas?</span>
+          <i data-lucide="plus" class="w-4 h-4 text-white/40 transition-transform shrink-0 ml-4" :class="open===8?'rotate-45 text-brand':''"></i>
+        </button>
+        <div x-show="open===8" x-collapse x-cloak class="text-sm text-white/55 pb-5 leading-relaxed -mt-1">Toda registración pasa primero por una breve revisión del equipo Kyros — verificamos que la empresa sea real antes de activarla. Normalmente toma menos de 24 horas.</div>
+      </div>
+          </div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     FINAL CTA
+     ============================================================== -->
+<section class="bg-[#0B1120] pb-24 sm:pb-32">
+  <div class="max-w-5xl mx-auto px-5 sm:px-6">
+    <div class="relative rounded-[2rem] p-12 lg:p-20 text-center reveal-s overflow-hidden" style="background:var(--grad)">
+      <div class="absolute inset-0 grid-dark opacity-30"></div>
+      <div class="absolute -top-20 -left-20 w-80 h-80 bg-white/10 blur-3xl rounded-full"></div>
+      <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-white/10 blur-3xl rounded-full"></div>
+      <div class="relative">
+        <h2 class="font-display display-xl text-[32px] sm:text-[56px] font-extrabold text-white">
+          Lleva tu rent car<br>al siguiente nivel
+        </h2>
+        <p class="mt-5 text-white/85 max-w-md mx-auto text-lg">Únete a las empresas que ya gestionan su negocio con Kyros.</p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center mt-10">
+          <a href="/kyros-rentcar-saas/public/register" class="k-btn k-btn-light magnetic px-8 !rounded-2xl" style="height:54px">Crear mi rent car</a>
+          <a href="/kyros-rentcar-saas/public/login" class="k-btn k-btn-glass px-8 !rounded-2xl" style="height:54px">Iniciar sesión</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Footer -->
+<footer class="relative border-t border-white/[0.07] bg-[#0B1120] mt-10">
+  <div class="max-w-7xl mx-auto px-5 sm:px-6 py-16 grid md:grid-cols-12 gap-10">
+    <!-- Brand block -->
+    <div class="md:col-span-5">
+      <div class="flex items-center gap-2.5 mb-4">
+        <div class="w-10 h-10 rounded-xl grad-bg grid place-items-center font-black text-white">K</div>
+        <span class="font-display font-extrabold text-xl tracking-tight">Kyros Rent Car</span>
+      </div>
+      <p class="text-white/55 text-[14.5px] max-w-sm leading-relaxed">El sistema operativo de tu rent car. Flotilla, reservas, contratos, pagos y página pública — en una plataforma.</p>
+
+      <!-- Status -->
+      <a href="#" class="inline-flex items-center gap-2 mt-6 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[12.5px] text-emerald-400 hover:bg-emerald-500/15 transition">
+        <span class="relative w-2 h-2 rounded-full bg-emerald-400">
+          <span class="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-60"></span>
+        </span>
+        Todos los sistemas operativos
+      </a>
+    </div>
+
+    <div class="md:col-span-2">
+      <p class="font-semibold text-[13px] text-white/85 mb-4 uppercase tracking-wider">Producto</p>
+      <ul class="space-y-2.5 text-[14px] text-white/55">
+        <li><a href="#showcase" class="hover:text-white transition">Recorrido</a></li>
+        <li><a href="#modulos" class="hover:text-white transition">Módulos</a></li>
+        <li><a href="#storefront" class="hover:text-white transition">Tu página pública</a></li>
+        <li><a href="#planes" class="hover:text-white transition">Planes</a></li>
+        <li><a href="/kyros-rentcar-saas/public/r/kyros-rent-car" class="hover:text-white transition flex items-center gap-1">Demo en vivo <i data-lucide="external-link" class="w-3 h-3"></i></a></li>
+      </ul>
+    </div>
+
+    <div class="md:col-span-2">
+      <p class="font-semibold text-[13px] text-white/85 mb-4 uppercase tracking-wider">Cuenta</p>
+      <ul class="space-y-2.5 text-[14px] text-white/55">
+        <li><a href="/kyros-rentcar-saas/public/login" class="hover:text-white transition">Iniciar sesión</a></li>
+        <li><a href="/kyros-rentcar-saas/public/login#demo" class="hover:text-white transition">Probar demo · 5h</a></li>
+        <li><a href="/kyros-rentcar-saas/public/register" class="hover:text-white transition">Crear rent car</a></li>
+      </ul>
+    </div>
+
+    <div class="md:col-span-3">
+      <p class="font-semibold text-[13px] text-white/85 mb-4 uppercase tracking-wider">Contacto</p>
+      <ul class="space-y-2.5 text-[14px] text-white/55">
+        <li class="flex items-start gap-2"><i data-lucide="mail" class="w-3.5 h-3.5 mt-1 shrink-0"></i><a href="mailto:soporte@kyrosrd.com" class="hover:text-white transition">soporte@kyrosrd.com</a></li>
+        <li class="flex items-start gap-2"><i data-lucide="map-pin" class="w-3.5 h-3.5 mt-1 shrink-0"></i>Santo Domingo, RD</li>
+      </ul>
+      <div class="flex items-center gap-2 mt-5">
+        <a href="#" class="w-9 h-9 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.07] grid place-items-center text-white/55 hover:text-white transition"><i data-lucide="twitter" class="w-4 h-4"></i></a>
+        <a href="#" class="w-9 h-9 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.07] grid place-items-center text-white/55 hover:text-white transition"><i data-lucide="instagram" class="w-4 h-4"></i></a>
+        <a href="#" class="w-9 h-9 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.07] grid place-items-center text-white/55 hover:text-white transition"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="border-t border-white/[0.06]">
+    <div class="max-w-7xl mx-auto px-5 sm:px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-[12.5px] text-white/45">
+      <p>&copy; 2026 Kyros Rent Car · Todos los derechos reservados.</p>
+      <div class="flex items-center gap-5">
+        <a href="#" class="hover:text-white transition">Términos</a>
+        <a href="#" class="hover:text-white transition">Privacidad</a>
+        <a href="#" class="hover:text-white transition">Seguridad</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<div class="fixed bottom-5 right-5 z-50 space-y-2.5" id="toasts"></div>
+<script>
+  const flashes=[];
+  const dot={success:'bg-emerald-400',error:'bg-red-400',warning:'bg-amber-400',info:'bg-white/60'};
+  flashes.forEach(f=>{const el=document.createElement('div');el.className='glass flex items-center gap-3 pl-4 pr-3 py-3 rounded-2xl min-w-[280px] text-white';el.innerHTML='<span class="w-2 h-2 rounded-full '+(dot[f.type]||'bg-white/60')+'"></span><span class="text-sm font-medium"></span>';el.querySelector('span:last-child').textContent=f.message;document.getElementById('toasts').appendChild(el);setTimeout(()=>el.remove(),6000);});
+  document.addEventListener('DOMContentLoaded',()=>window.lucide&&lucide.createIcons());
+  document.addEventListener('alpine:initialized',()=>window.lucide&&lucide.createIcons());
+</script>
+
+<!--
+  GSAP + ScrollTrigger ENHANCER
+  Pro scroll-driven animations for the landing. Replaces the legacy
+  IntersectionObserver in _assets.php (which is disabled by __USE_GSAP__).
+-->
+<script>
+(function(){
+  // ---- Safety net: if GSAP fails to load within 1.5s, force reveal so
+  // the page is never trapped at opacity:0 from the legacy CSS. ----
+  var safetyTimer = setTimeout(function(){
+    document.querySelectorAll('.reveal, .reveal-s').forEach(function(el){ el.classList.add('in'); });
+  }, 1500);
+
+  // ---- Wait for GSAP + ScrollTrigger ----
+  function ready(){
+    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+      return setTimeout(ready, 40);
+    }
+    clearTimeout(safetyTimer);
+    init();
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', ready);
+  } else {
+    ready();
+  }
+
+  function init(){
+    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Honor reduced-motion: instantly reveal everything and bail out.
+    if (reduced) {
+      document.querySelectorAll('.reveal, .reveal-s').forEach(function(el){ el.classList.add('in'); });
+      bindScrollProgress();
+      bindSmoothAnchors();
+      return;
+    }
+
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.config({ nullTargetWarn: false });
+
+    // Defaults for ScrollTrigger across the whole page
+    ScrollTrigger.defaults({
+      start: 'top 88%',
+      toggleActions: 'play none none none', // play once when entering, do not reverse
+    });
+
+    // ---- HARD RESET: strip the CSS reveal system so GSAP fully owns state ----
+    // The legacy CSS sets opacity:0 + translateY(16px) which can fight GSAP's
+    // animations. We remove transitions AND lock the start state via gsap.set
+    // so the first paint is what we expect.
+    var allReveals = document.querySelectorAll('.reveal, .reveal-s');
+    allReveals.forEach(function(el){
+      el.style.transition = 'none';
+    });
+    // Initial state: invisible + slightly translated. GSAP will animate from here.
+    gsap.set('.reveal',   { autoAlpha: 0, y: 24 });
+    gsap.set('.reveal-s', { autoAlpha: 0, scale: 0.96 });
+
+    var heroSection = document.querySelector('section.scene');
+
+    // ---------- 1. HERO STAGGERED ENTRANCE ----------
+    // The hero is above the fold — animate immediately on page load.
+    var heroChildren = document.querySelectorAll('section.scene > div > div.text-center > *');
+    if (heroChildren.length) {
+      // Lock start state for direct hero children (some may not have .reveal)
+      gsap.set(heroChildren, { autoAlpha: 0, y: 32 });
+      gsap.to(heroChildren, {
+        autoAlpha: 1, y: 0, duration: 1.0, stagger: 0.09, ease: 'power3.out',
+      });
+    }
+
+    // ---------- 2. HERO MOCKUP — fade-up + scale + scroll parallax ----------
+    var heroShot = document.getElementById('heroShot');
+    if (heroShot) {
+      gsap.set(heroShot, { autoAlpha: 0, y: 60, scale: 0.96 });
+      gsap.to(heroShot, {
+        autoAlpha: 1, y: 0, scale: 1, duration: 1.2, delay: 0.5, ease: 'power3.out',
+      });
+      gsap.to(heroShot, {
+        yPercent: -8,
+        scrollTrigger: { trigger: heroShot, start: 'top center', end: 'bottom top', scrub: 0.6 },
+      });
+    }
+
+    // ---------- 3. FLOATING NOTIFICATION CARDS — independent drift ----------
+    var floatCards = Array.from(document.querySelectorAll('section.scene .shadow-lift')).filter(function(c){
+      return !c.closest('#heroShot');
+    });
+    floatCards.forEach(function(card, i){
+      gsap.set(card, { autoAlpha: 0, y: 40, x: i % 2 ? 30 : -30, rotation: i % 2 ? 3 : -3 });
+      gsap.to(card, {
+        autoAlpha: 1, y: 0, x: 0, rotation: 0, duration: 1.1,
+        delay: 0.7 + i * 0.12, ease: 'power3.out',
+      });
+      gsap.to(card, {
+        yPercent: -20,
+        scrollTrigger: { trigger: card, start: 'top bottom', end: 'bottom top', scrub: 1.2 },
+      });
+    });
+
+    // ---------- 4. LOGO STRIP MARQUEE — already CSS animated, nothing to do ----------
+
+    // ---------- 5. STATS COUNTERS — bound to viewport entry, smooth easing ----------
+    document.querySelectorAll('[data-count]').forEach(function(el){
+      var end = parseFloat(el.getAttribute('data-count'));
+      var suf = el.getAttribute('data-suf') || '';
+      var dec = parseInt(el.getAttribute('data-dec') || '0');
+      var pre = el.getAttribute('data-pre') || '';
+      var obj = { v: 0 };
+      gsap.to(obj, {
+        v: end, duration: 1.8, ease: 'power2.out',
+        scrollTrigger: { trigger: el, start: 'top 80%' },
+        onUpdate: function(){
+          el.textContent = pre + obj.v.toLocaleString('en-US', {
+            minimumFractionDigits: dec, maximumFractionDigits: dec,
+          }) + suf;
+        }
+      });
+    });
+
+    // ---------- 6. SECTION REVEALS — stagger per-section, skipping hero ----------
+    // Initial state already locked via gsap.set above. Just animate IN.
+    document.querySelectorAll('section').forEach(function(section){
+      if (section === heroSection) return; // hero handled by dedicated timelines
+      var items = section.querySelectorAll('.reveal, .reveal-s');
+      if (!items.length) return;
+      gsap.to(items, {
+        autoAlpha: 1, y: 0, scale: 1, duration: 0.9, ease: 'power3.out',
+        stagger: { each: 0.08, from: 'start' },
+        scrollTrigger: { trigger: section, start: 'top 85%' },
+      });
+    });
+
+    // ---------- 7. BENTO GRID — extra rotation flourish on top ----------
+    // The section reveal already handles autoAlpha/y. We add a small rotation
+    // pass that runs in parallel for a richer feel.
+    document.querySelectorAll('section#features .bento').forEach(function(card, i){
+      gsap.fromTo(card, { rotation: i % 2 ? 1.5 : -1.5 }, {
+        rotation: 0, duration: 0.85, ease: 'power3.out',
+        scrollTrigger: { trigger: card, start: 'top 88%' },
+      });
+    });
+
+    // ---------- 8. PRICING CARDS — overshoot scale entrance ----------
+    document.querySelectorAll('#planes .plan-card').forEach(function(card, i){
+      // The section loop already handled autoAlpha. Add an extra scale pop.
+      gsap.fromTo(card, { scale: 0.92 }, {
+        scale: 1, duration: 1.0, delay: i * 0.1, ease: 'back.out(1.4)',
+        scrollTrigger: { trigger: card, start: 'top 85%' },
+      });
+    });
+
+    // ---------- 9. SECTION HEADINGS — subtle parallax on h2 while scrolling ----------
+    document.querySelectorAll('section h2').forEach(function(h){
+      gsap.to(h, {
+        yPercent: -5,
+        scrollTrigger: { trigger: h, start: 'top bottom', end: 'bottom top', scrub: 0.8 },
+      });
+    });
+
+    // ---------- 10. EMERGENCY FALLBACK ----------
+    // After all timelines are queued, force a refresh so ScrollTrigger
+    // re-evaluates which elements are already in viewport at load time.
+    requestAnimationFrame(function(){ ScrollTrigger.refresh(); });
+
+    bindScrollProgress();
+    bindSmoothAnchors();
+
+    // Refresh after fonts/images load — measurements need to be re-taken.
+    window.addEventListener('load', function(){ ScrollTrigger.refresh(); });
+  }
+
+  function bindScrollProgress(){
+    // Top progress bar — bound to actual document scroll.
+    var bar = document.getElementById('kprogress');
+    if (!bar) return;
+    function upd(){
+      var h = document.documentElement;
+      var p = h.scrollTop / ((h.scrollHeight - h.clientHeight) || 1);
+      bar.style.transform = 'scaleX(' + Math.min(1, Math.max(0, p)) + ')';
+    }
+    window.addEventListener('scroll', upd, { passive: true });
+    upd();
+  }
+
+  function bindSmoothAnchors(){
+    // Smooth-scroll for in-page anchors (CSS scroll-behavior is unreliable
+    // when there's a sticky header — do it manually).
+    document.querySelectorAll('a[href^="#"]').forEach(function(a){
+      a.addEventListener('click', function(e){
+        var id = a.getAttribute('href').slice(1);
+        if (!id) return;
+        var t = document.getElementById(id);
+        if (!t) return;
+        e.preventDefault();
+        var headerOffset = 80;
+        var y = t.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+        history.replaceState(null, '', '#' + id);
+      });
+    });
+  }
+})();
+</script>
+<script>
+(function(){
+  // Magnetic CTA
+  document.querySelectorAll(".magnetic").forEach(function(el){
+    el.addEventListener("mousemove",function(e){
+      var r=el.getBoundingClientRect();
+      var x=(e.clientX-r.left-r.width/2)*0.18;
+      var y=(e.clientY-r.top-r.height/2)*0.18;
+      el.style.transform="translate("+x+"px,"+y+"px)";
+    });
+    el.addEventListener("mouseleave",function(){ el.style.transform=""; });
+  });
+})();
+</script></body>
+</html>

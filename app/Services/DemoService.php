@@ -99,6 +99,7 @@ class DemoService
             ['Pickup',    'truck'],
             ['Van',       'bus'],
             ['Lujo',      'gem'],
+            ['Deportivo',  'zap'],
         ];
         $catIds = [];
         foreach ($cats as $row) {
@@ -129,39 +130,39 @@ class DemoService
         // --- Vehicles (15) ------------------------------------------------
         // Each entry: [brand, model, version, year, plate, vin, color, daily, weekly, monthly, deposit, insurance,
         //              mileage, passengers, doors, cat, transmission, fuel, status, location_idx, is_featured]
-        // Photos are bundled SVG illustrations under /assets/demo/vehicles/<category>.svg —
+        // Photos are bundled JPG assets under /assets/demo/vehicles/*.jpg —
         // always available, no external CDN, consistent look across the demo.
         $catToImage = [
-            'Económico' => '/assets/demo/vehicles/economico.svg',
-            'Compacto'  => '/assets/demo/vehicles/compacto.svg',
-            'Sedán'     => '/assets/demo/vehicles/sedan.svg',
-            'SUV'       => '/assets/demo/vehicles/suv.svg',
-            'Pickup'    => '/assets/demo/vehicles/pickup.svg',
-            'Van'       => '/assets/demo/vehicles/van.svg',
-            'Lujo'      => '/assets/demo/vehicles/lujo.svg',
+            'Económico' => '/assets/demo/vehicles/toyota-corolla.jpg',
+            'Compacto'  => '/assets/demo/vehicles/honda-civic.jpg',
+            'Sedán'     => '/assets/demo/vehicles/toyota-corolla.jpg',
+            'SUV'       => '/assets/demo/vehicles/hyundai-tucson.jpg',
+            'Pickup'    => '/assets/demo/vehicles/toyota-hilux-real.jpg',
+            'Van'       => '/assets/demo/vehicles/kia-sportage.jpg',
+            'Lujo'      => '/assets/demo/vehicles/mercedes-c-class.jpg',
         ];
         $vehicles = [
-            ['Toyota','Corolla','LE Hybrid',2023,'A100-001','VINTOY00001','Blanco', 2200, 13200, 50000, 10000, 350, 18500, 5, 4, 'Sedán',     'automatic','hybrid',  'available',     0, 0],
-            ['Honda','Civic','Sport',2022,'H200-002','VINHON00002','Negro', 2400, 14400, 56000, 12000, 380, 22000, 5, 4, 'Sedán',     'automatic','gasoline','available',     0, 0],
-            ['Hyundai','Tucson','GLS Premium',2023,'B300-003','VINHYU00003','Plata', 3500, 21000, 80000, 15000, 480, 12000, 5, 5, 'SUV',     'automatic','gasoline','rented',        0, 1],
-            ['Kia','Picanto','GT-Line',2022,'P400-004','VINKIA00004','Rojo', 1800, 10800, 42000, 8000, 280, 26000, 4, 5, 'Económico',  'automatic','gasoline','available',     1, 0],
-            ['Mercedes-Benz','C300','AMG Line',2023,'L500-005','VINMRC00005','Negro', 8500, 51000, 195000, 30000, 950, 8000, 5, 4, 'Lujo','automatic','gasoline','available',     0, 1],
-            ['Toyota','RAV4','XLE',2023,'T600-006','VINTOY00006','Azul', 3800, 22800, 88000, 16000, 510, 14500, 5, 5, 'SUV',          'automatic','hybrid',  'available',     1, 0],
-            ['Nissan','Sentra','Advance',2022,'N700-007','VINNIS00007','Gris', 2100, 12600, 48000, 10000, 320, 30500, 5, 4, 'Sedán',  'automatic','gasoline','maintenance',   0, 0],
-            ['Chevrolet','Spark','LT',2022,'C800-008','VINCHV00008','Amarillo', 1600, 9600, 38000, 7000, 250, 35200, 4, 5, 'Económico','manual','gasoline','available',     2, 0],
-            ['Ford','F-150','XLT 4x4',2023,'F900-009','VINFRD00009','Blanco', 4500, 27000, 105000, 20000, 620, 18900, 5, 4, 'Pickup', 'automatic','gasoline','available',     0, 1],
-            ['Toyota','Hiace','Commuter',2022,'V100-010','VINTOY00010','Blanco', 4200, 25200, 98000, 18000, 580, 42100, 12, 4, 'Van','manual','diesel',  'available',     0, 0],
-            ['BMW','X5','xDrive40i',2023,'X200-011','VINBMW00011','Gris', 9200, 55200, 215000, 35000, 1050, 9500, 7, 5, 'Lujo',          'automatic','gasoline','reserved',      0, 1],
-            ['Mazda','CX-5','Touring',2023,'M300-012','VINMAZ00012','Rojo', 3400, 20400, 78000, 15000, 460, 11200, 5, 5, 'SUV',         'automatic','gasoline','available',     1, 0],
-            ['Volkswagen','Jetta','Comfortline',2022,'J400-013','VINVWG00013','Plata', 2300, 13800, 52000, 11000, 360, 24700, 5, 4, 'Sedán','automatic','gasoline','available', 2, 0],
-            ['Toyota','Hilux','SR5 4x4',2023,'H500-014','VINTOY00014','Negro', 4800, 28800, 112000, 22000, 660, 16800, 5, 4, 'Pickup', 'automatic','diesel',  'available',     2, 0],
-            ['Audi','Q5','S-Line',2023,'Q600-015','VINAUD00015','Blanco', 7800, 46800, 180000, 28000, 880, 10100, 5, 5, 'Lujo',          'automatic','gasoline','available',     0, 1],
+            ['Toyota','Corolla','SE',2021,'A100-001','VINTOY00001','Negro', 2200, 13200, 50000, 10000, 350, 18500, 5, 4, 'Sedán',     'automatic','gasoline','available',     0, 0, '/assets/demo/vehicles/toyota-corolla.jpg'],
+            ['Honda','Civic','Sport',2022,'H200-002','VINHON00002','Gris', 2400, 14400, 56000, 12000, 380, 22000, 5, 4, 'Sedán',     'automatic','gasoline','available',     0, 0, '/assets/demo/vehicles/honda-civic.jpg'],
+            ['Hyundai','Tucson','Limited',2023,'B300-003','VINHYU00003','Negro', 3500, 21000, 80000, 15000, 480, 12000, 5, 5, 'SUV',     'automatic','gasoline','rented',        0, 1, '/assets/demo/vehicles/hyundai-tucson.jpg'],
+            ['Kia','Sportage','HEV',2023,'P400-004','VINKIA00004','Negro', 3000, 18000, 66000, 15000, 420, 26000, 5, 5, 'SUV',  'automatic','hybrid','available',     1, 0, '/assets/demo/vehicles/kia-sportage.jpg'],
+            ['Mercedes-Benz','C-Class','C300',2022,'L500-005','VINMRC00005','Blanco', 8500, 51000, 195000, 30000, 950, 8000, 5, 4, 'Lujo','automatic','gasoline','available',     0, 1, '/assets/demo/vehicles/mercedes-c-class.jpg'],
+            ['Toyota','Hilux','Doble Cabina',2021,'T600-006','VINTOY00006','Negro', 4200, 25200, 98000, 18000, 580, 14500, 5, 4, 'Pickup',          'automatic','diesel',  'available',     1, 0, '/assets/demo/vehicles/toyota-hilux-real.jpg'],
+            ['BMW','4 Series','420i M Sport',2022,'N700-007','VINBMW00007','Negro', 8200, 49200, 188000, 32000, 920, 30500, 4, 2, 'Lujo',  'automatic','gasoline','maintenance',   0, 0, '/assets/demo/vehicles/bmw-4-series.jpg'],
+            ['Chevrolet','Camaro','LT',2021,'C800-008','VINCHV00008','Azul', 7600, 45600, 172000, 36000, 1050, 35200, 4, 2, 'Deportivo','automatic','gasoline','available',     2, 0, '/assets/demo/vehicles/chevrolet-camaro.jpg'],
+            ['Ford','Mustang','EcoBoost',2020,'F900-009','VINFRD00009','Negro', 7200, 43200, 158000, 35000, 980, 18900, 4, 2, 'Deportivo', 'automatic','gasoline','available',     0, 1, '/assets/demo/vehicles/ford-mustang.jpg'],
+            ['Tesla','Model 3','Long Range',2023,'V100-010','VINTES00010','Blanco', 6000, 36000, 132000, 30000, 850, 42100, 5, 4, 'Lujo','automatic','electric',  'available',     0, 0, '/assets/demo/vehicles/tesla-model-3.jpg'],
+            ['Honda','Civic','Type R',2021,'X200-011','VINHON00011','Gris', 3600, 21600, 84000, 15000, 520, 9500, 5, 4, 'Sedán',          'manual','gasoline','reserved',      0, 1, '/assets/demo/vehicles/honda-civic.jpg'],
+            ['Kia','Sportage','EX',2022,'M300-012','VINKIA00012','Negro', 3200, 19200, 74000, 15000, 460, 11200, 5, 5, 'SUV',         'automatic','gasoline','available',     1, 0, '/assets/demo/vehicles/kia-sportage.jpg'],
+            ['Toyota','Corolla','LE',2020,'J400-013','VINTOY00013','Negro', 2100, 12600, 48000, 10000, 320, 24700, 5, 4, 'Sedán','automatic','gasoline','available', 2, 0, '/assets/demo/vehicles/toyota-corolla.jpg'],
+            ['Toyota','Hilux','SR5',2022,'H500-014','VINTOY00014','Negro', 4800, 28800, 112000, 22000, 660, 16800, 5, 4, 'Pickup', 'automatic','diesel',  'available',     2, 0, '/assets/demo/vehicles/toyota-hilux-real.jpg'],
+            ['Mercedes-Benz','C-Class','AMG Line',2021,'Q600-015','VINMRC00015','Blanco', 7800, 46800, 180000, 28000, 880, 10100, 5, 4, 'Lujo',          'automatic','gasoline','available',     0, 1, '/assets/demo/vehicles/mercedes-c-class.jpg'],
         ];
         $vehicleIds = [];
         foreach ($vehicles as $idx => $v) {
-            [$brand,$model,$ver,$year,$plate,$vin,$color,$daily,$weekly,$monthly,$dep,$ins,$mi,$pax,$doors,$catName,$trans,$fuel,$status,$locIdx,$feat] = $v;
+            [$brand,$model,$ver,$year,$plate,$vin,$color,$daily,$weekly,$monthly,$dep,$ins,$mi,$pax,$doors,$catName,$trans,$fuel,$status,$locIdx,$feat,$image] = $v;
             $catId = $catIds[$catName] ?? null;
-            $mainImg = $catToImage[$catName] ?? '/assets/demo/vehicles/sedan.svg';
+            $mainImg = $image ?: ($catToImage[$catName] ?? '/assets/demo/vehicles/toyota-corolla.jpg');
             $gallery = []; // one image per category is enough — keeps demo tight & on-brand
             $loc   = $locIds[$locIdx] ?? $locIds[0];
             $desc  = "Vehículo $brand $model $year en excelentes condiciones. " . ucfirst($trans) . ", " . $pax . " pasajeros, " . $doors . " puertas. Mantenimiento al día.";

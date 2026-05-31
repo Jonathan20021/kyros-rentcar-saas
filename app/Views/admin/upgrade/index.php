@@ -109,7 +109,7 @@ $tier = ['starter'=>1,'business'=>2,'premium'=>3];
         <span class="text-3xl font-extrabold text-navy dark:text-white tnum"><?= money($p['price_monthly']) ?></span>
         <span class="text-sm text-slate-400">/mes</span>
       </div>
-      <p class="text-xs text-slate-400 mt-1">o <?= money($p['price_yearly']) ?>/año (2 meses gratis)</p>
+      <p class="text-xs text-slate-400 mt-1">Facturación mensual · sin permanencia</p>
     </div>
 
     <div class="px-6 pb-2 text-sm text-slate-600 dark:text-slate-300 space-y-2">

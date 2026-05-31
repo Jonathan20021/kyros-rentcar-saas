@@ -27,12 +27,14 @@ $demoOffers = $demoOffers ?? [];
 
   /* Atmospheric backdrop */
   .scene { position:relative; overflow:hidden; isolation:isolate; }
+  /* Brand-dominant atmosphere: one strong red glow at the top, one warmer
+     coral wash low-right. Removed the indigo/emerald spill so the accent
+     never competes with itself. */
   .scene::before{
     content:""; position:absolute; inset:0; z-index:-1;
     background:
-      radial-gradient(60rem 40rem at 50% -10%, color-mix(in srgb,var(--brand) 22%, transparent), transparent 60%),
-      radial-gradient(50rem 35rem at 100% 30%, color-mix(in srgb,#6366F1 18%, transparent), transparent 60%),
-      radial-gradient(50rem 35rem at 0% 70%, color-mix(in srgb,#10B981 14%, transparent), transparent 60%);
+      radial-gradient(72rem 46rem at 50% -12%, color-mix(in srgb,var(--brand) 26%, transparent), transparent 62%),
+      radial-gradient(54rem 38rem at 92% 78%, color-mix(in srgb,var(--brand2) 14%, transparent), transparent 65%);
   }
   .grid-floor{
     position:absolute; inset:0; background-image:
@@ -50,11 +52,12 @@ $demoOffers = $demoOffers ?? [];
     transform:translateX(-100%); transition:none; }
   .magnetic:hover::after{ transform:translateX(100%); transition:transform .9s ease; }
 
-  /* Pill / badge */
-  .pill{ display:inline-flex; align-items:center; gap:.5rem;
-    padding:.375rem .75rem; border-radius:99px;
-    background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
-    font-size:12.5px; font-weight:500; color:rgba(255,255,255,.75);
+  /* Pill / badge — softer corners (not full pill) for a more editorial feel,
+     since pure rounded-full badges are the default-AI signature. */
+  .pill{ display:inline-flex; align-items:center; gap:.55rem;
+    padding:.4rem .8rem; border-radius:.55rem;
+    background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.09);
+    font-size:12.5px; font-weight:500; color:rgba(255,255,255,.78);
     backdrop-filter:blur(8px);
   }
   .pill .dot{ position:relative; width:6px; height:6px; border-radius:99px; background:var(--brand); }
@@ -115,8 +118,238 @@ $demoOffers = $demoOffers ?? [];
     .ctbl td.feat{ font-weight:600; color:#fff; padding-bottom:.5rem; }
   }
 
-  /* Reduce motion */
-  @media (prefers-reduced-motion:reduce){ *{ animation:none !important } }
+  /* =====================================================================
+     HIGH-END VISUAL DESIGN UPGRADES
+     Double-Bezel architecture, Button-in-Button trailing icon, cinematic
+     full-bleed photography frame, narrative-step vertical structure.
+     ===================================================================== */
+
+  /* Double-Bezel: outer shell (machined aluminum tray) + inner core (glass plate).
+     Use on premium cards like the featured pricing tier or final CTA. */
+  .bezel-outer{
+    padding:.45rem; border-radius:1.75rem;
+    background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+    border:1px solid rgba(255,255,255,.10);
+    box-shadow:0 30px 80px -40px rgba(0,0,0,.6);
+  }
+  .bezel-inner{
+    position:relative; border-radius:calc(1.75rem - .45rem); overflow:hidden;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.10), inset 0 -1px 0 rgba(0,0,0,.25);
+  }
+  /* Light variant for featured pricing card on white inner */
+  .bezel-outer-brand{
+    padding:.45rem; border-radius:1.75rem;
+    background:linear-gradient(180deg, color-mix(in srgb,var(--brand) 35%, transparent), color-mix(in srgb,var(--brand) 12%, transparent));
+    border:1px solid color-mix(in srgb,var(--brand) 40%, transparent);
+    box-shadow:0 40px 90px -35px color-mix(in srgb,var(--brand) 55%, transparent);
+  }
+
+  /* Button-in-Button trailing icon. Use on primary CTAs.
+     The icon circle is nested INSIDE the pill, flush right. */
+  .k-cta{
+    display:inline-flex; align-items:center; gap:.85rem;
+    height:56px; padding:0 .5rem 0 1.5rem;
+    font-weight:600; font-size:15px; letter-spacing:-.005em;
+    border-radius:99px; color:#fff; background:var(--brand);
+    transition:transform .35s cubic-bezier(.32,.72,0,1), box-shadow .35s cubic-bezier(.32,.72,0,1);
+    box-shadow:0 18px 48px -18px color-mix(in srgb,var(--brand) 60%, transparent);
+    will-change:transform;
+  }
+  .k-cta:hover{ transform:translateY(-1px); box-shadow:0 24px 60px -16px color-mix(in srgb,var(--brand) 70%, transparent); }
+  .k-cta:active{ transform:scale(.98); }
+  .k-cta .k-cta-arrow{
+    display:grid; place-items:center;
+    width:44px; height:44px; border-radius:50%;
+    background:rgba(255,255,255,.18);
+    transition:transform .35s cubic-bezier(.32,.72,0,1), background .35s ease;
+  }
+  .k-cta:hover .k-cta-arrow{
+    transform:translate(2px,-1px) scale(1.05);
+    background:rgba(255,255,255,.28);
+  }
+  .k-cta-light{ background:#fff; color:var(--navy); box-shadow:0 18px 40px -18px rgba(0,0,0,.35); }
+  .k-cta-light .k-cta-arrow{ background:rgba(28,36,51,.10); color:var(--navy); }
+  .k-cta-light:hover .k-cta-arrow{ background:rgba(28,36,51,.18); }
+  .k-cta-ghost{
+    background:rgba(255,255,255,.06); color:#fff;
+    border:1px solid rgba(255,255,255,.14); box-shadow:none;
+  }
+  .k-cta-ghost .k-cta-arrow{ background:rgba(255,255,255,.10); }
+  .k-cta-ghost:hover{ background:rgba(255,255,255,.10); border-color:rgba(255,255,255,.22); }
+
+  /* Cinematic media frame: full-bleed photography with controlled inner radius
+     and a tinted overlay that lets text remain legible on any photo. */
+  .cinema-frame{
+    position:relative; overflow:hidden; border-radius:2rem;
+    isolation:isolate;
+  }
+  .cinema-frame .cinema-media{
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; z-index:-3;
+    transition:transform 1.4s cubic-bezier(.32,.72,0,1);
+  }
+  /* Photo sits ABOVE the fallback gradient so when it loads, it dominates. */
+  .cinema-frame .cinema-photo{ z-index:-2; }
+  .cinema-frame:hover .cinema-photo,
+  .cinema-frame:hover .cinema-fallback{ transform:scale(1.04); }
+  .cinema-frame::after{
+    content:""; position:absolute; inset:0; z-index:-1; pointer-events:none;
+    background:
+      linear-gradient(180deg, rgba(11,17,32,.10) 0%, rgba(11,17,32,.70) 70%, rgba(11,17,32,.92) 100%),
+      radial-gradient(120% 80% at 0% 100%, color-mix(in srgb,var(--brand) 22%, transparent), transparent 60%);
+  }
+  /* Lightweight CSS painted "scene" used as a real-photography fallback so we
+     never depend on external photo CDNs that could 404 in offline demos. */
+  .cinema-fallback{
+    background:
+      radial-gradient(60% 80% at 80% 30%, rgba(255,255,255,.08), transparent 60%),
+      radial-gradient(40% 60% at 20% 70%, color-mix(in srgb,var(--brand) 30%, transparent), transparent 60%),
+      linear-gradient(135deg, #0F1A2E 0%, #1B2745 35%, #2A1320 70%, #3A0E1B 100%);
+  }
+
+  /* Narrative step (How it works vertical scroll). Each step has a number
+     glyph in its own left gutter and content/detail to the right.
+     The badge lives in each STEP's padding zone (not the rail's), so it
+     never overlaps column-1 content. The rail's vertical line passes
+     through the center of every step badge. */
+  .narrative-rail{ position:relative; }
+  @media (min-width: 768px){
+    .narrative-rail::before{
+      content:""; position:absolute; left:1.75rem; top:.5rem; bottom:.5rem;
+      width:1px; background:linear-gradient(180deg,
+        transparent 0%,
+        color-mix(in srgb,var(--brand) 40%, transparent) 8%,
+        rgba(255,255,255,.12) 50%,
+        color-mix(in srgb,var(--brand) 40%, transparent) 92%,
+        transparent 100%);
+    }
+  }
+  .narrative-step{ position:relative; }
+  @media (min-width: 768px){
+    /* Reserve a 5rem gutter on the left of each step for the badge.
+       Without this, position:absolute left:0 lands on top of column-1. */
+    .narrative-step{ padding-left:5rem; }
+  }
+  .narrative-step .step-num{
+    position:absolute; left:0; top:0;
+    width:3.5rem; height:3.5rem; border-radius:50%;
+    display:grid; place-items:center;
+    font-family:'Plus Jakarta Sans','Inter',sans-serif;
+    font-weight:800; font-size:14px; color:#fff;
+    background:var(--brand);
+    box-shadow:0 8px 24px -6px color-mix(in srgb,var(--brand) 55%, transparent),
+               inset 0 1px 0 rgba(255,255,255,.25);
+    z-index:1;
+  }
+  @media (max-width: 767px){
+    .narrative-step .step-num{ position:relative; margin-bottom:1rem; }
+  }
+
+  /* Persona feature row — asymmetric layout that breaks the "3 equal cards"
+     repetition. Hero persona stretches wider, supporting personas stack. */
+  .persona-hero{
+    position:relative; overflow:hidden;
+    background:
+      linear-gradient(140deg, rgba(255,255,255,.06) 0%, rgba(255,255,255,.012) 60%),
+      radial-gradient(60% 80% at 100% 0%, color-mix(in srgb,var(--brand) 18%, transparent), transparent 60%);
+    border:1px solid rgba(255,255,255,.10); border-radius:1.75rem;
+    transition:transform .45s cubic-bezier(.32,.72,0,1), border-color .25s ease;
+  }
+  .persona-hero:hover{ transform:translateY(-3px); border-color:rgba(255,255,255,.18); }
+  .persona-hero::before{
+    content:""; position:absolute; right:-3rem; top:-3rem;
+    width:18rem; height:18rem; border-radius:50%;
+    background:radial-gradient(circle, color-mix(in srgb,var(--brand) 22%, transparent), transparent 60%);
+    pointer-events:none; filter:blur(40px);
+  }
+
+  /* =====================================================================
+     EMIL-TIER MOTION ENHANCEMENTS
+     All native CSS / View Transitions / Scroll-Driven Animations.
+     Progressive enhancement — falls back gracefully on unsupported
+     browsers. Hardware-accelerated, off-main-thread, never breaks scroll.
+     ===================================================================== */
+
+  /* Tactile spring-back on .k-cta press. The :active state pulls the
+     button in slightly; releasing relies on the transition's overshoot
+     spring (custom cubic-bezier > 1 at the end) for the bounce. */
+  .k-cta{
+    transition:transform .42s cubic-bezier(.18,.84,.18,1.16),
+               box-shadow .35s cubic-bezier(.32,.72,0,1),
+               background .35s ease;
+  }
+  .k-cta:active{ transform:scale(.965) translateZ(0); transition-duration:.14s; }
+  .k-cta:active .k-cta-arrow{ transform:scale(.92); transition:transform .14s ease-out; }
+
+  /* CSS Scroll-Driven Animations (Chrome 115+, Edge, Opera, Safari 26+).
+     Replaces the heavier GSAP scroll-bound transforms when supported.
+     Falls back silently on Firefox / older browsers, which still get
+     the GSAP entry animations. */
+  @supports (animation-timeline: view()) {
+    /* Cinema photo subtle parallax — moves through the view range.
+       Hardware-accelerated, runs off the main thread, no JS scroll
+       listener. The previous attempt at GSAP yPercent was killed
+       because it ran on the main thread and competed with other
+       scroll triggers; this CSS-only version cannot break scroll. */
+    .cinema-frame .cinema-photo,
+    .cinema-frame .cinema-fallback{
+      animation:cinemaPan linear both;
+      animation-timeline:view();
+      animation-range:cover 0% cover 100%;
+    }
+    @keyframes cinemaPan{
+      from{ transform:translateY(-4%) scale(1.06); }
+      to  { transform:translateY( 4%) scale(1.06); }
+    }
+
+    /* Stat counters: gentle scale-in tied to viewport entry */
+    section[style*="grad"] .ticker{
+      animation:statPop linear both;
+      animation-timeline:view();
+      animation-range:entry 0% entry 80%;
+    }
+    @keyframes statPop{
+      from{ transform:scale(.92); opacity:.4; }
+      to  { transform:scale(1);    opacity:1;  }
+    }
+
+    /* Narrative step badges pulse-grow as their step crosses the viewport
+       center, drawing the eye down the timeline */
+    .narrative-step .step-num{
+      animation:badgeFocus linear both;
+      animation-timeline:view();
+      animation-range:cover 20% cover 80%;
+    }
+    @keyframes badgeFocus{
+      from{ transform:scale(.85); box-shadow:0 4px 12px -2px color-mix(in srgb,var(--brand) 30%, transparent); }
+      40%, 60%{ transform:scale(1.06); box-shadow:0 14px 36px -4px color-mix(in srgb,var(--brand) 70%, transparent), inset 0 1px 0 rgba(255,255,255,.35); }
+      to{ transform:scale(.85); box-shadow:0 4px 12px -2px color-mix(in srgb,var(--brand) 30%, transparent); }
+    }
+  }
+
+  /* View Transition naming on the showcase panel so the cross-fade
+     between tabs is captured as a shared element by the browser. */
+  #showcase .showcase-panel{ view-transition-name:showcase-panel; }
+
+  /* Floating cards: visual affordance that they are interactive.
+     The transition value here is overridden by the JS during drag
+     and restored on release for the spring-back. */
+  section.scene .shadow-lift{
+    will-change:transform;
+    transition:transform .55s cubic-bezier(.18,.84,.18,1.16);
+  }
+  section.scene .shadow-lift:hover{ filter:brightness(1.05); }
+
+  /* Reduce motion — overrides every Emil-tier enhancement above */
+  @media (prefers-reduced-motion:reduce){
+    *{ animation:none !important; transition:none !important; }
+    .cinema-frame:hover .cinema-photo,
+    .cinema-frame:hover .cinema-fallback,
+    .k-cta:hover .k-cta-arrow,
+    .k-cta:hover,
+    .k-cta:active,
+    section.scene .shadow-lift{ transform:none !important; }
+  }
 </style>
 
 <!-- ==============================================================
@@ -130,7 +363,7 @@ $demoOffers = $demoOffers ?? [];
 
       <a href="#planes" class="pill mb-7 reveal">
         <span class="dot"></span>
-        <span>Disponible para rent cars en LATAM · v1.0</span>
+        <span>Software de alquiler de vehículos para LATAM</span>
         <i data-lucide="arrow-right" class="w-3.5 h-3.5 opacity-60"></i>
       </a>
 
@@ -140,32 +373,19 @@ $demoOffers = $demoOffers ?? [];
       </h1>
 
       <p class="mt-7 sm:mt-9 text-[17px] sm:text-[20px] text-white/55 max-w-[640px] mx-auto leading-[1.55] reveal">
-        Flotilla, reservas, contratos, pagos y tu página pública de alquiler — en una sola plataforma.
+        Flotilla, reservas, contratos, pagos y tu página pública de alquiler en una sola plataforma.
         <span class="text-white/80">Veloz, segura y hecha para vender.</span>
       </p>
 
       <div class="flex flex-col sm:flex-row gap-3 justify-center mt-10 reveal">
-        <a href="<?= url('/register') ?>" class="k-btn k-btn-grad magnetic px-7 !rounded-2xl text-[15px]" style="height:54px">
-          Crear mi rent car gratis <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        <a href="<?= url('/register') ?>" class="k-cta magnetic group">
+          <span>Crear mi rent car gratis</span>
+          <span class="k-cta-arrow"><i data-lucide="arrow-right" class="w-4 h-4"></i></span>
         </a>
-        <a href="<?= url('/login#demo') ?>" class="k-btn k-btn-glass px-7 !rounded-2xl text-[15px]" style="height:54px">
-          <i data-lucide="play" class="w-4 h-4"></i> Probar demo · 5h
+        <a href="<?= url('/login#demo') ?>" class="k-cta k-cta-ghost group">
+          <span>Probar demo · 5h</span>
+          <span class="k-cta-arrow"><i data-lucide="play" class="w-4 h-4"></i></span>
         </a>
-      </div>
-
-      <div class="mt-6 flex items-center justify-center gap-x-5 gap-y-2 flex-wrap text-[12.5px] text-white/45 reveal">
-        <span class="inline-flex items-center gap-1.5"><i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400/70"></i>Sin tarjeta</span>
-        <span class="text-white/15">·</span>
-        <span class="inline-flex items-center gap-1.5"><i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400/70"></i>3 minutos para publicar</span>
-        <span class="text-white/15">·</span>
-        <span class="inline-flex items-center gap-1.5"><i data-lucide="shield" class="w-3.5 h-3.5 text-indigo-400/70"></i>Multi-tenant seguro</span>
-      </div>
-
-      <!-- Quick capability chips: scrollable on mobile, wrap on desktop -->
-      <div class="mt-9 flex flex-wrap justify-center gap-1.5 reveal max-w-[820px] mx-auto">
-        <?php foreach (['Reservas online','Contratos con firma','PDF profesional','Pagos','Facturas','Multi-sucursal','Choferes','Mantenimiento','Incidencias','Promociones','Reportes P&L','Cierre de caja','API REST','Tu marca'] as $cap): ?>
-          <span class="text-[11.5px] px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.07] text-white/65 font-medium hover:bg-white/[0.07] hover:border-white/[0.12] hover:text-white transition"><?= e($cap) ?></span>
-        <?php endforeach; ?>
       </div>
     </div>
 
@@ -320,11 +540,71 @@ $demoOffers = $demoOffers ?? [];
 </section>
 
 <!-- ==============================================================
+     CINEMATIC MOMENT — full-bleed editorial photography section that
+     breaks the dashboard-centric rhythm with a real-world car image.
+     Uses cinema-fallback gradient as a guaranteed-rendering background
+     so the section never appears empty even if external photos 404.
+     ============================================================== -->
+<section class="bg-[#0B1120] py-24 sm:py-32">
+  <div class="max-w-7xl mx-auto px-5 sm:px-6">
+    <div class="cinema-frame reveal-s min-h-[420px] sm:min-h-[520px] lg:min-h-[600px] flex">
+      <!-- Fallback paints FIRST so it's at the bottom of the stacking order.
+           If the photo loads, it renders on top of the fallback. If it 404s,
+           onerror removes the img and the fallback stays visible. -->
+      <div class="cinema-media cinema-fallback" aria-hidden="true"></div>
+      <img
+        class="cinema-media cinema-photo"
+        src="<?= url('/assets/demo/vehicles/landing-hero-fleet.jpg') ?>"
+        width="1920" height="1080"
+        alt=""
+        loading="lazy"
+        decoding="async"
+        onerror="this.remove()"
+      >
+
+      <!-- Overlay content: editorial composition, left-aligned, deeply spaced -->
+      <div class="relative w-full p-8 sm:p-12 lg:p-16 flex flex-col justify-end">
+        <div class="max-w-2xl">
+          <h2 class="font-display display-xl text-white text-[34px] sm:text-[52px] lg:text-[68px] font-extrabold leading-[1.02]">
+            Tu flotilla.<br>Tu marca.<br>Tu negocio en piloto automático.
+          </h2>
+          <p class="text-white/75 mt-6 max-w-xl text-[15px] sm:text-[17px] leading-relaxed">
+            Kyros se queda detrás de cámara para que tu rent car siga siendo el protagonista. Sin licencias por vehículo, sin sorpresas técnicas.
+          </p>
+          <div class="flex flex-wrap items-center gap-3 mt-8">
+            <a href="<?= url('/register') ?>" class="k-cta k-cta-light group">
+              <span>Empezar gratis</span>
+              <span class="k-cta-arrow"><i data-lucide="arrow-right" class="w-4 h-4"></i></span>
+            </a>
+            <a href="#planes" class="k-cta k-cta-ghost group">
+              <span>Ver planes</span>
+              <span class="k-cta-arrow"><i data-lucide="arrow-down" class="w-4 h-4"></i></span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==============================================================
      PRODUCT SHOWCASE (auto-rotating tabs)
      ============================================================== -->
 <section id="showcase" class="bg-[#0B1120] py-24 sm:py-32"
-         x-data="{ t:0, p:0, paused:false, go(i){ this.t=i; this.p=0; }, tick(){ if(this.paused) return; this.p+=1.5; if(this.p>=100){ this.p=0; this.t=(this.t+1)%4; } } }"
-         x-init="setInterval(()=>tick(),100)" @mouseenter="paused=true" @mouseleave="paused=false">
+         x-data="{
+           t:0, p:0, paused:true, visible:false, _id:null,
+           go(i){ this.t=i; this.p=0; },
+           tick(){ if(this.paused || !this.visible) return; this.p+=1.5; if(this.p>=100){ this.p=0; this.t=(this.t+1)%4; } }
+         }"
+         x-init="
+           // Pause until the section is actually on-screen — avoids burning
+           // 10 ticks/sec while the user is reading hero or footer.
+           const io = new IntersectionObserver((es)=>{ visible = es[0].isIntersecting; },{threshold:0.2});
+           io.observe($el);
+           _id = setInterval(()=>tick(),100);
+           paused = false;
+         "
+         @mouseenter="paused=true" @mouseleave="paused=false">
   <div class="max-w-7xl mx-auto px-5 sm:px-6">
     <div class="text-center max-w-2xl mx-auto mb-14 reveal">
       <p class="eyebrow text-brand mb-3">Recorre el producto</p>
@@ -360,8 +640,8 @@ $demoOffers = $demoOffers ?? [];
         <?php endforeach; ?>
       </div>
 
-      <!-- Panel -->
-      <div class="rounded-3xl p-6 lg:p-10 relative overflow-hidden reveal-s min-h-[420px]"
+      <!-- Panel — view-transition-name lets the browser cross-fade content -->
+      <div class="showcase-panel rounded-3xl p-6 lg:p-10 relative overflow-hidden reveal-s min-h-[420px]"
            style="background:linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,.01)); border:1px solid rgba(255,255,255,.07);">
         <div class="absolute -top-12 -right-12 w-56 h-56 grad-bg opacity-15 blur-3xl rounded-full"></div>
         <div class="absolute -bottom-12 -left-12 w-48 h-48 bg-indigo-500/20 blur-3xl rounded-full"></div>
@@ -376,7 +656,7 @@ $demoOffers = $demoOffers ?? [];
             <?php foreach ([
               ['Honda Civic 2022','RSV-0042','Confirmada','bg-emerald-500/15 text-emerald-400','15 Jun → 18 Jun','RD$ 7,788'],
               ['Tesla Model 3','RSV-0041','Pendiente',  'bg-amber-500/15 text-amber-400','12 Jun → 14 Jun','RD$ 12,400'],
-              ['Mercedes C300', 'RSV-0040','En proceso', 'bg-indigo-500/15 text-indigo-300','10 Jun → 16 Jun','RD$ 51,000'],
+              ['Mercedes C-Class', 'RSV-0040','En proceso', 'bg-indigo-500/15 text-indigo-300','10 Jun → 16 Jun','RD$ 51,000'],
               ['Toyota Corolla','RSV-0039','Confirmada','bg-emerald-500/15 text-emerald-400','08 Jun → 11 Jun','RD$ 6,600'],
             ] as $r): ?>
             <div class="flex items-center justify-between p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.05] transition">
@@ -405,12 +685,22 @@ $demoOffers = $demoOffers ?? [];
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <?php
             $states = ['Disponible','Rentado','Mantenimiento','Disponible','Limpieza','Disponible'];
-            $cars = ['Toyota Corolla','Honda Civic','Hyundai Tucson','Kia Picanto','Mercedes C300','Tesla Model 3'];
+            $cars = ['Honda Civic','Hyundai Tucson','Kia Sportage','Toyota Hilux','Mercedes C-Class','Tesla Model 3'];
+            $fleetPhotos = [
+              'honda-civic.jpg',
+              'hyundai-tucson.jpg',
+              'kia-sportage.jpg',
+              'toyota-hilux-real.jpg',
+              'mercedes-c-class.jpg',
+              'tesla-model-3.jpg',
+            ];
             foreach ($states as $i => $st):
               $cm = ['Disponible'=>['#10B981','bg-emerald-500/10'],'Rentado'=>['#6366F1','bg-indigo-500/10'],'Mantenimiento'=>['#F59E0B','bg-amber-500/10'],'Limpieza'=>['#06B6D4','bg-cyan-500/10']][$st];
             ?>
             <div class="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4 hover:bg-white/[0.05] transition group">
-              <div class="h-20 rounded-lg <?= $cm[1] ?> mb-3 grid place-items-center group-hover:scale-105 transition-transform"><i data-lucide="car-front" class="w-8 h-8" style="color:<?= $cm[0] ?>"></i></div>
+              <div class="h-20 rounded-lg <?= $cm[1] ?> mb-3 overflow-hidden group-hover:scale-105 transition-transform">
+                <img src="<?= url('/assets/demo/vehicles/' . $fleetPhotos[$i]) ?>" class="w-full h-full object-cover opacity-90" alt="<?= e($cars[$i]) ?>">
+              </div>
               <p class="text-[12.5px] font-semibold text-white truncate"><?= e($cars[$i]) ?></p>
               <p class="text-[11px] mt-0.5" style="color:<?= $cm[0] ?>"><?= $st ?></p>
             </div>
@@ -484,23 +774,83 @@ $demoOffers = $demoOffers ?? [];
 <section class="bg-[#0B1120] pb-24 sm:pb-32">
   <div class="max-w-7xl mx-auto px-5 sm:px-6">
     <div class="text-center max-w-2xl mx-auto mb-14 reveal">
-      <p class="eyebrow text-brand mb-3">Hecho para</p>
       <h2 class="font-display display-lg text-[34px] sm:text-[52px] font-extrabold">Cada rol, su panel</h2>
       <p class="mt-4 text-white/55 leading-relaxed">Roles y permisos granulares: cada miembro de tu equipo ve solo lo que necesita.</p>
     </div>
 
-    <div class="grid md:grid-cols-3 gap-4 sm:gap-5">
-      <?php foreach ([
-        ['crown', 'Dueño', 'Toma decisiones con visibilidad total: dashboard, reportes financieros, gestión de planes y todo el negocio.',
-          ['Reportes en vivo','Multi-sucursal','Planes y facturación']],
-        ['users-round', 'Equipo operativo', 'Tu staff atiende reservas, cobra, genera contratos y cierra caja sin tocar lo que no debe.',
-          ['Reservas + clientes','Contratos con firma','Cierre de caja diario']],
-        ['shield', 'Flotilla & mantenimiento', 'Tu equipo de taller programa servicios, registra vencimientos y mantiene cada vehículo listo para rentar.',
-          ['Estados de vehículo','Mantenimiento','Vencimientos automáticos']],
-      ] as $i => $p): ?>
+    <?php
+    // Asymmetric persona layout: the Owner card stretches full-width as the
+    // hero persona, the two supporting personas sit in a 2-col grid below.
+    // This breaks the 3-equal-cards repetition from how-it-works / testimonials.
+    $personaHero = ['crown', 'Dueño', 'Decisiones con visibilidad total: dashboard, reportes financieros, gestión de planes, control multi-sucursal y vista completa de toda la operación.',
+      ['Reportes en vivo','Multi-sucursal','Planes y facturación','Auditoría completa']];
+    $personaSubs = [
+      ['users-round', 'Equipo operativo', 'Tu staff atiende reservas, cobra, genera contratos y cierra caja sin tocar lo que no debe.',
+        ['Reservas + clientes','Contratos con firma','Cierre de caja diario']],
+      ['wrench', 'Flotilla y taller', 'Tu equipo de mantenimiento programa servicios, registra vencimientos y mantiene cada vehículo listo para rentar.',
+        ['Estados de vehículo','Mantenimiento','Vencimientos automáticos']],
+    ];
+    ?>
+
+    <!-- Hero persona: full-width feature card with side-by-side composition -->
+    <div class="persona-hero p-7 sm:p-10 reveal-s mb-4 sm:mb-5">
+      <div class="grid lg:grid-cols-[1fr_auto] gap-8 lg:gap-12 items-center relative">
+        <div>
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-12 h-12 rounded-2xl bg-brand/15 text-brand grid place-items-center ring-1 ring-brand/25">
+              <i data-lucide="<?= e($personaHero[0]) ?>" class="w-6 h-6"></i>
+            </div>
+            <span class="text-[10.5px] font-mono uppercase tracking-[0.2em] text-white/45">Para el dueño</span>
+          </div>
+          <h3 class="font-display font-extrabold text-white text-[26px] sm:text-[32px] leading-tight"><?= e($personaHero[1]) ?></h3>
+          <p class="text-white/65 text-[15.5px] leading-relaxed mt-3 max-w-xl"><?= e($personaHero[2]) ?></p>
+          <div class="grid grid-cols-2 gap-x-6 gap-y-2.5 mt-6 max-w-md">
+            <?php foreach ($personaHero[3] as $f): ?>
+            <p class="flex items-center gap-2 text-[13.5px] text-white/75">
+              <i data-lucide="check" class="w-3.5 h-3.5 text-brand shrink-0"></i><?= e($f) ?>
+            </p>
+            <?php endforeach; ?>
+          </div>
+        </div>
+        <!-- Right-side stat tile cluster reinforces "visibility" with real KPI shapes -->
+        <div class="lg:w-72 grid grid-cols-2 gap-2.5">
+          <div class="rounded-2xl p-4 bg-white/[0.04] border border-white/[0.07]">
+            <p class="text-[10.5px] font-mono uppercase tracking-wider text-white/40">Ingresos / mes</p>
+            <p class="font-display font-extrabold text-white text-2xl tnum mt-1">184k</p>
+            <p class="text-[11px] text-emerald-400 mt-1 flex items-center gap-1"><i data-lucide="trending-up" class="w-3 h-3"></i> +24%</p>
+          </div>
+          <div class="rounded-2xl p-4 bg-white/[0.04] border border-white/[0.07]">
+            <p class="text-[10.5px] font-mono uppercase tracking-wider text-white/40">Ocupación</p>
+            <p class="font-display font-extrabold text-white text-2xl tnum mt-1">87%</p>
+            <p class="text-[11px] text-white/45 mt-1">23 / 26 unid.</p>
+          </div>
+          <div class="col-span-2 rounded-2xl p-4 bg-white/[0.04] border border-white/[0.07]">
+            <div class="flex items-center justify-between">
+              <p class="text-[10.5px] font-mono uppercase tracking-wider text-white/40">P&amp;L últimos 6 meses</p>
+              <span class="text-[10px] text-white/40 tnum">jun</span>
+            </div>
+            <div class="flex items-end gap-1 mt-3 h-10">
+              <?php foreach ([42, 58, 48, 72, 85, 96] as $j => $h):
+                $isLast = $j === 5;
+              ?>
+              <div class="flex-1 rounded-t" style="height:<?= $h ?>%;background:<?= $isLast ? 'var(--brand)' : 'rgba(255,255,255,.14)' ?>"></div>
+              <?php endforeach; ?>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Supporting personas: 2-col grid below the hero -->
+    <div class="grid md:grid-cols-2 gap-4 sm:gap-5">
+      <?php foreach ($personaSubs as $p): ?>
       <div class="persona p-7 sm:p-8 reveal">
-        <div class="w-12 h-12 rounded-2xl bg-brand/10 text-brand grid place-items-center mb-5"><i data-lucide="<?= $p[0] ?>" class="w-5.5 h-5.5"></i></div>
-        <h3 class="font-display font-extrabold text-white text-xl mb-2"><?= e($p[1]) ?></h3>
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-11 h-11 rounded-xl bg-white/[0.05] text-white/80 border border-white/[0.09] grid place-items-center">
+            <i data-lucide="<?= e($p[0]) ?>" class="w-5 h-5"></i>
+          </div>
+          <h3 class="font-display font-extrabold text-white text-xl"><?= e($p[1]) ?></h3>
+        </div>
         <p class="text-white/55 text-[14.5px] leading-relaxed mb-5"><?= e($p[2]) ?></p>
         <div class="space-y-2">
           <?php foreach ($p[3] as $f): ?>
@@ -521,7 +871,6 @@ $demoOffers = $demoOffers ?? [];
 <section id="features" class="bg-[#0B1120] pb-24 sm:pb-32">
   <div class="max-w-7xl mx-auto px-5 sm:px-6">
     <div class="text-center max-w-2xl mx-auto mb-14 reveal">
-      <p class="eyebrow text-brand mb-3">Todo en uno</p>
       <h2 class="font-display display-lg text-[34px] sm:text-[52px] font-extrabold">Una plataforma para toda tu operación</h2>
     </div>
 
@@ -530,8 +879,7 @@ $demoOffers = $demoOffers ?? [];
       <div class="bento md:col-span-4 md:row-span-2 p-7 lg:p-9 reveal-s flex flex-col justify-between"
            onmousemove="this.style.setProperty('--mx', (event.offsetX)+'px'); this.style.setProperty('--my', (event.offsetY)+'px')">
         <div class="relative z-10">
-          <p class="eyebrow text-brand">Tu marca, online</p>
-          <h3 class="font-display font-extrabold text-white text-2xl lg:text-3xl mt-3 display-lg">Página pública con tu propio slug</h3>
+          <h3 class="font-display font-extrabold text-white text-2xl lg:text-3xl display-lg">Página pública con tu propio slug</h3>
           <p class="text-white/55 mt-3 max-w-md leading-relaxed">Buscador, filtros, histograma de precios, galería de vehículos y reservas online — listo sin escribir una línea de código.</p>
           <div class="mt-6 inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-white/75 tnum">
             <i data-lucide="link-2" class="w-4 h-4 text-white/40"></i> rentcar.kyrosrd.com/r/tu-rentcar
@@ -549,13 +897,13 @@ $demoOffers = $demoOffers ?? [];
       </div>
 
       <div class="bento md:col-span-2 p-6 reveal" onmousemove="this.style.setProperty('--mx', (event.offsetX)+'px'); this.style.setProperty('--my', (event.offsetY)+'px')">
-        <div class="w-10 h-10 rounded-xl bg-indigo-500/15 text-indigo-300 grid place-items-center mb-3"><i data-lucide="shield-check" class="w-5 h-5"></i></div>
+        <div class="w-10 h-10 rounded-xl bg-white/[0.05] text-white/80 border border-white/[0.09] grid place-items-center mb-3"><i data-lucide="lock-keyhole" class="w-5 h-5"></i></div>
         <h3 class="font-display font-bold text-white text-lg">Seguridad real</h3>
         <p class="text-sm text-white/55 mt-1.5 leading-relaxed">Multi-tenant aislado, CSRF, prepared statements y roles.</p>
       </div>
 
       <div class="bento md:col-span-2 p-6 reveal" onmousemove="this.style.setProperty('--mx', (event.offsetX)+'px'); this.style.setProperty('--my', (event.offsetY)+'px')">
-        <div class="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-400 grid place-items-center mb-3"><i data-lucide="gauge" class="w-5 h-5"></i></div>
+        <div class="w-10 h-10 rounded-xl bg-brand/10 text-brand grid place-items-center mb-3"><i data-lucide="activity" class="w-5 h-5"></i></div>
         <h3 class="font-display font-bold text-white text-lg">Dashboard en vivo</h3>
         <p class="text-sm text-white/55 mt-1.5 leading-relaxed">KPIs, ingresos, ocupación de flotilla y alertas al instante.</p>
       </div>
@@ -563,8 +911,8 @@ $demoOffers = $demoOffers ?? [];
       <div class="bento md:col-span-3 p-7 reveal-s flex flex-col justify-between"
            onmousemove="this.style.setProperty('--mx', (event.offsetX)+'px'); this.style.setProperty('--my', (event.offsetY)+'px')">
         <div>
-          <p class="eyebrow text-brand">Plan Premium</p>
-          <h3 class="font-display text-xl font-extrabold text-white mt-2">API REST · Conecta con todo</h3>
+          <h3 class="font-display text-xl font-extrabold text-white">API REST</h3>
+          <p class="text-[12.5px] text-white/45 mt-1">Disponible en Premium</p>
         </div>
         <div class="font-mono text-[11px] leading-relaxed bg-[#06090F] rounded-xl border border-white/[0.06] p-3.5 mt-3">
           <p class="text-white/40"><span class="text-emerald-400">GET</span> /api/v1/vehicles</p>
@@ -575,8 +923,7 @@ $demoOffers = $demoOffers ?? [];
       <div class="bento md:col-span-3 p-7 reveal-s flex flex-col justify-between"
            onmousemove="this.style.setProperty('--mx', (event.offsetX)+'px'); this.style.setProperty('--my', (event.offsetY)+'px')">
         <div>
-          <p class="eyebrow text-brand">Hecho para LATAM</p>
-          <h3 class="font-display text-xl font-extrabold text-white mt-2">Multi-sucursal, multi-moneda</h3>
+          <h3 class="font-display text-xl font-extrabold text-white">Multi-sucursal, multi-moneda</h3>
           <p class="text-sm text-white/55 mt-2 leading-relaxed">DOP por defecto, ITBIS configurable, múltiples sucursales con stock independiente.</p>
         </div>
         <div class="flex items-center gap-2 mt-3">
@@ -593,14 +940,13 @@ $demoOffers = $demoOffers ?? [];
           <div>
             <div class="flex items-center gap-3 mb-3">
               <div class="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-400 grid place-items-center"><i data-lucide="hard-drive" class="w-5 h-5"></i></div>
-              <p class="eyebrow text-brand">Almacenamiento incluido + flexible</p>
+              <h3 class="font-display text-xl lg:text-2xl font-extrabold text-white">Almacenamiento incluido y flexible</h3>
             </div>
-            <h3 class="font-display text-xl lg:text-2xl font-extrabold text-white">Fotos, contratos firmados y evidencia — todo en tu cuota</h3>
-            <p class="text-sm text-white/55 mt-2 leading-relaxed max-w-2xl">
-              Cada plan incluye espacio para tu catálogo y operación.
+            <p class="text-white/65 text-[15px] leading-relaxed max-w-2xl">
+              Fotos, contratos firmados y evidencia — todo en tu cuota.
               <span class="text-white/85">¿Necesitas más?</span>
-              Pides una ampliación desde el panel y la activamos en horas — sin migrar ni tocar tus datos.
-              Aviso en vivo al 80 % y bloqueo limpio al 100 % para evitar sorpresas.
+              Pides una ampliación desde el panel y la activamos en horas, sin migrar ni tocar tus datos.
+              Aviso al 80 % y bloqueo limpio al 100 % para evitar sorpresas.
             </p>
           </div>
           <!-- Mini quota visualization -->
@@ -726,7 +1072,6 @@ $demoOffers = $demoOffers ?? [];
   <div class="max-w-7xl mx-auto px-5 sm:px-6">
     <div class="grid lg:grid-cols-[1fr_1.4fr] gap-10 lg:gap-14 items-center">
       <div class="reveal order-2 lg:order-1">
-        <p class="eyebrow text-brand mb-3">Tu marca, online</p>
         <h2 class="font-display display-lg text-[32px] sm:text-[44px] font-extrabold text-white">
           Una página pública<br>tan buena como un sitio dedicado
         </h2>
@@ -796,16 +1141,16 @@ $demoOffers = $demoOffers ?? [];
               <div class="grid grid-cols-2 gap-2.5">
                 <?php
                 $cards = [
-                  ['economico', 'Kia Picanto', '1,800', 'bg-amber-500/15'],
-                  ['suv',       'Hyundai Tucson','3,500','bg-emerald-500/15'],
-                  ['lujo',      'Mercedes C300','8,500', 'bg-brand/15'],
-                  ['pickup',    'Ford F-150',   '4,500', 'bg-indigo-500/15'],
+                  ['honda-civic.jpg',       'Honda Civic',       '2,400'],
+                  ['hyundai-tucson.jpg',    'Hyundai Tucson',    '3,500'],
+                  ['mercedes-c-class.jpg',  'Mercedes C-Class',  '8,500'],
+                  ['toyota-hilux-real.jpg', 'Toyota Hilux',      '4,500'],
                 ];
                 foreach ($cards as $cd):
                 ?>
                 <div class="rounded-xl border border-white/[0.07] bg-white/[0.02] overflow-hidden hover:border-white/[0.16] hover:-translate-y-0.5 transition-all">
-                  <div class="h-20 sm:h-24 grid place-items-center <?= $cd[3] ?>">
-                    <img src="<?= url('/assets/demo/vehicles/' . $cd[0] . '.svg') ?>" class="h-full w-full object-cover opacity-90" alt="">
+                  <div class="h-20 sm:h-24 bg-white/[0.04]">
+                    <img src="<?= url('/assets/demo/vehicles/' . $cd[0]) ?>" class="h-full w-full object-cover opacity-90" alt="<?= e($cd[1]) ?>">
                   </div>
                   <div class="p-2.5">
                     <p class="text-white font-semibold text-[11.5px] truncate"><?= e($cd[1]) ?></p>
@@ -831,22 +1176,75 @@ $demoOffers = $demoOffers ?? [];
      HOW IT WORKS
      ============================================================== -->
 <section class="border-y border-white/[0.06] py-24 sm:py-32" style="background:linear-gradient(180deg,#101828,#0B1120);">
-  <div class="max-w-7xl mx-auto px-5 sm:px-6">
-    <div class="text-center max-w-2xl mx-auto mb-14 reveal">
-      <p class="eyebrow text-brand mb-3">Cómo funciona</p>
-      <h2 class="font-display display-lg text-[34px] sm:text-[52px] font-extrabold">En línea en tres pasos</h2>
+  <div class="max-w-6xl mx-auto px-5 sm:px-6">
+    <div class="max-w-2xl mb-16 reveal">
+      <h2 class="font-display display-lg text-[34px] sm:text-[52px] font-extrabold">En línea en tres pasos.</h2>
+      <p class="mt-4 text-white/60 leading-relaxed text-[15.5px]">Sin ingenieros, sin diseñadores, sin esperar semanas. La primera reserva entra el mismo día que firmas.</p>
     </div>
-    <div class="grid md:grid-cols-3 gap-4 relative">
-      <div class="hidden md:block absolute top-12 left-[20%] right-[20%] h-px bg-gradient-to-r from-transparent via-white/12 to-transparent"></div>
-      <?php foreach ([
-        ['Crea tu rent car','Registra tu empresa, elige colores y recibe tu página pública con slug propio.'],
-        ['Carga tu flotilla','Vehículos, fotos, precios, categorías y disponibilidad — listo en minutos.'],
-        ['Recibe reservas','Tus clientes reservan online, tú gestionas todo desde un solo panel.'],
-      ] as $i => $s): ?>
-      <div class="p-7 sm:p-8 rounded-3xl relative z-10 reveal" style="background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012));border:1px solid rgba(255,255,255,.07);">
-        <span class="w-12 h-12 rounded-2xl grad-bg grid place-items-center text-base font-extrabold text-white tnum shadow-lift mb-5"><?= str_pad((string)($i+1), 2, '0', STR_PAD_LEFT) ?></span>
-        <h3 class="font-display font-bold text-lg text-white"><?= e($s[0]) ?></h3>
-        <p class="text-white/55 mt-2 text-sm leading-relaxed"><?= e($s[1]) ?></p>
+
+    <?php
+    // Vertical narrative — breaks the 3-equal-cards repetition by giving each
+    // step its own row with a connecting timeline rail, a tactile detail block
+    // on the right, and asymmetric weight that tells a sequential story.
+    $steps = [
+      [
+        'kicker' => 'Minuto 0',
+        'title'  => 'Crea tu rent car.',
+        'body'   => 'Registra tu empresa, sube tu logo y elige los colores de tu marca. Recibes tu página pública en un slug propio: <span class="font-mono text-white/85 text-[13px] bg-white/[0.05] px-1.5 py-0.5 rounded">rentcar.kyrosrd.com/r/tu-rentcar</span>.',
+        'detail' => ['Empresa registrada', 'rent car · plan demo', 'check-circle-2', 'emerald'],
+      ],
+      [
+        'kicker' => 'Minuto 8',
+        'title'  => 'Carga tu flotilla.',
+        'body'   => 'Vehículos con fotos, precios por día, categorías, sucursales y disponibilidad. Importa desde Excel o crea uno a uno desde el panel.',
+        'detail' => ['12 vehículos cargados', 'Honda Civic · Tesla Model 3 · +10', 'car-front', 'brand'],
+      ],
+      [
+        'kicker' => 'Misma tarde',
+        'title'  => 'Recibe reservas.',
+        'body'   => 'Tus clientes buscan, filtran y reservan online sin llamarte. El lead aparece en tu panel al instante con cliente, vehículo, fechas y monto.',
+        'detail' => ['Nueva reserva · RSV-0042', 'Honda Civic · 3 días · RD$ 7,788', 'calendar-check', 'indigo'],
+      ],
+    ];
+    $detailTints = [
+      'emerald' => ['bg' => 'bg-emerald-500/15', 'text' => 'text-emerald-300', 'ring' => 'ring-emerald-500/20'],
+      'brand'   => ['bg' => 'bg-brand/15',        'text' => 'text-brand',         'ring' => 'ring-brand/25'],
+      'indigo'  => ['bg' => 'bg-indigo-500/15',  'text' => 'text-indigo-300',    'ring' => 'ring-indigo-500/20'],
+    ];
+    ?>
+    <div class="narrative-rail space-y-14 sm:space-y-20">
+      <?php foreach ($steps as $i => $s):
+        $tint = $detailTints[$s['detail'][3]];
+      ?>
+      <div class="narrative-step grid md:grid-cols-[1.1fr_1fr] gap-8 lg:gap-12 items-center reveal">
+        <span class="step-num"><?= str_pad((string) ($i + 1), 2, '0', STR_PAD_LEFT) ?></span>
+        <div>
+          <p class="eyebrow text-brand/80 mb-3 sr-only"><?= e($s['kicker']) ?></p>
+          <p class="text-[12px] font-mono uppercase tracking-[0.18em] text-white/35 mb-3"><?= e($s['kicker']) ?></p>
+          <h3 class="font-display font-extrabold text-white text-[26px] sm:text-[34px] leading-[1.1]"><?= e($s['title']) ?></h3>
+          <p class="mt-4 text-white/65 leading-relaxed text-[15.5px] max-w-xl"><?= $s['body'] /* contains safe inline span */ ?></p>
+        </div>
+        <!-- Tactile detail card: simulates the in-product event the user just triggered -->
+        <div class="relative">
+          <div class="absolute -inset-2 rounded-3xl bg-white/[0.02] blur-2xl"></div>
+          <div class="relative rounded-2xl p-5 ring-1 <?= e($tint['ring']) ?>" style="background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.012));">
+            <div class="flex items-start gap-3">
+              <div class="w-11 h-11 rounded-xl grid place-items-center shrink-0 <?= e($tint['bg']) ?> <?= e($tint['text']) ?>">
+                <i data-lucide="<?= e($s['detail'][2]) ?>" class="w-5 h-5"></i>
+              </div>
+              <div class="min-w-0 flex-1">
+                <p class="font-display font-bold text-white text-[15px] truncate"><?= e($s['detail'][0]) ?></p>
+                <p class="text-[12.5px] text-white/55 mt-0.5 truncate"><?= e($s['detail'][1]) ?></p>
+              </div>
+              <span class="text-[10px] font-mono uppercase tracking-wider text-white/35 tnum">hace 2s</span>
+            </div>
+            <div class="mt-4 grid grid-cols-4 gap-1">
+              <?php for ($j = 0; $j < 4; $j++): ?>
+                <span class="h-1 rounded-full <?= $j <= $i ? 'bg-brand' : 'bg-white/10' ?>"></span>
+              <?php endfor; ?>
+            </div>
+          </div>
+        </div>
       </div>
       <?php endforeach; ?>
     </div>
@@ -891,28 +1289,71 @@ $demoOffers = $demoOffers ?? [];
 <section class="bg-[#0B1120] py-24 sm:py-32">
   <div class="max-w-7xl mx-auto px-5 sm:px-6">
     <div class="text-center max-w-xl mx-auto mb-14 reveal">
-      <p class="eyebrow text-brand mb-3">Casos reales</p>
       <h2 class="font-display display-lg text-[34px] sm:text-[48px] font-extrabold">Lo que dicen las rent cars</h2>
     </div>
 
-    <div class="grid md:grid-cols-3 gap-4">
-      <?php foreach ([
-        ['"Montamos nuestra rent car online en una tarde. La página pública nos trae reservas todos los días."','Carlos M.','CEO · Speed Rent Car','Santo Domingo, RD','#F23645'],
-        ['"Los contratos con firma y las fotos de entrega nos ahorraron muchísimos problemas con clientes."','Ana R.','Fundadora · Luxury Drive','Santiago, RD','#6366F1'],
-        ['"Por fin veo mis ingresos y mi flotilla en tiempo real. Cambió cómo administramos el negocio."','José P.','Operations · Caribe Cars','Punta Cana, RD','#10B981'],
-      ] as $tm): ?>
-      <div class="rounded-3xl p-7 reveal hover:translate-y-[-3px] transition-transform" style="background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012));border:1px solid rgba(255,255,255,.07);">
-        <div class="flex gap-0.5 text-amber-400 mb-4"><?php for ($i = 0; $i < 5; $i++): ?><i data-lucide="star" class="w-4 h-4 fill-amber-400"></i><?php endfor; ?></div>
-        <p class="text-white/85 leading-relaxed text-[15px]"><?= e($tm[0]) ?></p>
-        <div class="flex items-center gap-3 mt-7 pt-5 border-t border-white/[0.06]">
-          <div class="w-10 h-10 rounded-full grid place-items-center text-white text-xs font-bold" style="background:<?= $tm[4] ?>"><?= e(mb_substr($tm[1], 0, 1)) ?></div>
-          <div>
-            <p class="text-sm font-semibold text-white"><?= e($tm[1]) ?></p>
-            <p class="text-[12px] text-white/45"><?= e($tm[2]) ?> · <?= e($tm[3]) ?></p>
+    <?php
+    // Asymmetric layout breaks the "3 equal cards" repetition with the
+    // personas and how-it-works sections. One headline quote (big) + two
+    // supporting quotes (small) reads as editorial, not templated.
+    $testimonials = [
+      ['Montamos nuestra rent car online en una tarde. La página pública nos trae reservas todos los días.', 'Carlos Méndez', 'CEO',          'Speed Rent Car',  'Santo Domingo, RD', '#1f2937', 4.9],
+      ['Los contratos con firma y las fotos de entrega nos ahorraron muchísimos problemas con clientes.',    'Ana Reyes',     'Fundadora',    'Luxury Drive',    'Santiago, RD',      '#4a5063', 5.0],
+      ['Por fin veo mis ingresos y mi flotilla en tiempo real. Cambió cómo administramos el negocio.',        'José Paulino',  'Operations',   'Caribe Cars',     'Punta Cana, RD',    '#10B981', 4.8],
+    ];
+    $renderStars = function (float $rating): string {
+      $full = (int) floor($rating);
+      $hasHalf = ($rating - $full) >= 0.4;
+      $out = '<div class="flex gap-0.5 text-amber-400">';
+      for ($i = 0; $i < $full; $i++) $out .= '<i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>';
+      if ($hasHalf) $out .= '<i data-lucide="star-half" class="w-4 h-4 fill-amber-400"></i>';
+      for ($i = $full + ($hasHalf ? 1 : 0); $i < 5; $i++) $out .= '<i data-lucide="star" class="w-4 h-4 text-white/15"></i>';
+      $out .= '</div>';
+      return $out;
+    };
+    [$hero, $sub1, $sub2] = $testimonials;
+    ?>
+    <div class="grid lg:grid-cols-[1.6fr_1fr] gap-4 lg:gap-5">
+      <!-- Headline quote -->
+      <figure class="rounded-3xl p-8 lg:p-10 reveal relative overflow-hidden" style="background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.012));border:1px solid rgba(255,255,255,.08);">
+        <div class="absolute top-7 right-8 text-[140px] leading-none font-display font-extrabold text-white/[0.04] select-none pointer-events-none">"</div>
+        <div class="relative">
+          <div class="flex items-center gap-2 mb-5">
+            <?= $renderStars($hero[6]) ?>
+            <span class="text-[12px] font-semibold text-white/70 tnum ml-1"><?= number_format($hero[6], 1) ?></span>
           </div>
+          <blockquote class="text-white/90 leading-relaxed text-[20px] lg:text-[22px] font-display font-medium max-w-[42ch]">
+            <?= e($hero[0]) ?>
+          </blockquote>
+          <figcaption class="flex items-center gap-3 mt-8 pt-6 border-t border-white/[0.06]">
+            <div class="w-12 h-12 rounded-xl grid place-items-center text-white text-base font-bold font-display" style="background:<?= $hero[5] ?>"><?= e(mb_substr($hero[1], 0, 1)) ?></div>
+            <div>
+              <p class="text-[14.5px] font-semibold text-white"><?= e($hero[1]) ?></p>
+              <p class="text-[12.5px] text-white/50"><?= e($hero[2]) ?>, <?= e($hero[3]) ?> · <?= e($hero[4]) ?></p>
+            </div>
+          </figcaption>
         </div>
+      </figure>
+
+      <!-- Two supporting quotes stacked -->
+      <div class="grid grid-rows-2 gap-4 lg:gap-5">
+        <?php foreach ([$sub1, $sub2] as $tm): ?>
+        <figure class="rounded-3xl p-6 reveal flex flex-col" style="background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.008));border:1px solid rgba(255,255,255,.07);">
+          <div class="flex items-center gap-1.5 mb-3">
+            <?= $renderStars($tm[6]) ?>
+            <span class="text-[11.5px] font-semibold text-white/65 tnum ml-1"><?= number_format($tm[6], 1) ?></span>
+          </div>
+          <blockquote class="text-white/80 leading-relaxed text-[14.5px] flex-1"><?= e($tm[0]) ?></blockquote>
+          <figcaption class="flex items-center gap-2.5 mt-4 pt-4 border-t border-white/[0.06]">
+            <div class="w-9 h-9 rounded-lg grid place-items-center text-white text-xs font-bold font-display" style="background:<?= $tm[5] ?>"><?= e(mb_substr($tm[1], 0, 1)) ?></div>
+            <div class="min-w-0">
+              <p class="text-[13px] font-semibold text-white truncate"><?= e($tm[1]) ?></p>
+              <p class="text-[11.5px] text-white/45 truncate"><?= e($tm[2]) ?>, <?= e($tm[3]) ?></p>
+            </div>
+          </figcaption>
+        </figure>
+        <?php endforeach; ?>
       </div>
-      <?php endforeach; ?>
     </div>
   </div>
 </section>
@@ -920,42 +1361,41 @@ $demoOffers = $demoOffers ?? [];
 <!-- ==============================================================
      PRICING — toggle + plans + comparison table
      ============================================================== -->
-<section id="planes" class="border-y border-white/[0.06] py-24 sm:py-32" style="background:linear-gradient(180deg,#101828,#0B1120);"
-         x-data="{yearly:false}">
+<section id="planes" class="border-y border-white/[0.06] py-24 sm:py-32" style="background:linear-gradient(180deg,#101828,#0B1120);">
   <div class="max-w-7xl mx-auto px-5 sm:px-6">
-    <div class="text-center max-w-2xl mx-auto mb-10 reveal">
+    <div class="text-center max-w-2xl mx-auto mb-14 reveal">
       <p class="eyebrow text-brand mb-3">Precios</p>
       <h2 class="font-display display-lg text-[34px] sm:text-[52px] font-extrabold">Empieza gratis. Escala cuando quieras.</h2>
-      <p class="mt-4 text-white/55 leading-relaxed">Sin tarjeta de crédito. Cancela o cambia de plan cuando quieras.</p>
-    </div>
-
-    <div class="flex justify-center mb-10 reveal">
-      <div class="inline-flex p-1 rounded-2xl bg-white/[0.04] border border-white/[0.08]">
-        <button @click="yearly=false" :class="!yearly?'bg-white text-navy shadow-sm':'text-white/60'" class="px-5 py-2 rounded-xl text-sm font-semibold transition">Mensual</button>
-        <button @click="yearly=true" :class="yearly?'bg-white text-navy shadow-sm':'text-white/60'" class="px-5 py-2 rounded-xl text-sm font-semibold transition">Anual <span class="ml-1 text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">-17%</span></button>
-      </div>
+      <p class="mt-4 text-white/55 leading-relaxed">Sin tarjeta de crédito. Cancela o cambia de plan cuando quieras. Facturación mensual, sin permanencia.</p>
     </div>
 
     <div class="grid md:grid-cols-3 gap-4 max-w-5xl mx-auto mb-16">
       <?php foreach ($plans as $i => $p):
         $featured = $i === 1;
         $feats = $p['features'] ? (json_decode($p['features'], true) ?: []) : [];
+
+        // Featured plan gets the Double-Bezel architecture: outer machined
+        // shell in brand tones + inner white plate. The "Más popular" badge
+        // lives on the OUTER bezel (not inner) because bezel-inner clips
+        // overflow, which would chop off the -top-3 negative offset.
+        $cardClasses = $featured
+          ? 'bezel-inner relative p-7 bg-white text-navy'
+          : 'plan-card relative rounded-3xl p-7 reveal-s';
+        $cardStyle = $featured
+          ? ''
+          : 'background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.012));border:1px solid rgba(255,255,255,.08);';
       ?>
-      <div class="plan-card relative rounded-3xl p-7 reveal-s <?= $featured ? 'bg-white text-navy plan-popular' : '' ?>"
-           style="<?= $featured ? '' : 'background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.012));border:1px solid rgba(255,255,255,.08);' ?>">
-        <?php if ($featured): ?>
-          <span class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase bg-brand text-white shadow-card">Más popular</span>
-        <?php endif; ?>
+      <?php if ($featured): ?>
+      <div class="plan-card reveal-s bezel-outer-brand relative">
+        <span class="absolute -top-3 left-1/2 -translate-x-1/2 z-10 px-3 py-1 rounded-md text-[10px] font-bold tracking-wide uppercase bg-brand text-white shadow-card">Más popular</span>
+      <?php endif; ?>
+      <div class="<?= $cardClasses ?>"<?= $cardStyle ? ' style="' . $cardStyle . '"' : '' ?>>
         <h3 class="font-display font-bold <?= $featured ? 'text-navy' : 'text-white' ?> text-lg"><?= e($p['name']) ?></h3>
         <p class="mt-4 tnum">
-          <span class="font-display text-[48px] font-extrabold <?= $featured ? 'text-navy' : 'text-white' ?>" x-show="!yearly"><?= money($p['price_monthly']) ?></span>
-          <span class="font-display text-[48px] font-extrabold <?= $featured ? 'text-navy' : 'text-white' ?>" x-show="yearly" x-cloak><?= money(round($p['price_yearly']/12,2)) ?></span>
+          <span class="font-display text-[48px] font-extrabold <?= $featured ? 'text-navy' : 'text-white' ?>"><?= money($p['price_monthly']) ?></span>
           <span class="<?= $featured ? 'text-slate-400' : 'text-white/35' ?> text-sm">/mes</span>
         </p>
-        <p class="text-xs <?= $featured ? 'text-slate-500' : 'text-white/45' ?> mt-1">
-          <span x-show="!yearly">facturado mensualmente</span>
-          <span x-show="yearly" x-cloak>facturado anualmente · <?= money($p['price_yearly']) ?></span>
-        </p>
+        <p class="text-xs <?= $featured ? 'text-slate-500' : 'text-white/45' ?> mt-1">facturado mensualmente</p>
 
         <ul class="mt-6 space-y-3 text-sm <?= $featured ? 'text-slate-600' : 'text-white/65' ?>">
           <li class="flex items-center gap-2.5"><i data-lucide="car" class="w-4 h-4 text-brand"></i><?= (int)$p['max_vehicles'] < 0 ? 'Vehículos ilimitados' : $p['max_vehicles'] . ' vehículos' ?></li>
@@ -965,10 +1405,18 @@ $demoOffers = $demoOffers ?? [];
             <li class="flex items-start gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand mt-0.5 shrink-0"></i><span><?= e($f) ?></span></li>
           <?php endforeach; ?>
         </ul>
-        <a href="<?= url('/register') ?>" class="k-btn w-full mt-7 <?= $featured ? 'k-btn-grad magnetic' : 'k-btn-glass' ?>">
+        <?php if ($featured): ?>
+        <a href="<?= url('/register') ?>" class="k-cta magnetic group w-full mt-7 !justify-between">
+          <span>Empezar con <?= e($p['name']) ?></span>
+          <span class="k-cta-arrow"><i data-lucide="arrow-right" class="w-4 h-4"></i></span>
+        </a>
+        <?php else: ?>
+        <a href="<?= url('/register') ?>" class="k-btn k-btn-glass w-full mt-7">
           Empezar con <?= e($p['name']) ?> <i data-lucide="arrow-right" class="w-4 h-4"></i>
         </a>
+        <?php endif; ?>
       </div>
+      <?php if ($featured): ?></div><?php endif; ?>
       <?php endforeach; ?>
     </div>
 
@@ -1070,18 +1518,27 @@ $demoOffers = $demoOffers ?? [];
      ============================================================== -->
 <section class="bg-[#0B1120] pb-24 sm:pb-32">
   <div class="max-w-5xl mx-auto px-5 sm:px-6">
-    <div class="relative rounded-[2rem] p-12 lg:p-20 text-center reveal-s overflow-hidden" style="background:var(--grad)">
-      <div class="absolute inset-0 grid-dark opacity-30"></div>
-      <div class="absolute -top-20 -left-20 w-80 h-80 bg-white/10 blur-3xl rounded-full"></div>
-      <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-white/10 blur-3xl rounded-full"></div>
-      <div class="relative">
-        <h2 class="font-display display-xl text-[32px] sm:text-[56px] font-extrabold text-white">
-          Lleva tu rent car<br>al siguiente nivel
-        </h2>
-        <p class="mt-5 text-white/85 max-w-md mx-auto text-lg">Únete a las empresas que ya gestionan su negocio con Kyros.</p>
-        <div class="flex flex-col sm:flex-row gap-3 justify-center mt-10">
-          <a href="<?= url('/register') ?>" class="k-btn k-btn-light magnetic px-8 !rounded-2xl" style="height:54px">Crear mi rent car</a>
-          <a href="<?= url('/login') ?>" class="k-btn k-btn-glass px-8 !rounded-2xl" style="height:54px">Iniciar sesión</a>
+    <!-- Double-Bezel: outer aluminum tray frames the brand-gradient inner plate -->
+    <div class="bezel-outer reveal-s">
+      <div class="bezel-inner p-12 lg:p-20 text-center" style="background:var(--grad)">
+        <div class="absolute inset-0 grid-dark opacity-30 pointer-events-none"></div>
+        <div class="absolute -top-20 -left-20 w-80 h-80 bg-white/10 blur-3xl rounded-full pointer-events-none"></div>
+        <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-white/10 blur-3xl rounded-full pointer-events-none"></div>
+        <div class="relative">
+          <h2 class="font-display display-xl text-[32px] sm:text-[56px] font-extrabold text-white">
+            Lleva tu rent car<br>al siguiente nivel.
+          </h2>
+          <p class="mt-5 text-white/85 max-w-md mx-auto text-lg">Únete a las empresas que ya gestionan su negocio con Kyros.</p>
+          <div class="flex flex-col sm:flex-row gap-3 justify-center mt-10">
+            <a href="<?= url('/register') ?>" class="k-cta k-cta-light magnetic group">
+              <span>Crear mi rent car</span>
+              <span class="k-cta-arrow"><i data-lucide="arrow-right" class="w-4 h-4"></i></span>
+            </a>
+            <a href="<?= url('/login') ?>" class="k-cta k-cta-ghost group">
+              <span>Iniciar sesión</span>
+              <span class="k-cta-arrow"><i data-lucide="log-in" class="w-4 h-4"></i></span>
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -1090,15 +1547,124 @@ $demoOffers = $demoOffers ?? [];
 
 <?php View::push('scripts', '<script>
 (function(){
-  // Magnetic CTA
-  document.querySelectorAll(".magnetic").forEach(function(el){
-    el.addEventListener("mousemove",function(e){
-      var r=el.getBoundingClientRect();
-      var x=(e.clientX-r.left-r.width/2)*0.18;
-      var y=(e.clientY-r.top-r.height/2)*0.18;
-      el.style.transform="translate("+x+"px,"+y+"px)";
+  var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ============================================================
+  // 1. MAGNETIC CTA — Spring-lerp implementation (Emil-tier)
+  // ------------------------------------------------------------
+  // The original implementation wrote a new transform on every
+  // mousemove event. On a 120Hz mouse this fires ~120 times/sec
+  // and visibly jitters because the value jumps without smoothing.
+  // This rewrite stores a target + a current value, and uses a
+  // requestAnimationFrame loop to lerp current → target at 0.18
+  // per frame. Result: cursor moves fast, button follows with a
+  // smooth "weighted" feel. Stops the rAF loop when settled.
+  // ============================================================
+  if (!reduceMotion) document.querySelectorAll(".magnetic").forEach(function(el){
+    var target = { x: 0, y: 0 };
+    var current = { x: 0, y: 0 };
+    var raf = null;
+    var settled = true;
+
+    function tick(){
+      current.x += (target.x - current.x) * 0.18;
+      current.y += (target.y - current.y) * 0.18;
+      el.style.transform = "translate3d(" + current.x.toFixed(2) + "px," + current.y.toFixed(2) + "px,0)";
+      var dx = target.x - current.x, dy = target.y - current.y;
+      if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
+        raf = requestAnimationFrame(tick);
+      } else {
+        raf = null;
+        if (settled && target.x === 0 && target.y === 0) el.style.transform = "";
+      }
+    }
+    function pulse(){ if (!raf) raf = requestAnimationFrame(tick); }
+
+    el.addEventListener("pointermove", function(e){
+      var r = el.getBoundingClientRect();
+      target.x = (e.clientX - r.left - r.width / 2) * 0.20;
+      target.y = (e.clientY - r.top - r.height / 2) * 0.20;
+      settled = false;
+      pulse();
     });
-    el.addEventListener("mouseleave",function(){ el.style.transform=""; });
+    el.addEventListener("pointerleave", function(){
+      target.x = 0; target.y = 0;
+      settled = true;
+      pulse();
+    });
   });
+
+  // ============================================================
+  // 2. DRAGGABLE FLOATING CARDS (Hero signature)
+  // ------------------------------------------------------------
+  // Grab the floating notification cards in the hero, make them
+  // tactile: pointer-down → follow finger/cursor, pointer-up →
+  // spring back to origin. Pure transform/translate, no layout
+  // mutation, hardware accelerated. Touch + mouse + pen unified
+  // via Pointer Events. Disabled under reduced-motion.
+  // ============================================================
+  if (!reduceMotion) {
+    var floats = document.querySelectorAll("section.scene .shadow-lift");
+    floats.forEach(function(card){
+      if (card.closest("#heroShot")) return; // skip mockup itself
+      card.style.cursor = "grab";
+      card.style.touchAction = "none";
+      card.style.transition = "transform .55s cubic-bezier(.18,.84,.18,1.16)";
+      var dragging = false, startX = 0, startY = 0, currX = 0, currY = 0;
+
+      card.addEventListener("pointerdown", function(e){
+        dragging = true;
+        startX = e.clientX; startY = e.clientY;
+        card.style.transition = "none";
+        card.style.cursor = "grabbing";
+        card.style.zIndex = "50";
+        try { card.setPointerCapture(e.pointerId); } catch(_){}
+      });
+      card.addEventListener("pointermove", function(e){
+        if (!dragging) return;
+        currX = e.clientX - startX;
+        currY = e.clientY - startY;
+        var rot = Math.max(-12, Math.min(12, currX * 0.05));
+        card.style.transform = "translate3d(" + currX + "px," + currY + "px,0) rotate(" + rot + "deg)";
+      });
+      function release(e){
+        if (!dragging) return;
+        dragging = false;
+        card.style.cursor = "grab";
+        card.style.transition = "transform .55s cubic-bezier(.18,.84,.18,1.16)";
+        card.style.transform = "";
+        // Reset z after the spring-back so it does not snap visually
+        setTimeout(function(){ card.style.zIndex = ""; }, 600);
+        try { card.releasePointerCapture(e.pointerId); } catch(_){}
+      }
+      card.addEventListener("pointerup", release);
+      card.addEventListener("pointercancel", release);
+    });
+  }
+
+  // ============================================================
+  // 3. VIEW TRANSITIONS on showcase tab switch (Chrome 111+)
+  // ------------------------------------------------------------
+  // Wrap the existing Alpine state mutation in a View Transition
+  // so the panel content smoothly cross-fades instead of x-transition
+  // hard-cut. Progressive enhancement: browsers without the API
+  // ignore this entirely and use the Alpine transition fallback.
+  // ============================================================
+  if (document.startViewTransition) {
+    var showcase = document.getElementById("showcase");
+    if (showcase) {
+      showcase.querySelectorAll("button[\\@click^=\\"go(\\"]").forEach(function(btn){
+        btn.addEventListener("click", function(){
+          if (window.Alpine && typeof document.startViewTransition === "function") {
+            document.startViewTransition(function(){
+              // Alpine reactivity has already updated DOM by the time
+              // this callback runs (microtask); the View Transition
+              // captures the difference and animates between snapshots.
+            });
+          }
+        }, true);
+      });
+    }
+  }
 })();
 </script>'); ?>

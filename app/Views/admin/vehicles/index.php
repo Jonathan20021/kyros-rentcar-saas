@@ -83,7 +83,7 @@ $kpis = [
     <div class="card overflow-hidden group reveal-s">
       <a href="<?= url('/admin/vehicles/show/'.$v['id']) ?>" class="relative aspect-[16/10] bg-paper grid place-items-center overflow-hidden">
         <?php if (!empty($v['main_image'])): ?>
-          <img src="<?= e(media($v['main_image'])) ?>" alt="<?= e($v['brand']) ?>" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-300">
+          <img src="<?= e(media($v['main_image'])) ?>" alt="<?= e($v['brand'].' '.$v['model']) ?>" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
         <?php else: ?><div class="text-slate-200"><i data-lucide="car" class="w-14 h-14"></i></div><?php endif; ?>
         <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-medium <?= status_badge($v['status']) ?>"><?= status_label($v['status']) ?></span>
         <?php if ($v['is_featured']): ?><span class="absolute top-3 right-3 px-2 py-1 rounded-full text-[11px] font-bold bg-amber-400 text-amber-900">★</span><?php endif; ?>
@@ -115,7 +115,7 @@ $kpis = [
     <?php foreach ($vehicles as $v): ?>
     <div class="flex items-center gap-4 p-3.5 hover:bg-paper transition">
       <div class="w-24 h-16 rounded-xl bg-paper grid place-items-center overflow-hidden shrink-0">
-        <?php if (!empty($v['main_image'])): ?><img src="<?= e(media($v['main_image'])) ?>" class="w-full h-full object-contain p-1"><?php else: ?><i data-lucide="car" class="w-7 h-7 text-slate-200"></i><?php endif; ?>
+        <?php if (!empty($v['main_image'])): ?><img src="<?= e(media($v['main_image'])) ?>" class="w-full h-full object-cover" alt="<?= e($v['brand'].' '.$v['model']) ?>"><?php else: ?><i data-lucide="car" class="w-7 h-7 text-slate-200"></i><?php endif; ?>
       </div>
       <div class="min-w-0 flex-1">
         <div class="flex items-center gap-2">

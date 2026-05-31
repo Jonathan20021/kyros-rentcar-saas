@@ -194,7 +194,7 @@ $qs = fn(array $extra=[]) => url('/r/'.$tenant['slug']).'?'.http_build_query(arr
             </div>
             <a href="<?= $detail ?>" class="block aspect-[16/10] grid place-items-center px-3 py-1">
               <?php if (!empty($v['main_image'])): ?>
-                <img src="<?= e(media($v['main_image'])) ?>" alt="<?= e($v['brand']) ?>" class="w-full h-full object-contain group-hover:scale-[1.04] transition duration-300">
+                <img src="<?= e(media($v['main_image'])) ?>" alt="<?= e($v['brand'].' '.$v['model']) ?>" class="w-full h-full object-cover group-hover:scale-[1.04] transition duration-300">
               <?php else: ?>
                 <div class="w-full h-full grid place-items-center text-slate-200"><i data-lucide="car" class="w-16 h-16"></i></div>
               <?php endif; ?>
