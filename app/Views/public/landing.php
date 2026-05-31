@@ -17,6 +17,7 @@ $demoOffers = $demoOffers ?? [];
   .display-xl   { letter-spacing:-.038em; line-height:1.02; }
   .display-lg   { letter-spacing:-.028em; line-height:1.08; }
   .eyebrow      { font-size:11.5px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; }
+  section[id]{ scroll-margin-top:96px; }
 
   /* Refined gradient text — slower, more luxurious */
   .text-grad-pro {
@@ -113,9 +114,43 @@ $demoOffers = $demoOffers ?? [];
   @media (max-width: 768px){
     .ctbl thead{ display:none; }
     .ctbl, .ctbl tbody, .ctbl tr, .ctbl td{ display:block; width:100%; }
-    .ctbl tr{ padding:1rem 0; border-bottom:1px solid rgba(255,255,255,.06); }
-    .ctbl td{ display:flex; justify-content:space-between; padding:.25rem 0; border:0; }
+    .ctbl tr{ padding:1rem; border-bottom:1px solid rgba(255,255,255,.06); }
+    .ctbl td{ display:flex; justify-content:space-between; gap:1rem; padding:.28rem 0; border:0; }
     .ctbl td.feat{ font-weight:600; color:#fff; padding-bottom:.5rem; }
+    .ctbl td:not(.feat)::before{ content:attr(data-label); color:rgba(255,255,255,.45); font-weight:600; text-align:left; }
+    .ctbl td:not(.feat){ align-items:center; }
+  }
+
+  /* Mobile polish: keep the marketing page compact without clipped type,
+     oversized fixed rows, or CTAs wider than the viewport. */
+  .landing-code-url{ overflow-wrap:anywhere; }
+  @media (max-width: 640px){
+    section[id]{ scroll-margin-top:112px; }
+    .landing-hero{ padding-top:7.25rem !important; padding-bottom:5.75rem !important; }
+    .landing-hero-title{ font-size:clamp(2.35rem, 10.8vw, 2.8rem) !important; line-height:1.02; letter-spacing:-.038em; }
+    .landing-hero-copy{ font-size:15.5px !important; line-height:1.65; }
+    .pill{ max-width:100%; align-items:flex-start; text-align:left; line-height:1.35; }
+    .pill i{ flex-shrink:0; margin-top:.08rem; }
+    .hero-actions .k-cta,
+    .mobile-cta-row .k-cta{
+      width:100%; max-width:100%; height:54px; justify-content:space-between;
+      padding-left:1.15rem; padding-right:.45rem;
+    }
+    .hero-actions .k-cta span:first-child,
+    .mobile-cta-row .k-cta span:first-child{ min-width:0; white-space:normal; text-align:left; }
+    .k-cta{ min-width:0; }
+    .bento{ border-radius:1.1rem; }
+    .bento-mobile-grid{ grid-auto-rows:auto; }
+    .landing-code-url{ display:inline-block; max-width:100%; white-space:normal; vertical-align:baseline; }
+    .showcase-panel{ min-height:auto !important; padding:1.25rem !important; }
+    .storefront-cards{ grid-template-columns:1fr; }
+  }
+  @media (min-width: 421px) and (max-width: 640px){
+    .storefront-cards{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+  }
+  @media (max-width: 380px){
+    .landing-hero-title{ font-size:2.2rem !important; }
+    .hero-actions .k-cta{ height:52px; font-size:14px; }
   }
 
   /* =====================================================================
@@ -355,7 +390,7 @@ $demoOffers = $demoOffers ?? [];
 <!-- ==============================================================
      HERO
      ============================================================== -->
-<section class="scene pt-32 pb-28 sm:pt-36 sm:pb-32">
+<section class="landing-hero scene pt-32 pb-28 sm:pt-36 sm:pb-32">
   <div class="grid-floor"></div>
 
   <div class="relative max-w-7xl mx-auto px-5 sm:px-6">
@@ -367,17 +402,17 @@ $demoOffers = $demoOffers ?? [];
         <i data-lucide="arrow-right" class="w-3.5 h-3.5 opacity-60"></i>
       </a>
 
-      <h1 class="font-display display-hero text-[44px] sm:text-[72px] lg:text-[96px] font-extrabold reveal">
+      <h1 class="landing-hero-title font-display display-hero text-[44px] sm:text-[72px] lg:text-[96px] font-extrabold reveal">
         El sistema operativo<br>
         <span class="text-grad-pro">de tu rent car</span>
       </h1>
 
-      <p class="mt-7 sm:mt-9 text-[17px] sm:text-[20px] text-white/55 max-w-[640px] mx-auto leading-[1.55] reveal">
+      <p class="landing-hero-copy mt-7 sm:mt-9 text-[17px] sm:text-[20px] text-white/55 max-w-[640px] mx-auto leading-[1.55] reveal">
         Flotilla, reservas, contratos, pagos y tu página pública de alquiler en una sola plataforma.
         <span class="text-white/80">Veloz, segura y hecha para vender.</span>
       </p>
 
-      <div class="flex flex-col sm:flex-row gap-3 justify-center mt-10 reveal">
+      <div class="hero-actions flex flex-col sm:flex-row gap-3 justify-center mt-10 reveal">
         <a href="<?= url('/register') ?>" class="k-cta magnetic group">
           <span>Crear mi rent car gratis</span>
           <span class="k-cta-arrow"><i data-lucide="arrow-right" class="w-4 h-4"></i></span>
@@ -596,14 +631,12 @@ $demoOffers = $demoOffers ?? [];
            go(i){ this.t=i; this.p=0; },
            tick(){ if(this.paused || !this.visible) return; this.p+=1.5; if(this.p>=100){ this.p=0; this.t=(this.t+1)%4; } }
          }"
-         x-init="
-           // Pause until the section is actually on-screen — avoids burning
-           // 10 ticks/sec while the user is reading hero or footer.
+         x-init="(() => {
            const io = new IntersectionObserver((es)=>{ visible = es[0].isIntersecting; },{threshold:0.2});
            io.observe($el);
            _id = setInterval(()=>tick(),100);
            paused = false;
-         "
+         })()"
          @mouseenter="paused=true" @mouseleave="paused=false">
   <div class="max-w-7xl mx-auto px-5 sm:px-6">
     <div class="text-center max-w-2xl mx-auto mb-14 reveal">
@@ -874,14 +907,14 @@ $demoOffers = $demoOffers ?? [];
       <h2 class="font-display display-lg text-[34px] sm:text-[52px] font-extrabold">Una plataforma para toda tu operación</h2>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-6 gap-4 auto-rows-[160px]">
+    <div class="bento-mobile-grid grid grid-cols-1 md:grid-cols-6 gap-4 auto-rows-[160px]">
       <!-- Storefront -->
       <div class="bento md:col-span-4 md:row-span-2 p-7 lg:p-9 reveal-s flex flex-col justify-between"
            onmousemove="this.style.setProperty('--mx', (event.offsetX)+'px'); this.style.setProperty('--my', (event.offsetY)+'px')">
         <div class="relative z-10">
           <h3 class="font-display font-extrabold text-white text-2xl lg:text-3xl display-lg">Página pública con tu propio slug</h3>
           <p class="text-white/55 mt-3 max-w-md leading-relaxed">Buscador, filtros, histograma de precios, galería de vehículos y reservas online — listo sin escribir una línea de código.</p>
-          <div class="mt-6 inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-white/75 tnum">
+          <div class="landing-code-url mt-6 inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-white/75 tnum">
             <i data-lucide="link-2" class="w-4 h-4 text-white/40"></i> rentcar.kyrosrd.com/r/tu-rentcar
           </div>
         </div>
@@ -1076,7 +1109,7 @@ $demoOffers = $demoOffers ?? [];
           Una página pública<br>tan buena como un sitio dedicado
         </h2>
         <p class="mt-5 text-white/60 text-[15px] leading-relaxed max-w-xl">
-          Sin código, sin diseñadores, sin esperar semanas. En el momento que creas tu rent car, ya tienes un <span class="font-mono text-white/85 text-[13.5px] bg-white/[0.05] px-1.5 py-0.5 rounded">rentcar.kyrosrd.com/r/tu-slug</span> con catálogo, filtros, galería y motor de reservas.
+          Sin código, sin diseñadores, sin esperar semanas. En el momento que creas tu rent car, ya tienes un <span class="landing-code-url font-mono text-white/85 text-[13.5px] bg-white/[0.05] px-1.5 py-0.5 rounded">rentcar.kyrosrd.com/r/tu-slug</span> con catálogo, filtros, galería y motor de reservas.
         </p>
         <div class="mt-7 space-y-3.5">
           <?php foreach ([
@@ -1138,7 +1171,7 @@ $demoOffers = $demoOffers ?? [];
                 <span class="text-[10px] text-white/45 px-2 py-1 rounded bg-white/[0.04]">Auto ▾</span>
               </div>
               <!-- Vehicle cards -->
-              <div class="grid grid-cols-2 gap-2.5">
+              <div class="storefront-cards grid grid-cols-2 gap-2.5">
                 <?php
                 $cards = [
                   ['honda-civic.jpg',       'Honda Civic',       '2,400'],
@@ -1190,7 +1223,7 @@ $demoOffers = $demoOffers ?? [];
       [
         'kicker' => 'Minuto 0',
         'title'  => 'Crea tu rent car.',
-        'body'   => 'Registra tu empresa, sube tu logo y elige los colores de tu marca. Recibes tu página pública en un slug propio: <span class="font-mono text-white/85 text-[13px] bg-white/[0.05] px-1.5 py-0.5 rounded">rentcar.kyrosrd.com/r/tu-rentcar</span>.',
+        'body'   => 'Registra tu empresa, sube tu logo y elige los colores de tu marca. Recibes tu página pública en un slug propio: <span class="landing-code-url font-mono text-white/85 text-[13px] bg-white/[0.05] px-1.5 py-0.5 rounded">rentcar.kyrosrd.com/r/tu-rentcar</span>.',
         'detail' => ['Empresa registrada', 'rent car · plan demo', 'check-circle-2', 'emerald'],
       ],
       [
@@ -1520,7 +1553,7 @@ $demoOffers = $demoOffers ?? [];
   <div class="max-w-5xl mx-auto px-5 sm:px-6">
     <!-- Double-Bezel: outer aluminum tray frames the brand-gradient inner plate -->
     <div class="bezel-outer reveal-s">
-      <div class="bezel-inner p-12 lg:p-20 text-center" style="background:var(--grad)">
+      <div class="bezel-inner p-7 sm:p-12 lg:p-20 text-center" style="background:var(--grad)">
         <div class="absolute inset-0 grid-dark opacity-30 pointer-events-none"></div>
         <div class="absolute -top-20 -left-20 w-80 h-80 bg-white/10 blur-3xl rounded-full pointer-events-none"></div>
         <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-white/10 blur-3xl rounded-full pointer-events-none"></div>
@@ -1529,7 +1562,7 @@ $demoOffers = $demoOffers ?? [];
             Lleva tu rent car<br>al siguiente nivel.
           </h2>
           <p class="mt-5 text-white/85 max-w-md mx-auto text-lg">Únete a las empresas que ya gestionan su negocio con Kyros.</p>
-          <div class="flex flex-col sm:flex-row gap-3 justify-center mt-10">
+          <div class="mobile-cta-row flex flex-col sm:flex-row gap-3 justify-center mt-10">
             <a href="<?= url('/register') ?>" class="k-cta k-cta-light magnetic group">
               <span>Crear mi rent car</span>
               <span class="k-cta-arrow"><i data-lucide="arrow-right" class="w-4 h-4"></i></span>
@@ -1653,7 +1686,9 @@ $demoOffers = $demoOffers ?? [];
   if (document.startViewTransition) {
     var showcase = document.getElementById("showcase");
     if (showcase) {
-      showcase.querySelectorAll("button[\\@click^=\\"go(\\"]").forEach(function(btn){
+      Array.prototype.forEach.call(showcase.querySelectorAll("button"), function(btn){
+        var clickExpr = btn.getAttribute("@click") || btn.getAttribute("x-on:click") || "";
+        if (clickExpr.indexOf("go(") !== 0) return;
         btn.addEventListener("click", function(){
           if (window.Alpine && typeof document.startViewTransition === "function") {
             document.startViewTransition(function(){

@@ -14,6 +14,41 @@ $flashes = $_flashes ?? [];
 <script src="<?= asset('js/ScrollTrigger.min.js') ?>"></script>
 <!-- Mark the page so the legacy IntersectionObserver in _assets.php stands down -->
 <script>window.__USE_GSAP__ = true;</script>
+<style>
+  .marketing-nav-inner,
+  .marketing-logo,
+  .marketing-actions{ min-width:0; }
+  .marketing-login-link{ display:none !important; }
+  .brand-short,
+  .nav-cta-short{ display:none; }
+
+  @media (max-width: 640px){
+    .marketing-nav-wrap{ padding-left:.75rem !important; padding-right:.75rem !important; }
+    .marketing-nav-inner{ padding-left:.65rem !important; padding-right:.5rem !important; gap:.5rem; }
+    .marketing-logo{ gap:.6rem; }
+    .marketing-logo-mark{ flex:0 0 auto; width:2rem; height:2rem; }
+    .marketing-logo-text{ max-width:7.1rem; line-height:1.05; white-space:normal; }
+    .marketing-actions{ gap:.4rem; }
+    .marketing-primary-cta{ flex:0 0 auto; padding-left:.8rem !important; padding-right:.8rem !important; }
+  }
+
+  @media (min-width: 1024px){
+    .marketing-login-link{ display:inline-flex !important; }
+  }
+
+  @media (max-width: 430px){
+    .nav-cta-full{ display:none; }
+    .nav-cta-short{ display:inline; }
+    .marketing-logo-text{ max-width:5.5rem; font-size:16px; }
+  }
+
+  @media (max-width: 350px){
+    .brand-full{ display:none; }
+    .brand-short{ display:inline; }
+    .marketing-logo-text{ max-width:3.2rem; }
+    .marketing-primary-cta{ display:none !important; }
+  }
+</style>
 </head>
 <body class="bg-[#0E1422] text-white antialiased selection:bg-brand/40">
 
@@ -22,17 +57,20 @@ $flashes = $_flashes ?? [];
 
 <!-- Nav -->
 <header class="fixed top-0 inset-x-0 z-50 transition-all duration-300" :class="scrolled ? 'py-2' : 'py-4'"
-        x-data="{sec:''}" x-init="
+        x-data="{sec:''}" x-init="(() => {
           const ids=['features','showcase','planes','faq'];
           const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting) sec=e.target.id;}),{rootMargin:'-45% 0px -50% 0px'});
           ids.forEach(i=>{const el=document.getElementById(i); if(el) io.observe(el);});
-        ">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6">
-    <div class="flex items-center justify-between rounded-xl px-3 sm:px-4 h-14 transition-all duration-300"
+        })()">
+  <div class="marketing-nav-wrap max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="marketing-nav-inner flex items-center justify-between rounded-xl px-3 sm:px-4 h-14 transition-all duration-300"
          :class="scrolled ? 'bg-[#141E30]/85 backdrop-blur-xl border border-white/[0.08] shadow-soft' : ''">
-      <a href="<?= url('/') ?>" class="flex items-center gap-2.5">
-        <div class="w-8 h-8 rounded-lg grad-bg grid place-items-center font-black text-white text-sm">K</div>
-        <span class="font-display font-extrabold text-[17px] tracking-tight">Kyros Rent Car</span>
+      <a href="<?= url('/') ?>" class="marketing-logo flex items-center gap-2.5">
+        <div class="marketing-logo-mark w-8 h-8 rounded-lg grad-bg grid place-items-center font-black text-white text-sm">K</div>
+        <span class="marketing-logo-text font-display font-extrabold text-[17px] tracking-tight">
+          <span class="brand-full">Kyros Rent Car</span>
+          <span class="brand-short">Kyros</span>
+        </span>
       </a>
       <nav class="hidden md:flex items-center gap-1 text-[14px] font-medium">
         <a href="#showcase" :class="sec==='showcase'?'text-white bg-white/10':'text-white/55 hover:text-white'" class="px-3 py-1.5 rounded-lg transition">Producto</a>
@@ -41,9 +79,12 @@ $flashes = $_flashes ?? [];
         <a href="#planes" :class="sec==='planes'?'text-white bg-white/10':'text-white/55 hover:text-white'" class="px-3 py-1.5 rounded-lg transition">Planes</a>
         <a href="#faq" :class="sec==='faq'?'text-white bg-white/10':'text-white/55 hover:text-white'" class="px-3 py-1.5 rounded-lg transition">FAQ</a>
       </nav>
-      <div class="flex items-center gap-2">
-        <a href="<?= url('/login') ?>" class="hidden sm:inline-flex k-btn k-btn-ghost !h-9 !px-3 !text-[14px] !text-white/70 hover:!bg-white/10 hover:!text-white">Iniciar sesión</a>
-        <a href="<?= url('/register') ?>" class="k-btn k-btn-light !h-9 !px-4 !text-[14px]">Crear mi rent car</a>
+      <div class="marketing-actions flex items-center gap-2">
+        <a href="<?= url('/login') ?>" class="marketing-login-link k-btn k-btn-ghost !h-9 !px-3 !text-[14px] !text-white/70 hover:!bg-white/10 hover:!text-white">Iniciar sesión</a>
+        <a href="<?= url('/register') ?>" class="marketing-primary-cta k-btn k-btn-light !h-9 !px-4 !text-[14px]">
+          <span class="nav-cta-full">Crear mi rent car</span>
+          <span class="nav-cta-short">Crear</span>
+        </a>
         <!-- Mobile menu toggle -->
         <button type="button" @click="mobile = !mobile" :aria-expanded="mobile" aria-label="Menú"
                 class="md:hidden inline-grid place-items-center w-9 h-9 rounded-lg text-white/80 hover:bg-white/10 transition">
