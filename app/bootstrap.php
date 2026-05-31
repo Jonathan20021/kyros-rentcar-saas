@@ -34,9 +34,16 @@ spl_autoload_register(function (string $class): void {
 });
 
 use App\Core\Config;
+use App\Core\Env;
 use App\Core\Session;
 use App\Core\View;
 use App\Core\Logger;
+
+// ---------------------------------------------------------------------
+// Environment (.env) — loaded before any config so KYROS_ENV / DB_* apply.
+// Real environment variables always take precedence over the file.
+// ---------------------------------------------------------------------
+Env::load(ROOT_PATH . DIRECTORY_SEPARATOR . '.env');
 
 // ---------------------------------------------------------------------
 // Config
