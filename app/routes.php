@@ -67,7 +67,14 @@ $router->post('/super-admin/tenants/update/{id}', 'SuperAdmin\\TenantController@
 $router->post('/super-admin/tenants/suspend/{id}', 'SuperAdmin\\TenantController@suspend', [$auth, $superadmin]);
 $router->post('/super-admin/tenants/activate/{id}', 'SuperAdmin\\TenantController@activate', [$auth, $superadmin]);
 $router->get('/super-admin/plans', 'SuperAdmin\\PlanController@index', [$auth, $superadmin]);
-$router->get('/super-admin/users', 'SuperAdmin\\UserController@index', [$auth, $superadmin]);
+// Global users — full CRUD (super admins + tenant staff) from the super panel
+$router->get ('/super-admin/users',              'SuperAdmin\\UserController@index',   [$auth, $superadmin]);
+$router->get ('/super-admin/users/create',       'SuperAdmin\\UserController@create',  [$auth, $superadmin]);
+$router->post('/super-admin/users',              'SuperAdmin\\UserController@store',   [$auth, $superadmin]);
+$router->get ('/super-admin/users/edit/{id}',    'SuperAdmin\\UserController@edit',    [$auth, $superadmin]);
+$router->post('/super-admin/users/update/{id}',  'SuperAdmin\\UserController@update',  [$auth, $superadmin]);
+$router->post('/super-admin/users/toggle/{id}',  'SuperAdmin\\UserController@toggle',  [$auth, $superadmin]);
+$router->post('/super-admin/users/delete/{id}',  'SuperAdmin\\UserController@destroy', [$auth, $superadmin]);
 $router->get('/super-admin/logs', 'SuperAdmin\\LogController@index', [$auth, $superadmin]);
 // Approvals — tenant activations + storage requests
 $router->get ('/super-admin/approvals',                              'SuperAdmin\\ApprovalsController@index',          [$auth, $superadmin]);
