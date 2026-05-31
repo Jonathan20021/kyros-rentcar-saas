@@ -36,10 +36,23 @@ if (!function_exists('abs_url')) {
 }
 
 if (!function_exists('asset')) {
-    /** Build a URL to a public asset. */
+    /**
+     * Build a URL to a public asset, with an automatic cache-busting ?v=<mtime>
+     * query when the file exists. Rebuilding/redeploying an asset changes its
+     * modification time, so browsers always fetch the fresh version instead of a
+     * stale cached copy.
+     */
     function asset(string $path): string
     {
-        return url('/assets/' . ltrim($path, '/'));
+        $rel = ltrim($path, '/');
+        $url = url('/assets/' . $rel);
+        $file = rtrim((string) Config::get('app.root_path', ''), '/\\')
+              . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'assets'
+              . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $rel);
+        if (is_file($file)) {
+            $url .= (strpos($url, '?') === false ? '?' : '&') . 'v=' . filemtime($file);
+        }
+        return $url;
     }
 }
 
