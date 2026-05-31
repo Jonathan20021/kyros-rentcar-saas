@@ -17,7 +17,7 @@
           <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 <?= $featured?'text-brand':'text-brand2' ?>"></i> <?= ((int)$p['max_users']<0)?'Usuarios ilimitados':$p['max_users'].' usuarios' ?></li>
           <?php foreach ($feats as $f): ?><li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 <?= $featured?'text-brand':'text-brand2' ?>"></i> <?= e($f) ?></li><?php endforeach; ?>
         </ul>
-        <a href="<?= url('/register') ?>" class="k-btn w-full mt-7 <?= $featured ? 'k-btn-grad' : 'k-btn-glass' ?>">Empezar</a>
+        <a href="<?= url('/register?plan=' . urlencode($p['slug'])) ?>" class="k-btn w-full mt-7 <?= $featured ? 'k-btn-grad' : 'k-btn-glass' ?>">Empezar con <?= e($p['name']) ?></a>
       </div>
       <?php endforeach; ?>
     </div>

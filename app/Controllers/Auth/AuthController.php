@@ -8,6 +8,7 @@ use App\Core\Session;
 use App\Core\Database;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Models\Plan;
 use App\Models\ActivityLog;
 use App\Services\LoginThrottle;
 use App\Services\DemoService;
@@ -183,12 +184,18 @@ class AuthController extends Controller
     public function showRegister(Request $request): void
     {
         if (Auth::check()) { $this->redirect('/dashboard'); }
-        $this->view('auth/register', ['title' => 'Crear mi rent car · Kyros Rent Car'], 'auth');
+        // Plan picked on the pricing page (?plan=slug). On a failed-validation
+        // bounce the query string is gone, so fall back to the flashed old input.
+        $slug = $request->str('plan') ?: (string) Session::old('plan');
+        $this->view('auth/register', [
+            'title' => 'Crear mi rent car · Kyros Rent Car',
+            'plan'  => Plan::resolvePublic($slug ?: null),
+        ], 'auth');
     }
 
     public function register(Request $request): void
     {
-        $input = $request->only(['company','email','phone','password','password_confirmation','owner_name']);
+        $input = $request->only(['company','email','phone','password','password_confirmation','owner_name','plan']);
 
         $data = $this->validateOrBack(
             $input,
@@ -211,6 +218,10 @@ class AuthController extends Controller
             $this->redirect('/register');
         }
 
+        // Plan the visitor chose on the pricing page; falls back to the cheapest
+        // public plan if missing or invalid.
+        $plan = Plan::resolvePublic($input['plan'] ?? null);
+
         try {
             Database::beginTransaction();
 
@@ -224,12 +235,12 @@ class AuthController extends Controller
                 'primary_color'  => '#4F46E5',
                 'secondary_color'=> '#06B6D4',
                 'currency'       => 'DOP',
-                'plan_id'        => 1, // Starter
+                'plan_id'        => (int) ($plan['id'] ?? 1),
                 // Fresh registrations sit in `pending_approval` until super admin
-                // reviews. Demo redemptions bypass this (they go straight to
-                // trial in DemoService::redeem).
+                // reviews. No free trial here — trials are handled exclusively by
+                // the demo system (DemoService::redeem).
                 'status'         => 'pending_approval',
-                'trial_ends_at'  => date('Y-m-d', strtotime('+30 days')),
+                'trial_ends_at'  => null,
             ]);
 
             // Owner role = 2
@@ -279,7 +290,7 @@ class AuthController extends Controller
                     'slug'      => $slug,
                     'email'     => $email,
                     'phone'     => $data['phone'] ?? null,
-                    'plan_name' => 'Starter',
+                    'plan_name' => $plan['name'] ?? 'Starter',
                     'status'    => 'pending_approval',
                 ],
                 ['name' => $data['owner_name'], 'email' => $email]

@@ -1,9 +1,11 @@
+<?php $planName = $plan['name'] ?? 'Starter'; $planSlug = $plan['slug'] ?? 'starter'; ?>
 <div>
   <h2 class="font-display text-3xl font-extrabold tracking-tight">Crea tu rent car</h2>
-  <p class="text-white/50 mt-2">Empieza gratis con el plan Starter. Sin tarjeta.</p>
+  <p class="text-white/50 mt-2">Empieza con el plan <strong class="text-white"><?= e($planName) ?></strong>. Sin tarjeta.</p>
 
   <form method="POST" action="<?= url('/register') ?>" class="mt-8 space-y-4">
     <?= csrf_field() ?>
+    <input type="hidden" name="plan" value="<?= e($planSlug) ?>">
     <div>
       <label class="block text-sm font-medium text-white/70 mb-1.5">Nombre de la empresa</label>
       <input type="text" name="company" value="<?= old('company') ?>" required placeholder="Speed Rent Car" class="fld-dark">

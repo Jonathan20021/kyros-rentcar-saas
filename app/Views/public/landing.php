@@ -1439,12 +1439,12 @@ $demoOffers = $demoOffers ?? [];
           <?php endforeach; ?>
         </ul>
         <?php if ($featured): ?>
-        <a href="<?= url('/register') ?>" class="k-cta magnetic group w-full mt-7 !justify-between">
+        <a href="<?= url('/register?plan=' . urlencode($p['slug'])) ?>" class="k-cta magnetic group w-full mt-7 !justify-between">
           <span>Empezar con <?= e($p['name']) ?></span>
           <span class="k-cta-arrow"><i data-lucide="arrow-right" class="w-4 h-4"></i></span>
         </a>
         <?php else: ?>
-        <a href="<?= url('/register') ?>" class="k-btn k-btn-glass w-full mt-7">
+        <a href="<?= url('/register?plan=' . urlencode($p['slug'])) ?>" class="k-btn k-btn-glass w-full mt-7">
           Empezar con <?= e($p['name']) ?> <i data-lucide="arrow-right" class="w-4 h-4"></i>
         </a>
         <?php endif; ?>

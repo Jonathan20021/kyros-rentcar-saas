@@ -50,6 +50,25 @@ class Plan extends Model
         );
     }
 
+    /** A single active, public plan by slug — or null if it isn't offered publicly. */
+    public static function publicBySlug(?string $slug): ?array
+    {
+        if (!$slug) return null;
+        return Database::selectOne(
+            "SELECT * FROM plans WHERE slug = :s AND status = 'active' AND is_public = 1 LIMIT 1",
+            ['s' => $slug]
+        );
+    }
+
+    /** Resolve the public plan a visitor picked from the pricing page, falling back to the cheapest. */
+    public static function resolvePublic(?string $slug): ?array
+    {
+        $plan = self::publicBySlug($slug);
+        if ($plan) return $plan;
+        $all = self::publicPlans();
+        return $all[0] ?? null;
+    }
+
     /** Returns true if the given plan slug includes the feature. */
     public static function planHas(?string $slug, string $feature): bool
     {
