@@ -128,7 +128,7 @@ $heroAlt = $featured ? trim($featured['brand'].' '.$featured['model']) : ($tenan
         <h2 class="mt-3 font-display text-3xl lg:text-5xl font-black tracking-[-.045em] text-ink">Selecciona por estilo, marca o plan de viaje.</h2>
       </div>
       <p class="max-w-2xl text-slate-500 leading-relaxed lg:justify-self-end">
-        Una vitrina pensada para rent cars premium: marcas visibles, vehiculos listos para inspeccionar y reserva directa por WhatsApp o formulario.
+        Explora nuestra flota por marca: vehiculos inspeccionados, listos para entregar y con reserva directa por WhatsApp o formulario.
       </p>
     </div>
 
@@ -217,7 +217,7 @@ $heroAlt = $featured ? trim($featured['brand'].' '.$featured['model']) : ($tenan
         <p class="text-[11px] font-black uppercase tracking-[.26em] text-brand">Servicio personal</p>
         <h2 class="mt-3 font-display text-4xl lg:text-6xl font-black tracking-[-.055em] leading-[.95] text-ink">Entrega coordinada, soporte directo y autos inspeccionados.</h2>
         <p class="mt-6 max-w-2xl text-lg leading-relaxed text-slate-500">
-          Cada tenant puede presentar su flota como una marca propia: portada con imagen real, catalogo por filtros, datos del vehiculo y llamadas a reserva sin perder la administracion del SaaS.
+          Presentamos nuestra flota con imagenes reales, fichas completas de cada vehiculo y reserva directa. Filtra por lo que necesitas y confirma tu unidad en minutos, con entrega coordinada y atencion personalizada.
         </p>
         <div class="mt-8 grid sm:grid-cols-3 gap-4">
           <?php foreach ([['shield-check','Seguro','Cobertura disponible'],['map-pin','Entrega','Aeropuerto, hotel o domicilio'],['headset','Asistencia','Contacto directo 24/7']] as $b): ?>
