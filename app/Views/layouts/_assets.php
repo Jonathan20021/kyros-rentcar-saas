@@ -67,6 +67,16 @@ $faviconSvg = rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0
   main table td, main table th{ font-variant-numeric:tabular-nums; }
   svg.lucide{ stroke-width:1.75; }
 
+  /* ===== PWA safe-areas — when installed (standalone) the page extends under
+     the status bar / Dynamic Island / home indicator. These keep fixed bars
+     clear of the unsafe zones. env() resolves to 0 outside standalone, so the
+     rules are inert in normal browsers. Hand-written (not Tailwind) so they
+     work regardless of the compiled stylesheet. */
+  .pwa-safe-top{ top: calc(env(safe-area-inset-top)) !important; }
+  .pwa-safe-header{ padding-top: env(safe-area-inset-top);
+                    height: calc(4rem + env(safe-area-inset-top)) !important; }
+  .pwa-safe-pt{ padding-top: env(safe-area-inset-top); }
+
   .hairline{ border-color:#E6EAF1; } .dark .hairline{ border-color:rgba(255,255,255,.08); }
 
   ::-webkit-scrollbar{ width:10px; height:10px; }

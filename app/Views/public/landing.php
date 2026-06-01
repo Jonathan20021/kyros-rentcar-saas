@@ -125,8 +125,8 @@ $demoOffers = $demoOffers ?? [];
      oversized fixed rows, or CTAs wider than the viewport. */
   .landing-code-url{ overflow-wrap:anywhere; }
   @media (max-width: 640px){
-    section[id]{ scroll-margin-top:112px; }
-    .landing-hero{ padding-top:7.25rem !important; padding-bottom:5.75rem !important; }
+    section[id]{ scroll-margin-top:calc(112px + env(safe-area-inset-top)); }
+    .landing-hero{ padding-top:calc(7.25rem + env(safe-area-inset-top)) !important; padding-bottom:5.75rem !important; }
     .landing-hero-title{ font-size:clamp(2.35rem, 10.8vw, 2.8rem) !important; line-height:1.02; letter-spacing:-.038em; }
     .landing-hero-copy{ font-size:15.5px !important; line-height:1.65; }
     .pill{ max-width:100%; align-items:flex-start; text-align:left; line-height:1.35; }

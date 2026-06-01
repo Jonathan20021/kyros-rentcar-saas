@@ -84,7 +84,7 @@ $planName = $tenant['plan_name'] ?? null;
 <div class="flex min-h-screen">
 
   <!-- Sidebar -->
-  <aside class="fixed lg:sticky top-0 z-40 h-screen w-[260px] shrink-0 bg-white dark:bg-slate-900 border-r hairline flex flex-col transition-[transform,width] duration-200 ease-out"
+  <aside class="fixed lg:sticky top-0 z-40 h-screen w-[260px] shrink-0 bg-white dark:bg-slate-900 border-r hairline flex flex-col transition-[transform,width] duration-200 ease-out pwa-safe-pt"
          :class="[
            open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
            collapsed ? 'lg:w-[76px]' : 'lg:w-[260px]'
@@ -183,7 +183,7 @@ $planName = $tenant['plan_name'] ?? null;
 
   <!-- Main column -->
   <div class="flex-1 flex flex-col min-w-0">
-    <header class="h-16 sticky top-0 z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b hairline flex items-center gap-3 px-4 lg:px-7">
+    <header class="h-16 sticky top-0 z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b hairline flex items-center gap-3 px-4 lg:px-7 pwa-safe-header">
       <button @click="open=!open" class="lg:hidden p-2 -ml-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
         <i data-lucide="menu" class="w-5 h-5"></i>
       </button>

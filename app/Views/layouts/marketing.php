@@ -53,10 +53,10 @@ $flashes = $_flashes ?? [];
 <body class="bg-[#0E1422] text-white antialiased selection:bg-brand/40">
 
 <!-- Scroll progress -->
-<div class="fixed top-0 left-0 right-0 h-[3px] z-[60]"><div id="kprogress" class="h-full origin-left grad-bg" style="transform:scaleX(0)"></div></div>
+<div class="fixed top-0 left-0 right-0 h-[3px] z-[60] pwa-safe-top"><div id="kprogress" class="h-full origin-left grad-bg" style="transform:scaleX(0)"></div></div>
 
 <!-- Nav -->
-<header class="fixed top-0 inset-x-0 z-50 transition-all duration-300" :class="scrolled ? 'py-2' : 'py-4'"
+<header class="fixed top-0 inset-x-0 z-50 transition-all duration-300 pwa-safe-top" :class="scrolled ? 'py-2' : 'py-4'"
         x-data="{sec:''}" x-init="(() => {
           const ids=['features','showcase','planes','faq'];
           const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting) sec=e.target.id;}),{rootMargin:'-45% 0px -50% 0px'});
