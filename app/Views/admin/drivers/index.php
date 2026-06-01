@@ -74,7 +74,10 @@ $kpis = [
       elseif ($diff <= 30)  $licWarn = ["Vence en {$diff}d", 'bg-amber-50 text-amber-600'];
     }
   ?>
-  <a href="<?= url('/admin/drivers/show/'.$d['id']) ?>" class="card overflow-hidden group reveal-s block">
+  <div class="card overflow-hidden group reveal-s relative">
+    <!-- Stretched-link overlay: makes the whole card navigable WITHOUT nesting
+         the contact <a> chips inside another <a> (invalid HTML that breaks the DOM). -->
+    <a href="<?= url('/admin/drivers/show/'.$d['id']) ?>" class="absolute inset-0 z-10" aria-label="Ver <?= e($fullName ?: 'chofer') ?>"></a>
     <div class="relative h-32 bg-gradient-to-br from-brand/15 to-brand2/10 dark:from-brand/25 dark:to-navy">
       <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-semibold <?= $sm[1] ?>"><?= $sm[0] ?></span>
       <?php if ($licWarn): ?>
@@ -95,7 +98,7 @@ $kpis = [
         <?php if (!empty($d['phone'])): ?> · <?= e($d['phone']) ?><?php endif; ?>
       </p>
       <?php if (!empty($d['phone']) || !empty($d['email'])): ?>
-        <div class="mt-2" @click.stop>
+        <div class="mt-2 relative z-20" @click.stop>
           <?= \App\Core\View::renderPartial('_partials/contact_actions', [
             'phone'    => $d['phone'] ?? null,
             'whatsapp' => $d['phone'] ?? null,
@@ -117,7 +120,7 @@ $kpis = [
         </div>
       </div>
     </div>
-  </a>
+  </div>
   <?php endforeach; ?>
 </div>
 <?php endif; ?>
