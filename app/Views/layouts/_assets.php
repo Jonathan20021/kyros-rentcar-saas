@@ -27,6 +27,36 @@ $accent2Rgb = $hexToRgb($accent2);
 <meta name="description" content="<?= e($metaDescription ?? 'Kyros Rent Car — software para administrar tu negocio de alquiler de vehiculos.') ?>">
 <meta name="theme-color" content="#0E1422">
 <?php
+// ---- Open Graph / Twitter cards: rich link previews on WhatsApp, Instagram,
+// Facebook, Telegram, X, etc. og:image MUST be an absolute URL. Crawlers cache
+// by URL, so a ?v=<mtime> lets a re-scrape pick up a new image. ----
+$ogTitle = $title ?? 'Kyros Rent Car — El sistema operativo de tu rent car';
+$ogDesc  = $metaDescription ?? 'Flotilla, reservas online, contratos, pagos y tu pagina publica con tu marca — en una sola plataforma. Empieza gratis, sin tarjeta.';
+$ogImgFile = rtrim((string) \App\Core\Config::get('app.root_path', ''), '/\\') . '/public/assets/img/og-image.png';
+$ogImage   = abs_url('/assets/img/og-image.png') . (is_file($ogImgFile) ? '?v=' . filemtime($ogImgFile) : '');
+$ogPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+$ogBase = (string) \App\Core\Config::get('app.base_path', '');
+if ($ogBase !== '' && str_starts_with($ogPath, $ogBase)) { $ogPath = substr($ogPath, strlen($ogBase)); }
+$ogUrl = abs_url($ogPath);
+?>
+<link rel="canonical" href="<?= e($ogUrl) ?>">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Kyros Rent Car">
+<meta property="og:locale" content="es_ES">
+<meta property="og:title" content="<?= e($ogTitle) ?>">
+<meta property="og:description" content="<?= e($ogDesc) ?>">
+<meta property="og:url" content="<?= e($ogUrl) ?>">
+<meta property="og:image" content="<?= e($ogImage) ?>">
+<meta property="og:image:secure_url" content="<?= e($ogImage) ?>">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Kyros Rent Car — software para rent cars">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="<?= e($ogTitle) ?>">
+<meta name="twitter:description" content="<?= e($ogDesc) ?>">
+<meta name="twitter:image" content="<?= e($ogImage) ?>">
+<?php
 // Inline SVG favicon — uses the resolved accent color so tenant-themed pages
 // inherit the brand. Falls back to the Kyros red for marketing pages.
 $faviconColor = ltrim($accent, '#');
