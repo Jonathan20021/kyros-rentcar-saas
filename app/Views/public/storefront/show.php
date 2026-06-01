@@ -10,137 +10,127 @@ $loVal = $filters['price_min'] ?: $hMin;
 $hiVal = $filters['price_max'] ?: $hMax;
 $maxBar = max(1, max($bars));
 
-$allVehicles = $vehicles;
-$featured = null;
-foreach ($allVehicles as $candidate) {
-  if (!empty($candidate['main_image']) && (int)($candidate['is_featured'] ?? 0) === 1) { $featured = $candidate; break; }
+$fuelLabel = static fn($f) => ['gasoline'=>'Gasolina','diesel'=>'Diésel','electric'=>'Eléctrico','hybrid'=>'Híbrido','gas'=>'Gas'][$f] ?? ucfirst((string)$f);
+
+// Marketing chrome uses the FULL public fleet (passed from the controller); the
+// filtered $vehicles is reserved for the #catalogo results grid only. This keeps the
+// hero, brands, spotlight and fleet preview stable no matter what filter is applied.
+$allVehicles = $allVehicles ?? $vehicles;
+
+// Featured pool for the spotlight carousel (prefer is_featured w/ image, then any w/ image).
+$featuredPool = [];
+foreach ($allVehicles as $v) { if (!empty($v['main_image']) && (int)($v['is_featured'] ?? 0) === 1) $featuredPool[] = $v; }
+if (count($featuredPool) < 2) {
+  foreach ($allVehicles as $v) { if (!empty($v['main_image'])) { $featuredPool[$v['id']] = $v; } }
+  $featuredPool = array_values($featuredPool);
 }
-if (!$featured) {
-  foreach ($allVehicles as $candidate) {
-    if (!empty($candidate['main_image'])) { $featured = $candidate; break; }
-  }
-}
-if (!$featured && !empty($allVehicles)) { $featured = $allVehicles[0]; }
+$featuredPool = array_slice($featuredPool, 0, 6);
+$featured = $featuredPool[0] ?? (!empty($allVehicles) ? $allVehicles[0] : null);
 
 $heroImage = $cover ?: ($featured['main_image'] ?? 'demo/vehicles/landing-hero-fleet.jpg');
+$heroAlt = $featured ? trim($featured['brand'].' '.$featured['model']) : ($tenant['name'].' flota');
+
+// Brand collection tiles.
+$descriptors = ['Confort ejecutivo','Diseño y potencia','Lujo y presencia','Ingeniería refinada','Listo para la ruta','Estilo y eficiencia'];
 $brandMap = [];
 foreach ($allVehicles as $v) {
   $brand = trim((string)($v['brand'] ?? ''));
   if ($brand === '') continue;
-  if (!isset($brandMap[$brand])) {
-    $brandMap[$brand] = [
-      'name' => $brand,
-      'category' => $v['category_name'] ?? 'Flota premium',
-      'count' => 0,
-    ];
-  }
+  if (!isset($brandMap[$brand])) $brandMap[$brand] = ['name'=>$brand,'count'=>0];
   $brandMap[$brand]['count']++;
 }
 $brandTiles = array_slice(array_values($brandMap), 0, 6);
 $fleetPreview = array_slice($allVehicles, 0, 8);
-$featuredUrl = $featured ? url('/r/'.$tenant['slug'].'/vehiculo/'.$featured['slug']) : '#catalogo';
-$heroAlt = $featured ? trim($featured['brand'].' '.$featured['model']) : ($tenant['name'].' flota');
+
+// Carousel payload
+$spotlightJs = array_map(fn($v) => [
+  'brand'=>$v['brand'],'model'=>$v['model'],'year'=>$v['year'],
+  'img'=>media($v['main_image']),
+  'passengers'=>$v['passengers'],'fuel'=>$fuelLabel($v['fuel_type']),
+  'trans'=>$v['transmission']==='automatic'?'Automática':'Manual',
+  'price'=>money($v['daily_price']),
+  'url'=>url('/r/'.$tenant['slug'].'/vehiculo/'.$v['slug']),
+  'category'=>$v['category_name'] ?? 'Premium',
+], $featuredPool);
 ?>
 
-<!-- Editorial hero -->
-<section id="inicio" class="relative min-h-[88dvh] overflow-hidden bg-[#101620] text-white">
+<!-- ============================== HERO ============================== -->
+<section id="inicio" class="relative min-h-[92dvh] overflow-hidden">
   <div class="absolute inset-0">
-    <img src="<?= e(media($heroImage)) ?>" class="h-full w-full object-cover opacity-70" alt="<?= e($heroAlt) ?>">
-    <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,12,18,.96)_0%,rgba(8,12,18,.72)_42%,rgba(8,12,18,.18)_100%)]"></div>
-    <div class="absolute inset-0 bg-[radial-gradient(circle_at_18%_16%,color-mix(in_srgb,var(--brand)_38%,transparent),transparent_32%),radial-gradient(circle_at_88%_72%,rgba(255,255,255,.18),transparent_24%)]"></div>
+    <img src="<?= e(media($heroImage)) ?>" class="h-full w-full object-cover" alt="<?= e($heroAlt) ?>">
+    <div class="absolute inset-0" style="background:linear-gradient(90deg,#0a0a0a 0%,rgba(10,10,10,.86) 40%,rgba(10,10,10,.35) 75%,rgba(10,10,10,.55) 100%)"></div>
+    <div class="absolute inset-0" style="background:linear-gradient(0deg,#0a0a0a 2%,transparent 38%)"></div>
+    <div class="lux-orb" style="width:560px;height:560px;left:-120px;top:-120px;opacity:.22"></div>
   </div>
 
-  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 pt-20 lg:pt-28 pb-16">
-    <div class="grid lg:grid-cols-[minmax(0,1fr)_390px] gap-10 items-end min-h-[70dvh]">
-      <div class="max-w-4xl" data-aos="fade-up">
-        <div class="flex flex-wrap items-center gap-x-3 gap-y-2 text-[10px] sm:text-[11px] font-bold uppercase tracking-[.18em] sm:tracking-[.28em] text-white/68">
-          <span><?= e($tenant['address'] ? strtok($tenant['address'], ',') : 'Republica Dominicana') ?></span>
-          <span class="h-px w-8 sm:w-10 bg-white/30"></span>
-          <span>Flota curada</span>
-          <span class="h-px w-8 sm:w-10 bg-white/30"></span>
-          <span>Servicio 24/7</span>
-        </div>
-        <h1 class="mt-6 max-w-[10ch] sm:max-w-4xl font-display text-[44px] sm:text-6xl lg:text-[88px] font-black leading-[.94] sm:leading-[.9] tracking-[-.045em] sm:tracking-[-.055em]">
-          Renta el auto correcto. Conduce sin friccion.
-        </h1>
-        <p class="mt-6 max-w-2xl text-lg sm:text-xl leading-relaxed text-white/78">
-          <?= e($tenant['description'] ?? 'Flota moderna, reservas rapidas y atencion personalizada para cada viaje.') ?>
-        </p>
-        <div class="mt-8 flex flex-col sm:flex-row sm:flex-wrap gap-3">
-          <a href="#catalogo" class="inline-flex items-center justify-center gap-2 rounded-none px-5 sm:px-6 py-3.5 text-sm font-bold text-white shadow-card transition hover:-translate-y-0.5" style="background:var(--brand)">
-            Reservar un vehiculo <i data-lucide="arrow-right" class="h-4 w-4"></i>
-          </a>
-          <?php if (!empty($tenant['whatsapp'])): ?>
-          <a href="<?= e(whatsapp_link($tenant['whatsapp'], 'Hola ' . $tenant['name'] . ', quiero informacion sobre alquiler de vehiculos.')) ?>" target="_blank" class="inline-flex items-center justify-center gap-2 rounded-none border border-white/24 bg-white/8 px-5 sm:px-6 py-3.5 text-sm font-bold text-white backdrop-blur transition hover:bg-white/14">
-            Hablar con un asesor <i data-lucide="message-circle" class="h-4 w-4"></i>
-          </a>
-          <?php endif; ?>
-        </div>
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 flex min-h-[92dvh] flex-col justify-center pt-28 pb-16">
+    <div class="max-w-3xl" data-aos="fade-up">
+      <div class="flex flex-wrap items-center gap-x-3 gap-y-2 text-[10px] sm:text-[11px] font-bold uppercase tracking-[.22em] text-[var(--lux-muted)]">
+        <span><?= e($tenant['address'] ? strtok($tenant['address'], ',') : 'República Dominicana') ?></span>
+        <span class="h-1 w-1 rounded-full bg-[var(--brand)]"></span>
+        <span>Flota premium</span>
+        <span class="h-1 w-1 rounded-full bg-[var(--brand)]"></span>
+        <span>Servicio 24/7</span>
       </div>
-
-      <aside class="hidden lg:block border border-white/14 bg-white/[.07] p-5 backdrop-blur-xl" data-aos="fade-left">
-        <div class="flex items-center justify-between text-[11px] font-bold uppercase tracking-[.22em] text-white/55">
-          <span>Flota destacada</span>
-          <span><?= count($allVehicles) ?> unidades</span>
-        </div>
-        <?php if ($featured): ?>
-        <a href="<?= e($featuredUrl) ?>" class="group mt-5 block overflow-hidden bg-black/25">
-          <?php if (!empty($featured['main_image'])): ?>
-            <img src="<?= e(media($featured['main_image'])) ?>" alt="<?= e($featured['brand'].' '.$featured['model']) ?>" class="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-[1.04]">
-          <?php else: ?>
-            <div class="aspect-[4/3] grid place-items-center text-white/30"><i data-lucide="car" class="h-20 w-20"></i></div>
-          <?php endif; ?>
-        </a>
-        <div class="mt-5 grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <p class="text-white/45">Modelo</p>
-            <p class="mt-1 font-semibold text-white"><?= e($featured['brand'].' '.$featured['model']) ?></p>
-          </div>
-          <div>
-            <p class="text-white/45">Desde</p>
-            <p class="mt-1 text-2xl font-black tnum"><?= money($featured['daily_price']) ?></p>
-          </div>
-          <div>
-            <p class="text-white/45">Pasajeros</p>
-            <p class="mt-1 font-semibold"><?= e($featured['passengers']) ?></p>
-          </div>
-          <div>
-            <p class="text-white/45">Combustible</p>
-            <p class="mt-1 font-semibold"><?= e(ucfirst($featured['fuel_type'])) ?></p>
-          </div>
-        </div>
-        <a href="<?= e($featuredUrl) ?>" class="mt-5 inline-flex items-center gap-2 text-sm font-bold text-white hover:text-brand">
-          Ver detalles <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
-        </a>
+      <h1 class="mt-7 font-display text-[clamp(44px,7vw,104px)] font-extrabold leading-[.92] tracking-[-.05em] text-white">
+        Renta el auto correcto.<br>
+        <span style="color:var(--lux-brand-text)">Conduce la experiencia.</span>
+      </h1>
+      <p class="mt-7 max-w-xl text-lg sm:text-xl leading-relaxed text-[var(--lux-muted)]">
+        <?= e($tenant['description'] ?? 'Flota moderna e inspeccionada, reservas rápidas y atención personalizada para cada viaje.') ?>
+      </p>
+      <div class="mt-9 flex flex-col sm:flex-row sm:flex-wrap gap-3">
+        <a href="#flota" class="lux-btn lux-btn-brand text-[15px] px-7 py-4">Reservar un vehículo <i data-lucide="arrow-right" class="h-4 w-4"></i></a>
+        <?php if (!empty($tenant['whatsapp'])): ?>
+        <a href="<?= e(whatsapp_link($tenant['whatsapp'], 'Hola ' . $tenant['name'] . ', quiero información sobre alquiler de vehículos.')) ?>" target="_blank" class="lux-btn lux-btn-outline text-[15px] px-7 py-4">Hablar con un asesor <i data-lucide="message-circle" class="h-4 w-4"></i></a>
         <?php endif; ?>
-      </aside>
+      </div>
+    </div>
+
+    <!-- Hero stats strip -->
+    <div class="mt-14 grid max-w-2xl grid-cols-3 gap-px overflow-hidden rounded-2xl border border-[#262626]" style="background:#262626" data-aos="fade-up" data-aos-delay="120">
+      <?php
+        $stats = [
+          [count($allVehicles), 'Vehículos disponibles'],
+          [count($brandMap), 'Marcas en flota'],
+          ['24/7', 'Asistencia directa'],
+        ];
+        foreach ($stats as $s): ?>
+        <div class="px-5 py-5" style="background:#0d0d0d">
+          <p class="font-display text-3xl font-extrabold text-white tnum"><?= e($s[0]) ?></p>
+          <p class="mt-1 text-[12px] text-[var(--lux-dim)]"><?= e($s[1]) ?></p>
+        </div>
+      <?php endforeach; ?>
     </div>
   </div>
+  <a href="#flota" class="absolute bottom-7 left-1/2 -translate-x-1/2 text-[var(--lux-dim)] hover:text-white transition-colors hidden sm:block" aria-label="Ver flota"><i data-lucide="chevron-down" class="h-6 w-6 animate-bounce"></i></a>
 </section>
 
-<!-- Brand collection -->
+<!-- ============================== MARCAS ============================== -->
 <?php if (!empty($brandTiles)): ?>
-<section id="marcas" class="bg-white py-16 lg:py-20">
+<section id="marcas" class="relative py-20 lg:py-28">
   <div class="max-w-7xl mx-auto px-4 sm:px-6">
-    <div class="grid lg:grid-cols-[.7fr_1fr] gap-10 items-end">
-      <div>
-        <p class="text-[11px] font-black uppercase tracking-[.26em] text-brand">Marcas destacadas</p>
-        <h2 class="mt-3 font-display text-3xl lg:text-5xl font-black tracking-[-.045em] text-ink">Selecciona por estilo, marca o plan de viaje.</h2>
+    <div class="grid lg:grid-cols-[.8fr_1fr] gap-8 items-end">
+      <div data-aos="fade-up">
+        <span class="lux-eyebrow">Marcas destacadas</span>
+        <h2 class="mt-5 font-display text-[clamp(30px,4vw,56px)] font-extrabold tracking-[-.045em] leading-[1.02] text-white">Una colección curada de marcas.</h2>
       </div>
-      <p class="max-w-2xl text-slate-500 leading-relaxed lg:justify-self-end">
-        Explora nuestra flota por marca: vehiculos inspeccionados, listos para entregar y con reserva directa por WhatsApp o formulario.
-      </p>
+      <div class="lg:justify-self-end lg:text-right" data-aos="fade-up" data-aos-delay="80">
+        <p class="max-w-xl text-[var(--lux-muted)] leading-relaxed">Explora la flota por marca: vehículos inspeccionados, listos para entregar y con reserva directa por WhatsApp o formulario.</p>
+        <a href="#catalogo" class="mt-5 inline-flex lux-link items-center gap-2">Ver flota completa <i data-lucide="arrow-right" class="h-4 w-4"></i></a>
+      </div>
     </div>
 
-    <div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 border-y hairline">
+    <div class="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
       <?php foreach ($brandTiles as $i => $brand): ?>
-      <a href="#catalogo" class="group min-h-[168px] border-b sm:border-r hairline p-5 transition hover:bg-slate-50 <?= $i >= 3 ? 'lg:border-b-0' : '' ?>">
-        <div class="flex h-full flex-col justify-between">
-          <span class="text-[11px] font-bold uppercase tracking-[.22em] text-slate-400"><?= e($brand['category']) ?></span>
-          <div>
-            <p class="font-display text-2xl font-black tracking-[-.04em] text-ink group-hover:text-brand"><?= e($brand['name']) ?></p>
-            <p class="mt-1 text-sm text-slate-400"><?= (int)$brand['count'] ?> disponible<?= $brand['count'] === 1 ? '' : 's' ?></p>
-          </div>
+      <a href="#catalogo" class="lux-card group p-7 flex flex-col justify-between min-h-[168px]" data-aos="fade-up" data-aos-delay="<?= ($i%3)*70 ?>">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold uppercase tracking-[.2em] text-[var(--lux-dim)]"><?= e($descriptors[$i % count($descriptors)]) ?></span>
+          <i data-lucide="arrow-up-right" class="h-5 w-5 text-[var(--lux-dim)] group-hover:text-[var(--lux-brand-text)] transition-colors"></i>
+        </div>
+        <div>
+          <p class="font-display text-3xl font-extrabold tracking-[-.04em] text-white group-hover:text-[var(--lux-brand-text)] transition-colors"><?= e($brand['name']) ?></p>
+          <p class="mt-1 text-sm text-[var(--lux-dim)]"><?= (int)$brand['count'] ?> disponible<?= $brand['count'] === 1 ? '' : 's' ?></p>
         </div>
       </a>
       <?php endforeach; ?>
@@ -149,46 +139,42 @@ $heroAlt = $featured ? trim($featured['brand'].' '.$featured['model']) : ($tenan
 </section>
 <?php endif; ?>
 
-<!-- Fleet preview -->
-<section class="bg-[#F4F6FA] py-16 lg:py-20">
+<!-- ============================== FLOTA DESTACADA (preview) ============================== -->
+<section id="flota" class="py-20 lg:py-24" style="background:#0d0d0d">
   <div class="max-w-7xl mx-auto px-4 sm:px-6">
-    <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+    <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between" data-aos="fade-up">
       <div>
-        <p class="text-[11px] font-black uppercase tracking-[.26em] text-brand">Flota destacada</p>
-        <h2 class="mt-3 font-display text-3xl lg:text-5xl font-black tracking-[-.045em] text-ink">Vehiculos listos para reservar.</h2>
+        <span class="lux-eyebrow">Flota destacada</span>
+        <h2 class="mt-5 font-display text-[clamp(30px,4vw,56px)] font-extrabold tracking-[-.045em] text-white">Vehículos listos para reservar.</h2>
       </div>
-      <a href="#catalogo" class="inline-flex items-center gap-2 text-sm font-bold text-ink hover:text-brand">Ver toda la flota <i data-lucide="arrow-down" class="h-4 w-4"></i></a>
+      <a href="#catalogo" class="inline-flex lux-link items-center gap-2 shrink-0">Ver toda la flota <i data-lucide="arrow-down" class="h-4 w-4"></i></a>
     </div>
 
     <?php if (!empty($fleetPreview)): ?>
-    <div class="mt-10 grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div class="mt-12 grid sm:grid-cols-2 xl:grid-cols-4 gap-5">
       <?php foreach ($fleetPreview as $i => $v):
         $detail = url('/r/'.$tenant['slug'].'/vehiculo/'.$v['slug']);
         $reserve = url('/r/'.$tenant['slug'].'/reservar/'.$v['slug'].($rangeStart?'?start='.urlencode($rangeStart).'&end='.urlencode($rangeEnd):'')); ?>
-      <article class="group bg-white border hairline overflow-hidden transition duration-300 hover:-translate-y-1 hover:shadow-lift" data-aos="fade-up" data-aos-delay="<?= ($i%4)*45 ?>">
-        <a href="<?= e($detail) ?>" class="block bg-slate-100">
+      <article class="lux-card group overflow-hidden flex flex-col" data-aos="fade-up" data-aos-delay="<?= ($i%4)*60 ?>">
+        <a href="<?= e($detail) ?>" class="relative block overflow-hidden">
           <?php if (!empty($v['main_image'])): ?>
-            <img src="<?= e(media($v['main_image'])) ?>" alt="<?= e($v['brand'].' '.$v['model']) ?>" class="aspect-[16/11] w-full object-cover transition duration-500 group-hover:scale-[1.04]">
+            <img src="<?= e(media($v['main_image'])) ?>" alt="<?= e($v['brand'].' '.$v['model']) ?>" class="aspect-[16/11] w-full object-cover transition duration-700 group-hover:scale-105">
           <?php else: ?>
-            <div class="aspect-[16/11] grid place-items-center text-slate-300"><i data-lucide="car" class="h-16 w-16"></i></div>
+            <div class="aspect-[16/11] grid place-items-center text-[#2a2a2a]"><i data-lucide="car" class="h-16 w-16"></i></div>
           <?php endif; ?>
+          <span class="absolute top-3 left-3 lux-chip lux-chip-brand backdrop-blur"><?= e($v['category_name'] ?? 'Premium') ?></span>
         </a>
-        <div class="p-5">
-          <div class="flex items-start justify-between gap-3">
-            <div>
-              <p class="text-[11px] font-bold uppercase tracking-[.18em] text-slate-400"><?= e($v['brand']) ?> · <?= e($v['year']) ?></p>
-              <a href="<?= e($detail) ?>" class="mt-1 block font-display text-xl font-black tracking-[-.035em] text-ink hover:text-brand"><?= e($v['model']) ?></a>
-            </div>
-            <p class="text-right text-lg font-black text-ink tnum"><?= money($v['daily_price']) ?><span class="block text-[11px] font-medium text-slate-400">por dia</span></p>
+        <div class="p-5 flex flex-col flex-1">
+          <p class="text-[11px] font-bold uppercase tracking-[.18em] text-[var(--lux-dim)]"><?= e($v['brand']) ?> · <?= e($v['year']) ?></p>
+          <a href="<?= e($detail) ?>" class="mt-1.5 block font-display text-lg font-extrabold tracking-[-.03em] text-white hover:text-[var(--lux-brand-text)] transition-colors"><?= e($v['model']) ?></a>
+          <div class="mt-3 flex flex-wrap items-center gap-3 text-[12px] text-[var(--lux-muted)]">
+            <span class="flex items-center gap-1.5"><i data-lucide="users" class="h-3.5 w-3.5"></i><?= e($v['passengers']) ?></span>
+            <span class="flex items-center gap-1.5"><i data-lucide="fuel" class="h-3.5 w-3.5"></i><?= e($fuelLabel($v['fuel_type'])) ?></span>
+            <span class="flex items-center gap-1.5"><i data-lucide="cog" class="h-3.5 w-3.5"></i><?= $v['transmission']==='automatic'?'Auto':'Manual' ?></span>
           </div>
-          <div class="mt-4 grid grid-cols-3 gap-2 text-[12px] text-slate-500">
-            <span class="flex items-center gap-1"><i data-lucide="users" class="h-3.5 w-3.5"></i><?= e($v['passengers']) ?></span>
-            <span class="flex items-center gap-1"><i data-lucide="fuel" class="h-3.5 w-3.5"></i><?= e(ucfirst($v['fuel_type'])) ?></span>
-            <span class="flex items-center gap-1"><i data-lucide="cog" class="h-3.5 w-3.5"></i><?= $v['transmission']==='automatic'?'Auto':'Manual' ?></span>
-          </div>
-          <div class="mt-5 flex items-center justify-between border-t hairline pt-4">
-            <a href="<?= e($detail) ?>" class="text-sm font-bold text-ink hover:text-brand">Ver</a>
-            <a href="<?= e($reserve) ?>" class="inline-flex items-center gap-1.5 px-4 py-2 text-[13px] font-bold text-white transition hover:opacity-90" style="background:var(--navy)">Reservar <i data-lucide="arrow-right" class="h-3.5 w-3.5"></i></a>
+          <div class="mt-5 flex items-end justify-between border-t border-[#262626] pt-4">
+            <p class="font-display text-xl font-extrabold text-white tnum"><?= money($v['daily_price']) ?><span class="block text-[11px] font-medium text-[var(--lux-dim)]">por día</span></p>
+            <a href="<?= e($reserve) ?>" class="lux-btn lux-btn-brand lux-btn-sm">Reservar <i data-lucide="arrow-right" class="h-3.5 w-3.5"></i></a>
           </div>
         </div>
       </article>
@@ -198,33 +184,87 @@ $heroAlt = $featured ? trim($featured['brand'].' '.$featured['model']) : ($tenan
   </div>
 </section>
 
-<!-- Feature editorial -->
+<!-- ============================== SPOTLIGHT carousel ============================== -->
+<?php if (count($spotlightJs) >= 1): ?>
+<section class="relative overflow-hidden py-20 lg:py-28" style="background:#0a0a0a"
+  x-data='luxSpotlight(<?= htmlspecialchars(json_encode($spotlightJs, JSON_UNESCAPED_UNICODE), ENT_QUOTES) ?>)'
+  @mouseenter="stop()" @mouseleave="start()" @focusin="stop()" @focusout="start()">
+  <div class="lux-grid absolute inset-0 opacity-60"></div>
+  <div class="lux-orb" style="width:600px;height:600px;right:-180px;top:-140px;opacity:.14"></div>
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="flex items-center justify-between gap-4">
+      <span class="lux-eyebrow">Flota destacada</span>
+      <div class="flex items-center gap-4">
+        <span class="font-display text-sm font-bold text-[var(--lux-muted)] tnum"><span x-text="String(index+1).padStart(2,'0')"></span> / <span x-text="String(items.length).padStart(2,'0')"></span></span>
+        <div class="flex gap-2">
+          <button @click="prev()" class="grid h-11 w-11 place-items-center rounded-full border border-[#363636] text-white hover:border-[var(--brand)] hover:text-[var(--lux-brand-text)] transition"><i data-lucide="arrow-left" class="h-4 w-4"></i></button>
+          <button @click="next()" class="grid h-11 w-11 place-items-center rounded-full border border-[#363636] text-white hover:border-[var(--brand)] hover:text-[var(--lux-brand-text)] transition"><i data-lucide="arrow-right" class="h-4 w-4"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="relative mt-10 grid lg:grid-cols-[1.4fr_.85fr] gap-8 lg:gap-12 items-center">
+      <!-- Big image -->
+      <div class="relative">
+        <span class="lux-watermark absolute -top-16 -left-2 text-[clamp(120px,18vw,260px)] hidden sm:block" x-text="String(index+1).padStart(2,'0')"></span>
+        <div class="relative aspect-[16/10] overflow-hidden rounded-3xl border border-[#262626]" style="background:#141414">
+          <template x-for="(it,i) in items" :key="i">
+            <img x-show="i===index" x-transition.opacity.duration.500ms :src="it.img" :alt="it.brand+' '+it.model" class="absolute inset-0 h-full w-full object-cover">
+          </template>
+        </div>
+      </div>
+
+      <!-- Spec panel -->
+      <div class="lux-surface rounded-3xl p-7 lg:p-8">
+        <span class="lux-chip lux-chip-brand" x-text="items[index].category"></span>
+        <h3 class="mt-5 font-display text-3xl lg:text-4xl font-extrabold tracking-[-.04em] leading-[1.02] text-white">
+          <span x-text="items[index].brand"></span> <span x-text="items[index].model"></span>
+        </h3>
+        <p class="mt-1.5 text-sm text-[var(--lux-dim)]" x-text="'Modelo ' + items[index].year"></p>
+        <div class="mt-7 grid grid-cols-2 gap-5">
+          <div><p class="text-[12px] text-[var(--lux-dim)]">Pasajeros</p><p class="mt-1 font-display text-xl font-bold text-white" x-text="items[index].passengers"></p></div>
+          <div><p class="text-[12px] text-[var(--lux-dim)]">Transmisión</p><p class="mt-1 font-display text-xl font-bold text-white" x-text="items[index].trans"></p></div>
+          <div><p class="text-[12px] text-[var(--lux-dim)]">Combustible</p><p class="mt-1 font-display text-xl font-bold text-white" x-text="items[index].fuel"></p></div>
+          <div><p class="text-[12px] text-[var(--lux-dim)]">Desde · por día</p><p class="mt-1 font-display text-xl font-extrabold" style="color:var(--lux-brand-text)" x-text="items[index].price"></p></div>
+        </div>
+        <a :href="items[index].url" class="mt-8 lux-btn lux-btn-brand w-full">Ver detalles <i data-lucide="arrow-up-right" class="h-4 w-4"></i></a>
+      </div>
+    </div>
+  </div>
+</section>
+<?php endif; ?>
+
+<!-- ============================== NOSOTROS / SERVICIO ============================== -->
 <?php if ($featured): ?>
-<section id="nosotros" class="bg-white py-16 lg:py-24 overflow-hidden">
+<section id="servicio" class="py-20 lg:py-28" style="background:#0d0d0d">
   <div class="max-w-7xl mx-auto px-4 sm:px-6">
-    <div class="grid lg:grid-cols-[.9fr_1.1fr] gap-10 lg:gap-16 items-center">
-      <div class="relative order-2 lg:order-1">
-        <div class="absolute -left-6 -top-6 h-24 w-24 border-l-2 border-t-2 border-brand"></div>
-        <div class="relative bg-[#101620] p-3">
+    <div class="grid lg:grid-cols-[1.1fr_.9fr] gap-12 lg:gap-16 items-center">
+      <div class="relative order-2 lg:order-1" data-aos="fade-up">
+        <div class="absolute -left-4 -top-4 h-20 w-20 rounded-tl-3xl border-l-2 border-t-2" style="border-color:var(--lux-brand-text)"></div>
+        <div class="relative overflow-hidden rounded-3xl border border-[#262626]" style="background:#141414">
           <?php if (!empty($featured['main_image'])): ?>
             <img src="<?= e(media($featured['main_image'])) ?>" alt="<?= e($featured['brand'].' '.$featured['model']) ?>" class="aspect-[5/4] w-full object-cover">
           <?php else: ?>
-            <div class="aspect-[5/4] grid place-items-center text-white/30"><i data-lucide="car" class="h-24 w-24"></i></div>
+            <div class="aspect-[5/4] grid place-items-center text-[#2a2a2a]"><i data-lucide="car" class="h-24 w-24"></i></div>
           <?php endif; ?>
         </div>
       </div>
-      <div class="order-1 lg:order-2">
-        <p class="text-[11px] font-black uppercase tracking-[.26em] text-brand">Servicio personal</p>
-        <h2 class="mt-3 font-display text-4xl lg:text-6xl font-black tracking-[-.055em] leading-[.95] text-ink">Entrega coordinada, soporte directo y autos inspeccionados.</h2>
-        <p class="mt-6 max-w-2xl text-lg leading-relaxed text-slate-500">
-          Presentamos nuestra flota con imagenes reales, fichas completas de cada vehiculo y reserva directa. Filtra por lo que necesitas y confirma tu unidad en minutos, con entrega coordinada y atencion personalizada.
+      <div class="order-1 lg:order-2" data-aos="fade-up" data-aos-delay="80">
+        <span class="lux-eyebrow">Servicio personal</span>
+        <h2 class="mt-5 font-display text-[clamp(32px,4.4vw,60px)] font-extrabold tracking-[-.05em] leading-[.98] text-white">Servicio al cliente <span style="color:var(--lux-brand-text)">superior.</span></h2>
+        <p class="mt-6 max-w-xl text-[17px] leading-relaxed text-[var(--lux-muted)]">
+          Coordinamos entrega y recogida en aeropuerto, hotel o domicilio. Cada vehículo se inspecciona antes de la entrega y la asistencia es directa, 24/7. Reserva en minutos y confirma disponibilidad sin fricción.
         </p>
-        <div class="mt-8 grid sm:grid-cols-3 gap-4">
-          <?php foreach ([['shield-check','Seguro','Cobertura disponible'],['map-pin','Entrega','Aeropuerto, hotel o domicilio'],['headset','Asistencia','Contacto directo 24/7']] as $b): ?>
-          <div class="border-l-2 pl-4" style="border-color:var(--brand)">
-            <i data-lucide="<?= $b[0] ?>" class="h-5 w-5 text-brand"></i>
-            <h3 class="mt-3 font-bold text-ink"><?= e($b[1]) ?></h3>
-            <p class="mt-1 text-sm text-slate-500"><?= e($b[2]) ?></p>
+        <div class="mt-9 grid sm:grid-cols-3 gap-5">
+          <?php foreach ([
+            ['shield-check','Inspeccionados','Cada unidad revisada antes de entregar'],
+            ['map-pin','Entrega flexible','Aeropuerto, hotel o domicilio'],
+            ['headset','Asistencia 24/7','Contacto directo cuando lo necesites'],
+          ] as $b): ?>
+          <div class="border-l-2 pl-4" style="border-color:var(--lux-brand-text)">
+            <i data-lucide="<?= $b[0] ?>" class="h-5 w-5" style="color:var(--lux-brand-text)"></i>
+            <h3 class="mt-3 font-bold text-white"><?= e($b[1]) ?></h3>
+            <p class="mt-1 text-sm text-[var(--lux-dim)]"><?= e($b[2]) ?></p>
           </div>
           <?php endforeach; ?>
         </div>
@@ -234,45 +274,42 @@ $heroAlt = $featured ? trim($featured['brand'].' '.$featured['model']) : ($tenan
 </section>
 <?php endif; ?>
 
-<!-- Catalog browser -->
-<section id="catalogo" class="max-w-7xl mx-auto px-4 sm:px-6 py-16 lg:py-20">
-  <div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+<!-- ============================== CATÁLOGO (filtros) ============================== -->
+<section id="catalogo" class="max-w-7xl mx-auto px-4 sm:px-6 py-20 lg:py-24">
+  <div class="mb-10 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between" data-aos="fade-up">
     <div>
-      <p class="text-[11px] font-black uppercase tracking-[.26em] text-brand">Catalogo completo</p>
-      <h2 class="mt-3 font-display text-3xl lg:text-5xl font-black tracking-[-.045em] text-ink">Encuentra la unidad ideal.</h2>
+      <span class="lux-eyebrow">Catálogo completo</span>
+      <h2 class="mt-5 font-display text-[clamp(30px,4vw,56px)] font-extrabold tracking-[-.045em] text-white">Encuentra la unidad ideal.</h2>
     </div>
-    <p class="max-w-xl text-slate-500">Filtra por fecha, precio, combustible y capacidad. La disponibilidad se valida antes de confirmar la reserva.</p>
+    <p class="max-w-xl text-[var(--lux-muted)]">Filtra por fecha, precio, combustible y capacidad. La disponibilidad se valida antes de confirmar la reserva.</p>
   </div>
 
-  <form method="GET" class="grid lg:grid-cols-[290px_1fr] gap-7"
+  <form method="GET" class="grid lg:grid-cols-[300px_1fr] gap-8"
         x-data='priceRange(<?= $hMin ?>, <?= $hMax ?>, <?= (int)$loVal ?>, <?= (int)$hiVal ?>)'>
 
     <!-- FILTER RAIL -->
-    <aside class="lg:sticky lg:top-[88px] h-fit">
-      <input type="hidden" name="start" value="<?= e($rangeStart) ?>">
-      <input type="hidden" name="end" value="<?= e($rangeEnd) ?>">
+    <aside class="lg:sticky lg:top-[92px] h-fit">
       <input type="hidden" name="sort" value="<?= e($filters['sort']) ?>" x-ref="sortMirror">
-
-      <div class="bg-white border hairline shadow-card p-5">
+      <div class="lux-surface rounded-2xl p-6">
         <div class="flex items-center justify-between">
-          <h2 class="font-display font-black tracking-[-.03em] text-ink">Filtrar</h2>
-          <a href="<?= url('/r/'.$tenant['slug'].'#catalogo') ?>" class="text-xs font-semibold text-slate-400 hover:text-brand">Limpiar todo</a>
-        </div>
-
-        <div class="mt-5">
-          <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Fechas de renta</p>
-          <div class="grid grid-cols-2 gap-2">
-            <input type="date" name="start" value="<?= e($rangeStart) ?>" class="fld !py-2 !text-[13px]">
-            <input type="date" name="end" value="<?= e($rangeEnd) ?>" class="fld !py-2 !text-[13px]">
-          </div>
+          <h3 class="font-display font-extrabold tracking-[-.03em] text-white">Filtrar</h3>
+          <a href="<?= url('/r/'.$tenant['slug'].'#catalogo') ?>" class="text-xs font-semibold text-[var(--lux-dim)] hover:text-[var(--lux-brand-text)] transition-colors">Limpiar todo</a>
         </div>
 
         <div class="mt-6">
-          <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Precio por dia</p>
-          <div class="flex items-end gap-[2px] h-12 mb-1">
+          <p class="text-[11px] font-bold uppercase tracking-[.16em] text-[var(--lux-dim)] mb-2.5">Fechas de renta</p>
+          <div class="grid grid-cols-2 gap-2">
+            <input type="date" name="start" value="<?= e($rangeStart) ?>" class="lux-field !h-11 !text-[13px]">
+            <input type="date" name="end" value="<?= e($rangeEnd) ?>" class="lux-field !h-11 !text-[13px]">
+          </div>
+        </div>
+
+        <div class="mt-7">
+          <p class="text-[11px] font-bold uppercase tracking-[.16em] text-[var(--lux-dim)] mb-2.5">Precio por día</p>
+          <div class="flex items-end gap-[2px] h-12 mb-2">
             <?php foreach ($bars as $i => $count):
-              $h = max(8, (int)round(($count / $maxBar) * 100)); ?>
-              <div class="flex-1 rounded-sm transition-colors" :class="barActive(<?= $i ?>, <?= count($bars) ?>) ? 'bg-[color:var(--brand)]' : 'bg-slate-200'" style="height: <?= $h ?>%"></div>
+              $hh = max(8, (int)round(($count / $maxBar) * 100)); ?>
+              <div class="flex-1 rounded-sm transition-colors" :class="barActive(<?= $i ?>, <?= count($bars) ?>) ? 'bg-[color:var(--lux-brand-text)]' : 'bg-[#2a2a2a]'" style="height: <?= $hh ?>%"></div>
             <?php endforeach; ?>
           </div>
           <div class="range-wrap">
@@ -283,33 +320,33 @@ $heroAlt = $featured ? trim($featured['brand'].' '.$featured['model']) : ($tenan
           </div>
           <input type="hidden" name="price_min" :value="lo">
           <input type="hidden" name="price_max" :value="hi">
-          <div class="flex items-center justify-between mt-2 text-sm">
-            <span class="px-2.5 py-1 bg-slate-100 font-semibold text-ink" x-text="money(lo)"></span>
-            <span class="text-slate-300">-</span>
-            <span class="px-2.5 py-1 bg-slate-100 font-semibold text-ink" x-text="money(hi)"></span>
+          <div class="flex items-center justify-between mt-3 text-sm">
+            <span class="px-2.5 py-1 rounded-lg bg-[#1a1a1a] font-semibold text-white tnum" x-text="money(lo)"></span>
+            <span class="text-[var(--lux-dim)]">—</span>
+            <span class="px-2.5 py-1 rounded-lg bg-[#1a1a1a] font-semibold text-white tnum" x-text="money(hi)"></span>
           </div>
         </div>
 
         <?php if (!empty($categories)): ?>
-        <div class="mt-6">
-          <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Categoria</p>
+        <div class="mt-7">
+          <p class="text-[11px] font-bold uppercase tracking-[.16em] text-[var(--lux-dim)] mb-2.5">Categoría</p>
           <div class="space-y-1 max-h-44 overflow-y-auto pr-1">
-            <label class="flex items-center gap-2.5 px-2 py-1.5 hover:bg-slate-50 cursor-pointer">
-              <input type="radio" name="category_id" value="" <?= !$filters['category_id']?'checked':'' ?> class="text-brand focus:ring-brand/30">
-              <span class="text-sm text-slate-600">Todas</span>
+            <label class="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-[#1a1a1a] cursor-pointer transition-colors">
+              <input type="radio" name="category_id" value="" <?= !$filters['category_id']?'checked':'' ?> style="accent-color:var(--lux-brand-text)">
+              <span class="text-sm text-[var(--lux-muted)]">Todas</span>
             </label>
             <?php foreach ($categories as $c): ?>
-            <label class="flex items-center gap-2.5 px-2 py-1.5 hover:bg-slate-50 cursor-pointer">
-              <input type="radio" name="category_id" value="<?= $c['id'] ?>" <?= $filters['category_id']==$c['id']?'checked':'' ?> class="text-brand focus:ring-brand/30">
-              <span class="text-sm text-slate-600"><?= e($c['name']) ?></span>
+            <label class="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-[#1a1a1a] cursor-pointer transition-colors">
+              <input type="radio" name="category_id" value="<?= $c['id'] ?>" <?= $filters['category_id']==$c['id']?'checked':'' ?> style="accent-color:var(--lux-brand-text)">
+              <span class="text-sm text-[var(--lux-muted)]"><?= e($c['name']) ?></span>
             </label>
             <?php endforeach; ?>
           </div>
         </div>
         <?php endif; ?>
 
-        <div class="mt-6">
-          <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Transmision</p>
+        <div class="mt-7">
+          <p class="text-[11px] font-bold uppercase tracking-[.16em] text-[var(--lux-dim)] mb-2.5">Transmisión</p>
           <div class="seg w-full grid grid-cols-3">
             <?php foreach (['' =>'Todas','automatic'=>'Auto','manual'=>'Manual'] as $val=>$lbl): $id='tr_'.($val?:'all'); ?>
               <input type="radio" id="<?= $id ?>" name="transmission" value="<?= $val ?>" <?= $filters['transmission']===$val?'checked':'' ?>>
@@ -318,58 +355,58 @@ $heroAlt = $featured ? trim($featured['brand'].' '.$featured['model']) : ($tenan
           </div>
         </div>
 
-        <div class="mt-6">
-          <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Combustible</p>
+        <div class="mt-7">
+          <p class="text-[11px] font-bold uppercase tracking-[.16em] text-[var(--lux-dim)] mb-2.5">Combustible</p>
           <div class="grid grid-cols-2 gap-1">
-            <?php foreach (['' =>'Todos','gasoline'=>'Gasolina','diesel'=>'Diesel','electric'=>'Electrico','hybrid'=>'Hibrido'] as $val=>$lbl): $id='fu_'.($val?:'all'); ?>
-            <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 cursor-pointer">
-              <input type="radio" id="<?= $id ?>" name="fuel_type" value="<?= $val ?>" <?= $filters['fuel_type']===$val?'checked':'' ?> class="text-brand focus:ring-brand/30">
-              <span class="text-sm text-slate-600"><?= $lbl ?></span>
+            <?php foreach (['' =>'Todos','gasoline'=>'Gasolina','diesel'=>'Diésel','electric'=>'Eléctrico','hybrid'=>'Híbrido'] as $val=>$lbl): $id='fu_'.($val?:'all'); ?>
+            <label class="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-[#1a1a1a] cursor-pointer transition-colors">
+              <input type="radio" id="<?= $id ?>" name="fuel_type" value="<?= $val ?>" <?= $filters['fuel_type']===$val?'checked':'' ?> style="accent-color:var(--lux-brand-text)">
+              <span class="text-sm text-[var(--lux-muted)]"><?= $lbl ?></span>
             </label>
             <?php endforeach; ?>
           </div>
         </div>
 
-        <div class="mt-6">
-          <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Pasajeros (min)</p>
+        <div class="mt-7">
+          <p class="text-[11px] font-bold uppercase tracking-[.16em] text-[var(--lux-dim)] mb-2.5">Pasajeros (mín)</p>
           <div class="flex gap-1.5">
             <?php foreach (['' =>'Todos',2=>'2',4=>'4',5=>'5',7=>'7+'] as $val=>$lbl): ?>
               <label class="flex-1">
                 <input type="radio" name="passengers" value="<?= $val ?>" <?= (string)$filters['passengers']===(string)$val?'checked':'' ?> class="peer sr-only">
-                <span class="block text-center text-sm py-1.5 border hairline cursor-pointer peer-checked:bg-ink peer-checked:text-white peer-checked:border-ink"><?= $lbl ?></span>
+                <span class="block text-center text-sm py-1.5 rounded-lg border border-[#363636] text-[var(--lux-muted)] cursor-pointer transition peer-checked:bg-brand peer-checked:text-[var(--lux-ink)] peer-checked:border-[color:var(--lux-brand-text)]"><?= $lbl ?></span>
               </label>
             <?php endforeach; ?>
           </div>
         </div>
 
-        <button type="submit" class="w-full mt-6 py-2.5 text-white font-bold shadow-card hover:opacity-90 transition" style="background:<?= e($primary) ?>">Aplicar filtros</button>
+        <button type="submit" class="lux-btn lux-btn-brand w-full mt-7">Aplicar filtros</button>
       </div>
     </aside>
 
     <!-- RESULTS -->
     <section>
-      <div class="flex items-center justify-between gap-3 mb-5">
+      <div class="flex items-center justify-between gap-3 mb-6">
         <div>
-          <h2 class="font-display text-2xl font-black tracking-[-.035em] text-ink"><?= count($vehicles) ?> vehiculos</h2>
-          <p class="text-sm text-slate-400">disponibles para rentar</p>
+          <h3 class="font-display text-2xl font-extrabold tracking-[-.035em] text-white"><?= count($vehicles) ?> vehículos</h3>
+          <p class="text-sm text-[var(--lux-dim)]">disponibles para rentar</p>
         </div>
         <div class="flex items-center gap-2">
-          <label class="text-sm text-slate-400 hidden sm:block">Ordenar:</label>
-          <select name="sort" onchange="this.form.submit()" class="fld !py-2 !w-auto !text-[13px] font-medium">
+          <label class="text-sm text-[var(--lux-dim)] hidden sm:block">Ordenar:</label>
+          <select name="sort" onchange="this.form.submit()" class="lux-field !h-11 !w-auto !text-[13px] font-medium">
             <option value="" <?= $filters['sort']===''?'selected':'' ?>>Destacados</option>
             <option value="price_asc" <?= $filters['sort']==='price_asc'?'selected':'' ?>>Precio: menor</option>
             <option value="price_desc" <?= $filters['sort']==='price_desc'?'selected':'' ?>>Precio: mayor</option>
-            <option value="newest" <?= $filters['sort']==='newest'?'selected':'' ?>>Mas nuevos</option>
+            <option value="newest" <?= $filters['sort']==='newest'?'selected':'' ?>>Más nuevos</option>
           </select>
         </div>
       </div>
 
       <?php if (empty($vehicles)): ?>
-        <div class="bg-white border hairline p-16 text-center">
-          <div class="w-14 h-14 bg-slate-100 grid place-items-center mx-auto"><i data-lucide="search-x" class="w-7 h-7 text-slate-400"></i></div>
-          <h3 class="font-semibold text-ink mt-4">Sin resultados</h3>
-          <p class="text-sm text-slate-400 mt-1">Ajusta los filtros para ver mas vehiculos.</p>
-          <a href="<?= url('/r/'.$tenant['slug'].'#catalogo') ?>" class="inline-block mt-4 text-sm font-semibold text-brand hover:underline">Limpiar filtros</a>
+        <div class="lux-surface rounded-2xl p-16 text-center">
+          <div class="w-14 h-14 rounded-2xl bg-[#1a1a1a] grid place-items-center mx-auto"><i data-lucide="search-x" class="w-7 h-7 text-[var(--lux-dim)]"></i></div>
+          <h3 class="font-semibold text-white mt-4">Sin resultados</h3>
+          <p class="text-sm text-[var(--lux-dim)] mt-1">Ajusta los filtros para ver más vehículos.</p>
+          <a href="<?= url('/r/'.$tenant['slug'].'#catalogo') ?>" class="inline-block mt-4 text-sm font-semibold" style="color:var(--lux-brand-text)">Limpiar filtros</a>
         </div>
       <?php else: ?>
       <div class="grid sm:grid-cols-2 xl:grid-cols-3 gap-5">
@@ -377,41 +414,35 @@ $heroAlt = $featured ? trim($featured['brand'].' '.$featured['model']) : ($tenan
           $unavailable = isset($v['available_in_range']) && !$v['available_in_range'];
           $detail = url('/r/'.$tenant['slug'].'/vehiculo/'.$v['slug']);
           $reserve = url('/r/'.$tenant['slug'].'/reservar/'.$v['slug'].($rangeStart?'?start='.urlencode($rangeStart).'&end='.urlencode($rangeEnd):'')); ?>
-        <article class="group bg-white border hairline shadow-card hover:shadow-lift hover:-translate-y-0.5 transition-all duration-200 overflow-hidden flex flex-col <?= $unavailable?'opacity-60':'' ?>"
+        <article class="lux-card group overflow-hidden flex flex-col <?= $unavailable?'opacity-55':'' ?>"
                  data-aos="fade-up" data-aos-delay="<?= ($i%3)*60 ?>">
-          <div class="relative">
-            <div class="flex items-center justify-between px-4 pt-4">
-              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 text-[12px] font-semibold text-slate-600">
-                <i data-lucide="car-front" class="w-3.5 h-3.5"></i><?= e($v['category_name'] ?? 'Vehiculo') ?>
-              </span>
+          <a href="<?= e($detail) ?>" class="relative block overflow-hidden">
+            <?php if (!empty($v['main_image'])): ?>
+              <img src="<?= e(media($v['main_image'])) ?>" alt="<?= e($v['brand'].' '.$v['model']) ?>" class="aspect-[16/10] w-full object-cover transition duration-700 group-hover:scale-105">
+            <?php else: ?>
+              <div class="aspect-[16/10] grid place-items-center text-[#2a2a2a]"><i data-lucide="car" class="w-16 h-16"></i></div>
+            <?php endif; ?>
+            <div class="absolute top-3 left-3 right-3 flex items-center justify-between">
+              <span class="lux-chip backdrop-blur"><i data-lucide="car-front" class="w-3.5 h-3.5"></i><?= e($v['category_name'] ?? 'Vehículo') ?></span>
               <?php if ($unavailable): ?>
-                <span class="px-2.5 py-1 bg-red-50 text-red-600 text-[12px] font-semibold">No disponible</span>
+                <span class="lux-chip backdrop-blur" style="color:#fca5a5;border-color:rgba(248,113,113,.4)">No disponible</span>
               <?php else: ?>
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-600 text-[12px] font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Disponible</span>
+                <span class="lux-chip backdrop-blur" style="color:#86efac;border-color:rgba(34,197,94,.35)"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Disponible</span>
               <?php endif; ?>
             </div>
-            <a href="<?= e($detail) ?>" class="block aspect-[16/10] grid place-items-center px-3 py-1">
-              <?php if (!empty($v['main_image'])): ?>
-                <img src="<?= e(media($v['main_image'])) ?>" alt="<?= e($v['brand'].' '.$v['model']) ?>" class="w-full h-full object-cover group-hover:scale-[1.04] transition duration-300">
-              <?php else: ?>
-                <div class="w-full h-full grid place-items-center text-slate-200"><i data-lucide="car" class="w-16 h-16"></i></div>
-              <?php endif; ?>
-            </a>
-          </div>
-          <div class="px-5 pb-5 pt-1 flex flex-col flex-1">
-            <a href="<?= e($detail) ?>" class="font-display font-black tracking-[-.03em] text-ink text-[17px] leading-tight hover:text-brand transition"><?= e($v['brand'].' '.$v['model']) ?></a>
-            <p class="text-[13px] text-slate-400 mt-0.5"><?= e($v['version'] ?: $v['year']) ?> · <?= e($v['year']) ?></p>
-            <div class="flex items-center gap-3.5 mt-3 text-[12px] text-slate-500">
-              <span class="flex items-center gap-1"><i data-lucide="users" class="w-3.5 h-3.5"></i><?= $v['passengers'] ?></span>
-              <span class="flex items-center gap-1"><i data-lucide="cog" class="w-3.5 h-3.5"></i><?= $v['transmission']==='automatic'?'Auto':'Manual' ?></span>
-              <span class="flex items-center gap-1"><i data-lucide="fuel" class="w-3.5 h-3.5"></i><?= ucfirst($v['fuel_type']) ?></span>
-              <span class="flex items-center gap-1"><i data-lucide="briefcase" class="w-3.5 h-3.5"></i><?= $v['luggage_capacity'] ?></span>
+          </a>
+          <div class="p-5 flex flex-col flex-1">
+            <a href="<?= e($detail) ?>" class="font-display font-extrabold tracking-[-.03em] text-white text-[17px] leading-tight hover:text-[var(--lux-brand-text)] transition-colors"><?= e($v['brand'].' '.$v['model']) ?></a>
+            <p class="text-[13px] text-[var(--lux-dim)] mt-0.5"><?= e($v['version'] ? $v['version'].' · '.$v['year'] : $v['year']) ?></p>
+            <div class="flex flex-wrap items-center gap-3.5 mt-3.5 text-[12px] text-[var(--lux-muted)]">
+              <span class="flex items-center gap-1.5"><i data-lucide="users" class="w-3.5 h-3.5"></i><?= $v['passengers'] ?></span>
+              <span class="flex items-center gap-1.5"><i data-lucide="cog" class="w-3.5 h-3.5"></i><?= $v['transmission']==='automatic'?'Auto':'Manual' ?></span>
+              <span class="flex items-center gap-1.5"><i data-lucide="fuel" class="w-3.5 h-3.5"></i><?= e($fuelLabel($v['fuel_type'])) ?></span>
+              <span class="flex items-center gap-1.5"><i data-lucide="briefcase" class="w-3.5 h-3.5"></i><?= $v['luggage_capacity'] ?></span>
             </div>
-            <div class="flex items-center justify-between mt-4 pt-4 border-t hairline">
-              <p class="text-[20px] font-black text-ink leading-none tnum"><?= money($v['daily_price']) ?><span class="text-[12px] font-medium text-slate-400">/dia</span></p>
-              <a href="<?= e($reserve) ?>" class="inline-flex items-center gap-1.5 px-4 py-2 text-white text-[13px] font-bold hover:opacity-90 transition" style="background:var(--navy)">
-                Reservar <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-              </a>
+            <div class="flex items-end justify-between mt-5 pt-4 border-t border-[#262626]">
+              <p class="font-display text-xl font-extrabold text-white leading-none tnum"><?= money($v['daily_price']) ?><span class="text-[12px] font-medium text-[var(--lux-dim)]">/día</span></p>
+              <a href="<?= e($reserve) ?>" class="lux-btn lux-btn-brand lux-btn-sm">Reservar <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></a>
             </div>
           </div>
         </article>
@@ -422,19 +453,19 @@ $heroAlt = $featured ? trim($featured['brand'].' '.$featured['model']) : ($tenan
   </form>
 </section>
 
-<!-- CTA -->
-<section id="contacto" class="relative overflow-hidden bg-[#101620] text-white">
-  <div class="absolute inset-0 opacity-70" style="background:radial-gradient(circle at 14% 20%, color-mix(in srgb,var(--brand) 42%, transparent), transparent 28%), radial-gradient(circle at 90% 80%, color-mix(in srgb,var(--brand2) 28%, transparent), transparent 28%);"></div>
-  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 py-16 lg:py-20">
-    <div class="grid lg:grid-cols-[1fr_auto] gap-8 items-end">
-      <div>
-        <p class="text-[11px] font-black uppercase tracking-[.26em] text-white/55">Listo para tu viaje</p>
-        <h2 class="mt-3 max-w-3xl font-display text-4xl lg:text-6xl font-black tracking-[-.055em] leading-[.95]">Reserva en minutos. Confirmamos disponibilidad por WhatsApp.</h2>
+<!-- ============================== CTA ============================== -->
+<section class="relative overflow-hidden" style="background:#0d0d0d">
+  <div class="lux-orb" style="width:520px;height:520px;left:50%;top:-260px;transform:translateX(-50%);opacity:.18"></div>
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 py-20 lg:py-28">
+    <div class="grid lg:grid-cols-[1fr_auto] gap-10 items-end">
+      <div data-aos="fade-up">
+        <span class="lux-eyebrow">¿Listo para tu viaje?</span>
+        <h2 class="mt-5 max-w-3xl font-display text-[clamp(34px,5vw,72px)] font-extrabold tracking-[-.05em] leading-[.96] text-white">Reserva en minutos. Confirmamos por WhatsApp.</h2>
       </div>
-      <div class="flex flex-wrap gap-3">
-        <a href="#catalogo" class="inline-flex items-center justify-center gap-2 bg-white px-6 py-3.5 text-sm font-bold text-ink transition hover:bg-slate-100">Explorar catalogo <i data-lucide="arrow-up-right" class="h-4 w-4"></i></a>
+      <div class="flex flex-wrap gap-3" data-aos="fade-up" data-aos-delay="100">
+        <a href="#catalogo" class="lux-btn lux-btn-light px-7 py-4">Explorar catálogo <i data-lucide="arrow-up-right" class="h-4 w-4"></i></a>
         <?php if (!empty($tenant['whatsapp'])): ?>
-        <a href="<?= e(whatsapp_link($tenant['whatsapp'])) ?>" target="_blank" class="inline-flex items-center justify-center gap-2 border border-white/18 px-6 py-3.5 text-sm font-bold text-white transition hover:bg-white/10">Contactar asesor <i data-lucide="message-circle" class="h-4 w-4"></i></a>
+        <a href="<?= e(whatsapp_link($tenant['whatsapp'])) ?>" target="_blank" class="lux-btn lux-btn-outline px-7 py-4">Contactar asesor <i data-lucide="message-circle" class="h-4 w-4"></i></a>
         <?php endif; ?>
       </div>
     </div>
@@ -452,6 +483,18 @@ function priceRange(min,max,lo,hi){
     pct(v){ return this.max === this.min ? 0 : ((v - this.min) / (this.max - this.min)) * 100; },
     fillStyle(){ return { left: this.pct(this.lo) + "%", width: (this.pct(this.hi) - this.pct(this.lo)) + "%" }; },
     barActive(i,n){ const span=(this.max-this.min)/n; const center=this.min + (i+0.5)*span; return center>=this.lo && center<=this.hi; }
+  }
+}
+function luxSpotlight(items){
+  return {
+    items, index:0, timer:null,
+    reduced(){ return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; },
+    init(){ this.start(); },
+    start(){ this.stop(); if(this.items.length>1 && !this.reduced()){ this.timer=setInterval(()=>this.next(), 6000); } },
+    stop(){ if(this.timer){ clearInterval(this.timer); this.timer=null; } },
+    next(){ this.index=(this.index+1)%this.items.length; this.ping(); },
+    prev(){ this.index=(this.index-1+this.items.length)%this.items.length; this.ping(); },
+    ping(){ this.$nextTick(()=>window.lucide&&lucide.createIcons()); }
   }
 }
 </script>'); ?>

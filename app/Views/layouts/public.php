@@ -17,13 +17,14 @@ $flashes = $_flashes ?? [];
 <script src="<?= asset('js/lucide.min.js') ?>"></script>
 <script defer src="<?= asset('js/alpine.min.js') ?>"></script>
 </head>
-<body class="bg-white text-ink <?= e($bodyClass ?? '') ?>">
+<body class="<?= e($bodyClass ?? 'bg-white text-ink') ?>">
 <?= $content ?>
 
 <div class="fixed bottom-5 right-5 z-50 space-y-2.5" id="toasts"></div>
 <script src="<?= asset('js/aos.min.js') ?>"></script>
 <script>
-  AOS.init({ once:true, duration:650, easing:'ease-out-cubic', offset:60 });
+  AOS.init({ once:true, duration:650, easing:'ease-out-cubic', offset:60,
+    disable: function(){ return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; } });
   const flashes = [
     <?php foreach ($flashes as $type => $messages): foreach ((array) $messages as $m): ?>
       { type: <?= json_encode($type) ?>, message: <?= json_encode($m) ?> },

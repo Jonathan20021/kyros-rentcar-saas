@@ -48,6 +48,14 @@ class StorefrontController extends Controller
         $end   = $request->str('end');
 
         $vehicles = Vehicle::publicList($tid, $filters);
+        // Full (unfiltered) public fleet powers the marketing chrome (hero stats,
+        // brand tiles, spotlight, fleet preview) so applying a catalog filter never
+        // guts those sections. The filtered $vehicles drives only the catalog grid.
+        $hasFilters = (bool) array_filter([
+            $filters['category_id'], $filters['transmission'], $filters['fuel_type'],
+            $filters['passengers'], $filters['price_min'], $filters['price_max'], $filters['search'],
+        ]);
+        $allVehicles = $hasFilters ? Vehicle::publicList($tid, []) : $vehicles;
 
         // If a date range is provided, annotate availability.
         if ($start && $end && strtotime($start) && strtotime($end) && strtotime($end) > strtotime($start)) {
@@ -60,8 +68,10 @@ class StorefrontController extends Controller
         $this->view('public/storefront/show', [
             'title'       => $tenant['name'] . ' · Renta de vehiculos',
             'metaDescription' => $tenant['description'] ?? '',
+            'bodyClass'   => 'lux bg-[#0a0a0a] text-white',
             'tenant'      => $tenant,
             'vehicles'    => $vehicles,
+            'allVehicles' => $allVehicles,
             'categories'  => VehicleCategory::forTenant($tid),
             'filters'     => $filters,
             'histogram'   => Vehicle::priceHistogram($tid),
@@ -92,6 +102,7 @@ class StorefrontController extends Controller
 
         $this->view('public/storefront/vehicle', [
             'title'    => $vehicle['brand'] . ' ' . $vehicle['model'] . ' · ' . $tenant['name'],
+            'bodyClass'=> 'lux bg-[#0a0a0a] text-white',
             'tenant'   => $tenant,
             'vehicle'  => $vehicle,
             'images'   => $images,
@@ -113,6 +124,7 @@ class StorefrontController extends Controller
         );
         $this->view('public/storefront/reserve', [
             'title'   => 'Reservar ' . $vehicle['brand'] . ' ' . $vehicle['model'],
+            'bodyClass'=> 'lux bg-[#0a0a0a] text-white',
             'tenant'  => $tenant,
             'vehicle' => $vehicle,
             'extras'  => $extras,
@@ -331,6 +343,7 @@ class StorefrontController extends Controller
         Session::forget('_last_reservation');
         $this->view('public/storefront/confirmation', [
             'title'       => 'Reserva confirmada · ' . $tenant['name'],
+            'bodyClass'   => 'lux bg-[#0a0a0a] text-white',
             'tenant'      => $tenant,
             'reservation' => $reservation,
         ], 'public');

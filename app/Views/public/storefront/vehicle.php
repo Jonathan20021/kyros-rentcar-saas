@@ -6,68 +6,68 @@ echo View::renderPartial('public/storefront/_nav', ['tenant' => $tenant]);
 $gallery = !empty($images) ? array_column($images, 'path') : [];
 if (empty($gallery) && !empty($vehicle['main_image'])) $gallery = [$vehicle['main_image']];
 $galleryUrls = array_map('media', $gallery);
-$primary = $tenant['primary_color'];
-$fuelLabel = static fn($fuel) => [
-  'gasoline' => 'Gasolina',
-  'diesel' => 'Diesel',
-  'electric' => 'Electrico',
-  'hybrid' => 'Hibrido',
-][$fuel] ?? ucfirst((string)$fuel);
-$transLabel = static fn($transmission) => $transmission === 'automatic' ? 'Automatica' : 'Manual';
+$base = url('/r/'.$tenant['slug']);
+$reserveUrl = url('/r/'.$tenant['slug'].'/reservar/'.$vehicle['slug']);
+$fuelLabel = static fn($fuel) => ['gasoline'=>'Gasolina','diesel'=>'Diésel','electric'=>'Eléctrico','hybrid'=>'Híbrido','gas'=>'Gas'][$fuel] ?? ucfirst((string)$fuel);
+$transLabel = static fn($t) => $t === 'automatic' ? 'Automática' : 'Manual';
 ?>
 
-<section class="bg-[#101620] text-white">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10 lg:py-16">
-    <nav class="mb-8 flex items-center gap-2 text-sm text-white/50">
-      <a href="<?= url('/r/'.$tenant['slug']) ?>" class="hover:text-white">Catalogo</a>
+<!-- HERO -->
+<section class="relative overflow-hidden border-b border-[#1c1c1c]" style="background:#0a0a0a">
+  <div class="lux-orb" style="width:480px;height:480px;right:-160px;top:-180px;opacity:.16"></div>
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 pt-28 pb-14 lg:pb-20">
+    <nav class="mb-8 flex items-center gap-2 text-sm text-[var(--lux-dim)]">
+      <a href="<?= e($base) ?>" class="hover:text-white transition-colors">Catálogo</a>
       <i data-lucide="chevron-right" class="h-4 w-4"></i>
       <span class="font-semibold text-white"><?= e($vehicle['brand'].' '.$vehicle['model']) ?></span>
     </nav>
 
     <div class="grid lg:grid-cols-[1.1fr_.9fr] gap-8 lg:gap-12 items-end">
-      <div>
-        <p class="text-[11px] font-black uppercase tracking-[.26em] text-white/50"><?= e($vehicle['category_name'] ?? 'Vehiculo') ?> · <?= e($vehicle['year']) ?></p>
-        <h1 class="mt-4 max-w-4xl font-display text-5xl sm:text-6xl lg:text-[84px] font-black leading-[.92] tracking-[-.055em]">
+      <div data-aos="fade-up">
+        <span class="lux-chip lux-chip-brand"><?= e($vehicle['category_name'] ?? 'Vehículo') ?> · <?= e($vehicle['year']) ?></span>
+        <h1 class="mt-5 max-w-3xl font-display text-[clamp(40px,6vw,84px)] font-extrabold leading-[.92] tracking-[-.05em] text-white">
           <?= e($vehicle['brand'].' '.$vehicle['model']) ?>
         </h1>
-        <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/68">
-          <?= e($vehicle['description'] ?: (($vehicle['version'] ?? '') . ' listo para reservar con ' . $tenant['name'] . '.')) ?>
+        <p class="mt-5 max-w-2xl text-lg leading-relaxed text-[var(--lux-muted)]">
+          <?= e($vehicle['description'] ?: (trim(($vehicle['version'] ?? '').' '.$vehicle['year']).' · listo para reservar con '.$tenant['name'].'.')) ?>
         </p>
       </div>
 
-      <aside class="border border-white/14 bg-white/[.07] p-5 backdrop-blur-xl">
+      <aside class="lux-surface rounded-2xl p-6" data-aos="fade-up" data-aos-delay="80">
         <div class="flex items-start justify-between gap-5">
           <div>
-            <p class="text-sm text-white/45">Desde</p>
-            <p class="mt-1 text-4xl font-black tnum"><?= money($vehicle['daily_price']) ?><span class="text-sm font-medium text-white/45"> / dia</span></p>
+            <p class="text-sm text-[var(--lux-dim)]">Desde</p>
+            <p class="mt-1 font-display text-4xl font-extrabold text-white tnum"><?= money($vehicle['daily_price']) ?><span class="text-sm font-medium text-[var(--lux-dim)]"> / día</span></p>
           </div>
-          <span class="inline-flex items-center gap-1.5 bg-emerald-500/12 px-3 py-1.5 text-[12px] font-bold text-emerald-200">
-            <span class="h-1.5 w-1.5 rounded-full bg-emerald-300"></span>Disponible
-          </span>
+          <span class="lux-chip" style="color:#86efac;border-color:rgba(34,197,94,.35)"><span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>Disponible</span>
         </div>
-        <a href="<?= url('/r/'.$tenant['slug'].'/reservar/'.$vehicle['slug']) ?>" class="mt-6 flex items-center justify-center gap-2 px-6 py-4 text-base font-bold text-white transition hover:opacity-90" style="background:<?= e($primary) ?>">
+        <a href="<?= e($reserveUrl) ?>" class="mt-6 lux-btn lux-btn-brand w-full text-base py-4">
           <i data-lucide="calendar-check" class="h-5 w-5"></i> Reservar ahora
         </a>
+        <?php if (!empty($tenant['whatsapp'])): ?>
+        <a href="<?= e(whatsapp_link($tenant['whatsapp'], 'Hola, me interesa el '.$vehicle['brand'].' '.$vehicle['model'].'.')) ?>" target="_blank" class="mt-2.5 lux-btn lux-btn-outline w-full"><i data-lucide="message-circle" class="h-4 w-4"></i> Consultar por WhatsApp</a>
+        <?php endif; ?>
       </aside>
     </div>
   </div>
 </section>
 
-<section class="bg-[#F4F6FA]">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12 lg:py-16">
+<!-- GALLERY + SPECS -->
+<section class="py-14 lg:py-20" style="background:#0d0d0d">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
     <div class="grid lg:grid-cols-[1.1fr_.9fr] gap-8 lg:gap-12" x-data='{ main: <?= json_encode($galleryUrls[0] ?? '') ?> }'>
       <div data-aos="fade-up">
-        <div class="overflow-hidden border hairline bg-white">
+        <div class="overflow-hidden rounded-2xl border border-[#262626]" style="background:#141414">
           <?php if (!empty($gallery)): ?>
             <img :src="main" class="aspect-[16/11] w-full object-cover" alt="<?= e($vehicle['brand'].' '.$vehicle['model']) ?>">
           <?php else: ?>
-            <div class="aspect-[16/11] grid place-items-center text-slate-300"><i data-lucide="car" class="h-24 w-24"></i></div>
+            <div class="aspect-[16/11] grid place-items-center text-[#2a2a2a]"><i data-lucide="car" class="h-24 w-24"></i></div>
           <?php endif; ?>
         </div>
         <?php if (count($gallery) > 1): ?>
         <div class="mt-3 grid grid-cols-4 gap-2.5">
           <?php foreach ($gallery as $g): ?>
-            <button type="button" @click='main=<?= json_encode(media($g)) ?>' class="overflow-hidden border-2 bg-white transition" :class='main===<?= json_encode(media($g)) ?>?"border-[color:var(--brand)]":"border-transparent"'>
+            <button type="button" @click='main=<?= json_encode(media($g)) ?>' class="overflow-hidden rounded-xl border-2 transition" :class='main===<?= json_encode(media($g)) ?>?"border-[color:var(--lux-brand-text)]":"border-[#262626]"'>
               <img src="<?= e(media($g)) ?>" class="aspect-[4/3] w-full object-cover" alt="<?= e($vehicle['brand'].' '.$vehicle['model']) ?>">
             </button>
           <?php endforeach; ?>
@@ -85,41 +85,39 @@ $transLabel = static fn($transmission) => $transmission === 'automatic' ? 'Autom
             ['briefcase',$vehicle['luggage_capacity'].' maletas'],
             ['gauge',number_format((int)$vehicle['mileage']).' km'],
           ] as $s): ?>
-          <div class="border hairline bg-white p-4">
-            <i data-lucide="<?= $s[0] ?>" class="h-5 w-5 text-brand"></i>
-            <p class="mt-3 text-sm font-bold text-ink"><?= e($s[1]) ?></p>
+          <div class="lux-surface rounded-xl p-4">
+            <i data-lucide="<?= $s[0] ?>" class="h-5 w-5" style="color:var(--lux-brand-text)"></i>
+            <p class="mt-3 text-sm font-bold text-white"><?= e($s[1]) ?></p>
           </div>
           <?php endforeach; ?>
         </div>
 
         <?php if (!empty($features)): ?>
-        <div class="border hairline bg-white p-5">
-          <h2 class="font-display text-xl font-black tracking-[-.035em] text-ink">Caracteristicas</h2>
+        <div class="lux-surface rounded-2xl p-5">
+          <h2 class="font-display text-lg font-extrabold tracking-[-.03em] text-white">Características</h2>
           <div class="mt-4 flex flex-wrap gap-2">
             <?php foreach ($features as $f): ?>
-              <span class="inline-flex items-center gap-1.5 border hairline bg-[#F4F6FA] px-3 py-1.5 text-sm font-medium text-slate-600"><i data-lucide="check" class="h-3.5 w-3.5 text-brand"></i><?= e($f) ?></span>
+              <span class="lux-chip"><i data-lucide="check" class="h-3.5 w-3.5" style="color:var(--lux-brand-text)"></i><?= e($f) ?></span>
             <?php endforeach; ?>
           </div>
         </div>
         <?php endif; ?>
 
         <div class="grid grid-cols-2 gap-3">
-          <div class="border hairline bg-white p-5">
-            <p class="text-sm text-slate-400">Deposito reembolsable</p>
-            <p class="mt-1 text-2xl font-black text-ink tnum"><?= money($vehicle['deposit_amount']) ?></p>
+          <div class="lux-surface rounded-xl p-5">
+            <p class="text-sm text-[var(--lux-dim)]">Depósito reembolsable</p>
+            <p class="mt-1 font-display text-2xl font-extrabold text-white tnum"><?= money($vehicle['deposit_amount']) ?></p>
           </div>
-          <div class="border hairline bg-white p-5">
-            <p class="text-sm text-slate-400">Seguro / dia</p>
-            <p class="mt-1 text-2xl font-black text-ink tnum"><?= money($vehicle['insurance_price']) ?></p>
+          <div class="lux-surface rounded-xl p-5">
+            <p class="text-sm text-[var(--lux-dim)]">Seguro / día</p>
+            <p class="mt-1 font-display text-2xl font-extrabold text-white tnum"><?= money($vehicle['insurance_price']) ?></p>
           </div>
         </div>
 
-        <div class="border-l-2 bg-white p-5" style="border-color:var(--brand)">
-          <h2 class="font-display text-xl font-black tracking-[-.035em] text-ink">Reserva directa</h2>
-          <p class="mt-2 text-sm leading-relaxed text-slate-500">Selecciona tus fechas y envia la solicitud. El equipo confirma disponibilidad, deposito y punto de entrega.</p>
-          <a href="<?= url('/r/'.$tenant['slug'].'/reservar/'.$vehicle['slug']) ?>" class="mt-5 inline-flex items-center gap-2 px-5 py-3 text-sm font-bold text-white transition hover:opacity-90" style="background:var(--brand)">
-            Continuar reserva <i data-lucide="arrow-right" class="h-4 w-4"></i>
-          </a>
+        <div class="rounded-2xl border-l-2 p-6" style="border-color:var(--lux-brand-text); background:#141414">
+          <h2 class="font-display text-lg font-extrabold tracking-[-.03em] text-white">Reserva directa</h2>
+          <p class="mt-2 text-sm leading-relaxed text-[var(--lux-muted)]">Selecciona tus fechas y envía la solicitud. El equipo confirma disponibilidad, depósito y punto de entrega.</p>
+          <a href="<?= e($reserveUrl) ?>" class="mt-5 lux-btn lux-btn-brand">Continuar reserva <i data-lucide="arrow-right" class="h-4 w-4"></i></a>
         </div>
       </div>
     </div>
