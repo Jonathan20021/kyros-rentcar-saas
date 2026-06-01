@@ -1547,6 +1547,192 @@ $demoOffers = $demoOffers ?? [];
 </section>
 
 <!-- ==============================================================
+     INSTALL PWA
+     ============================================================== -->
+<section id="instalar" class="bg-[#0B1120] pb-24 sm:pb-32" x-data="installCard()" x-init="init()">
+  <div class="max-w-6xl mx-auto px-5 sm:px-6">
+    <div class="surface overflow-hidden reveal-s relative" style="border-radius:1.6rem;">
+      <div class="absolute inset-0 grid-dark opacity-[0.18] pointer-events-none"></div>
+      <div class="absolute -top-24 -right-24 w-80 h-80 rounded-full pointer-events-none" style="background:radial-gradient(circle,rgba(242,54,69,.22),transparent 65%);"></div>
+
+      <div class="relative grid lg:grid-cols-2 gap-10 lg:gap-6 p-7 sm:p-12 lg:p-16 items-center">
+        <!-- Copy + actions -->
+        <div>
+          <p class="eyebrow text-brand mb-3 inline-flex items-center gap-2">
+            <i data-lucide="smartphone" class="w-4 h-4"></i> App instalable
+          </p>
+          <h2 class="font-display display-lg text-[30px] sm:text-[44px] font-extrabold leading-[1.05]">
+            Lleva Kyros<br>en tu bolsillo.
+          </h2>
+          <p class="mt-5 text-white/60 text-[15.5px] sm:text-base leading-relaxed max-w-md">
+            Instala Kyros como una app nativa en tu teléfono o computadora. Se abre a pantalla completa, carga al instante y funciona incluso con conexión inestable &mdash; sin pasar por ninguna tienda de aplicaciones.
+          </p>
+
+          <!-- Benefit chips -->
+          <div class="mt-7 flex flex-wrap gap-2.5">
+            <?php foreach ([
+              ['monitor-smartphone','Pantalla completa'],
+              ['wifi-off','Funciona offline'],
+              ['zap','Carga instantánea'],
+              ['store','Sin tienda de apps'],
+            ] as $chip): ?>
+            <span class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/[0.05] border border-white/[0.09] text-[13px] text-white/70">
+              <i data-lucide="<?= $chip[0] ?>" class="w-3.5 h-3.5 text-brand"></i><?= e($chip[1]) ?>
+            </span>
+            <?php endforeach; ?>
+          </div>
+
+          <!-- Actions -->
+          <div class="mt-9">
+            <!-- Already installed -->
+            <div x-show="installed" x-cloak class="inline-flex items-center gap-2.5 px-5 py-3.5 rounded-2xl bg-emerald-500/12 border border-emerald-500/25 text-emerald-300 font-semibold text-[15px]">
+              <i data-lucide="check-circle-2" class="w-5 h-5"></i> Ya tienes la app instalada
+            </div>
+
+            <!-- Install button (Android / desktop Chrome-Edge) + iOS trigger -->
+            <div x-show="!installed" x-cloak class="flex flex-col sm:flex-row gap-3">
+              <button type="button" @click="install()" :disabled="busy"
+                      class="k-cta k-cta-light magnetic group disabled:opacity-60 disabled:cursor-wait">
+                <span x-text="busy ? 'Instalando…' : (isIOS ? 'Cómo instalar' : 'Instalar app')"></span>
+                <span class="k-cta-arrow"><i :data-lucide="isIOS ? 'share' : 'download'" class="w-4 h-4"></i></span>
+              </button>
+              <a href="<?= url('/login#demo') ?>" class="k-cta k-cta-ghost group">
+                <span>Probar demo · 5h</span>
+                <span class="k-cta-arrow"><i data-lucide="play" class="w-4 h-4"></i></span>
+              </a>
+            </div>
+
+            <!-- Browser hint when install isn't available yet (e.g. desktop Firefox/Safari) -->
+            <p x-show="!installed && !canInstall && !isIOS" x-cloak class="mt-4 text-[13.5px] text-white/45 flex items-start gap-2 max-w-md">
+              <i data-lucide="info" class="w-4 h-4 mt-0.5 shrink-0 text-white/40"></i>
+              <span>Para instalar, abre este sitio en <b class="text-white/70">Chrome</b> o <b class="text-white/70">Edge</b> (móvil o escritorio) y vuelve a tocar el botón, o usa el ícono de instalar en la barra de direcciones.</span>
+            </p>
+
+            <!-- iOS step-by-step -->
+            <div x-show="showIOS" x-cloak x-transition class="mt-5 glass p-5 rounded-2xl max-w-md">
+              <p class="text-[13px] font-semibold text-white/85 mb-3 flex items-center gap-2"><i data-lucide="apple" class="w-4 h-4"></i> En iPhone / iPad (Safari)</p>
+              <ol class="space-y-3 text-[14px] text-white/65">
+                <li class="flex items-center gap-3">
+                  <span class="w-7 h-7 shrink-0 rounded-full grad-bg grid place-items-center text-white text-[12px] font-bold">1</span>
+                  Toca <b class="text-white/85">Compartir</b> <i data-lucide="share" class="w-3.5 h-3.5 inline align-middle"></i> en la barra inferior.
+                </li>
+                <li class="flex items-center gap-3">
+                  <span class="w-7 h-7 shrink-0 rounded-full grad-bg grid place-items-center text-white text-[12px] font-bold">2</span>
+                  Elige <b class="text-white/85">Añadir a pantalla de inicio</b> <i data-lucide="plus-square" class="w-3.5 h-3.5 inline align-middle"></i>.
+                </li>
+                <li class="flex items-center gap-3">
+                  <span class="w-7 h-7 shrink-0 rounded-full grad-bg grid place-items-center text-white text-[12px] font-bold">3</span>
+                  Confirma con <b class="text-white/85">Añadir</b>. ¡Listo!
+                </li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phone mockup -->
+        <div class="relative flex justify-center lg:justify-end reveal-s">
+          <div class="relative w-[230px] sm:w-[260px] floaty">
+            <!-- device frame -->
+            <div class="relative rounded-[2.5rem] bg-[#0b0f1a] border border-white/[0.12] p-2.5 shadow-2xl" style="box-shadow:0 40px 80px -30px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.04);">
+              <div class="absolute top-3 left-1/2 -translate-x-1/2 w-20 h-[18px] bg-black rounded-full z-10"></div>
+              <div class="rounded-[2rem] overflow-hidden bg-gradient-to-b from-[#101a2e] to-[#0b1120] aspect-[9/19] flex flex-col">
+                <!-- app status row -->
+                <div class="flex items-center justify-between px-5 pt-7 pb-2 text-[10px] text-white/45 font-semibold">
+                  <span>9:41</span>
+                  <span class="flex items-center gap-1"><i data-lucide="wifi" class="w-3 h-3"></i><i data-lucide="battery-full" class="w-3.5 h-3.5"></i></span>
+                </div>
+                <!-- app content -->
+                <div class="flex-1 px-5 pt-2">
+                  <div class="flex items-center gap-3 mb-5">
+                    <div class="w-11 h-11 rounded-2xl grad-bg grid place-items-center font-black text-white text-lg shadow-lg">K</div>
+                    <div>
+                      <p class="text-white font-bold text-[14px] leading-tight">Kyros Rent Car</p>
+                      <p class="text-white/40 text-[11px]">Dashboard</p>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-2 gap-2.5 mb-3">
+                    <div class="rounded-xl bg-white/[0.05] border border-white/[0.07] p-3">
+                      <p class="text-[10px] text-white/40">Ingresos hoy</p>
+                      <p class="text-[15px] font-extrabold text-white mt-1">RD$ 48.2K</p>
+                    </div>
+                    <div class="rounded-xl bg-white/[0.05] border border-white/[0.07] p-3">
+                      <p class="text-[10px] text-white/40">Reservas</p>
+                      <p class="text-[15px] font-extrabold text-white mt-1">12</p>
+                    </div>
+                  </div>
+                  <div class="rounded-xl bg-white/[0.05] border border-white/[0.07] p-3 mb-2.5">
+                    <div class="flex items-center justify-between mb-2">
+                      <p class="text-[11px] text-white/55 font-medium">Flotilla activa</p>
+                      <span class="text-[10px] text-emerald-300">82% uso</span>
+                    </div>
+                    <div class="h-1.5 rounded-full bg-white/10 overflow-hidden"><div class="h-full grad-bg" style="width:82%"></div></div>
+                  </div>
+                  <div class="space-y-2">
+                    <?php foreach (['Toyota Corolla · Rentado','Hyundai Tucson · Disponible'] as $row): ?>
+                    <div class="flex items-center gap-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06] px-3 py-2.5">
+                      <i data-lucide="car" class="w-4 h-4 text-brand"></i>
+                      <span class="text-[11.5px] text-white/70"><?= e($row) ?></span>
+                    </div>
+                    <?php endforeach; ?>
+                  </div>
+                </div>
+                <!-- bottom nav -->
+                <div class="mt-3 px-6 py-3 border-t border-white/[0.06] flex items-center justify-between text-white/35">
+                  <i data-lucide="layout-dashboard" class="w-4 h-4 text-brand"></i>
+                  <i data-lucide="calendar-check" class="w-4 h-4"></i>
+                  <i data-lucide="car" class="w-4 h-4"></i>
+                  <i data-lucide="user" class="w-4 h-4"></i>
+                </div>
+              </div>
+            </div>
+            <!-- floating install badge -->
+            <div class="absolute -left-4 sm:-left-8 top-1/3 glass px-3.5 py-2.5 rounded-xl flex items-center gap-2 shadow-xl">
+              <span class="w-8 h-8 rounded-lg grad-bg grid place-items-center text-white"><i data-lucide="download" class="w-4 h-4"></i></span>
+              <div>
+                <p class="text-[10px] text-white/45 leading-none">Instalar</p>
+                <p class="text-[12px] text-white font-bold leading-tight mt-0.5">Kyros</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<?php View::push('scripts', '<script>
+document.addEventListener("alpine:init", function(){
+  window.Alpine.data("installCard", function(){
+    return {
+      canInstall:false, installed:false, isIOS:false, showIOS:false, busy:false,
+      init: function(){
+        var p = window.KyrosPWA || {};
+        this.installed  = !!p.isStandalone;
+        this.isIOS      = !!p.isIOSInstallable;
+        this.canInstall = !!p.canInstall;
+        var self = this;
+        window.addEventListener("kyros:installable", function(){ self.canInstall = true; });
+        window.addEventListener("kyros:installed",  function(){ self.installed = true; self.canInstall = false; self.showIOS = false; });
+      },
+      install: function(){
+        var p = window.KyrosPWA;
+        if (this.isIOS){ this.showIOS = !this.showIOS; return; }
+        if (!p || !p.canInstall){
+          if (p && p.isIOSInstallable){ this.showIOS = true; }
+          return;
+        }
+        var self = this; this.busy = true;
+        p.promptInstall().then(function(r){
+          self.busy = false;
+          if (r === "accepted"){ self.installed = true; self.canInstall = false; }
+        });
+      }
+    };
+  });
+});
+</script>'); ?>
+
+<!-- ==============================================================
      FINAL CTA
      ============================================================== -->
 <section class="bg-[#0B1120] pb-24 sm:pb-32">

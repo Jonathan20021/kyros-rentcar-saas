@@ -29,6 +29,11 @@ $router->get('/privacidad', 'HomeController@privacy');
 $router->get('/terminos', 'HomeController@terms');
 $router->get('/contacto', 'HomeController@contact');
 
+// PWA — manifest, service worker, offline fallback (public, base-path aware)
+$router->get('/manifest.webmanifest', 'PwaController@manifest');
+$router->get('/sw.js', 'PwaController@serviceWorker');
+$router->get('/offline', 'PwaController@offline');
+
 // Storefront by slug
 $router->get('/r/{slug}', 'PublicSite\\StorefrontController@show');
 $router->get('/r/{slug}/vehiculo/{vehicle_slug}', 'PublicSite\\StorefrontController@vehicle');

@@ -33,7 +33,18 @@ $faviconColor = ltrim($accent, '#');
 $faviconSvg = rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#' . $faviconColor . '"/><path fill="#fff" d="M19 17h8.6l7 11.2L41.7 17H50L37.6 35.6 50.4 47H42l-7.6-12L26.7 47H19l13-19.2L19 17z"/></svg>');
 ?>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<?= $faviconSvg ?>">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<?= $faviconSvg ?>">
+<link rel="apple-touch-icon" href="<?= asset('img/apple-touch-icon.png') ?>">
+<link rel="apple-touch-icon" sizes="180x180" href="<?= asset('img/apple-touch-icon.png') ?>">
+
+<?php /* ---- PWA: installable across the whole SaaS (admin, storefront, auth, marketing) ---- */ ?>
+<link rel="manifest" href="<?= url('/manifest.webmanifest') ?>">
+<meta name="application-name" content="Kyros Rent Car">
+<meta name="apple-mobile-web-app-title" content="Kyros">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="msapplication-TileColor" content="#0E1422">
+<meta name="msapplication-TileImage" content="<?= asset('img/icon-192.png') ?>">
 <?php
 // Self-hosted, pre-compiled Tailwind + variable fonts (Inter, Plus Jakarta
 // Sans). Replaces the Tailwind Play CDN and Google Fonts so pages always load
@@ -393,4 +404,65 @@ $faviconSvg = rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0
       }); },{threshold:.5}); io2.observe(el);
     });
   });
+</script>
+<?php /* ---- PWA runtime: register the service worker + expose a global install API ---- */ ?>
+<script>
+(function(){
+  // window.KyrosPWA — single source of truth for the install UI (landing button,
+  // in-app banners). Emits DOM events so any page can react without coupling.
+  var api = {
+    deferred: null,
+    canInstall: false,
+    isStandalone: window.matchMedia('(display-mode: standalone)').matches
+                  || window.matchMedia('(display-mode: window-controls-overlay)').matches
+                  || window.navigator.standalone === true,
+    isIOS: /iphone|ipad|ipod/i.test(window.navigator.userAgent) && !window.MSStream,
+    // Returns a promise resolving to 'accepted' | 'dismissed' | 'unavailable'.
+    promptInstall: function(){
+      if (!api.deferred) return Promise.resolve('unavailable');
+      var d = api.deferred;
+      api.deferred = null; api.canInstall = false;
+      d.prompt();
+      return d.userChoice.then(function(c){ return (c && c.outcome) || 'dismissed'; });
+    }
+  };
+  api.isIOSInstallable = api.isIOS && !api.isStandalone;
+  window.KyrosPWA = api;
+
+  function emit(name){ window.dispatchEvent(new CustomEvent(name)); }
+
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault();              // suppress the mini-infobar; we drive the UI
+    api.deferred = e;
+    api.canInstall = true;
+    emit('kyros:installable');
+  });
+
+  window.addEventListener('appinstalled', function(){
+    api.deferred = null;
+    api.canInstall = false;
+    emit('kyros:installed');
+  });
+
+  // Register the service worker (secure context only: https or localhost).
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function(){
+      var scope = <?= json_encode(rtrim(url('/'), '/') . '/') ?>;
+      navigator.serviceWorker.register(<?= json_encode(url('/sw.js')) ?>, { scope: scope })
+        .then(function(reg){
+          // Surface waiting updates so a future enhancement can show "refresh".
+          reg.addEventListener('updatefound', function(){
+            var sw = reg.installing;
+            if (!sw) return;
+            sw.addEventListener('statechange', function(){
+              if (sw.state === 'installed' && navigator.serviceWorker.controller) {
+                emit('kyros:update-available');
+              }
+            });
+          });
+        })
+        .catch(function(){ /* SW optional — app works without it */ });
+    });
+  }
+})();
 </script>

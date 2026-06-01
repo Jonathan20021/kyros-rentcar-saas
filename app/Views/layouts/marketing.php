@@ -103,6 +103,7 @@ $flashes = $_flashes ?? [];
         <a href="<?= url('/#storefront') ?>" @click="mobile=false" class="px-4 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/[0.06] transition">Tu página</a>
         <a href="<?= url('/#planes') ?>"   @click="mobile=false" class="px-4 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/[0.06] transition">Planes</a>
         <a href="#faq"      @click="mobile=false" class="px-4 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/[0.06] transition">FAQ</a>
+        <a href="<?= url('/#instalar') ?>" @click="mobile=false" class="px-4 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/[0.06] transition flex items-center gap-2">Instalar app <i data-lucide="download" class="w-3.5 h-3.5"></i></a>
       </nav>
       <div class="h-px bg-white/[0.08] my-2"></div>
       <a href="<?= url('/login') ?>" class="block px-4 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/[0.06] transition text-[15px] font-medium">Iniciar sesión</a>
