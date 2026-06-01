@@ -183,69 +183,95 @@ $flashes = $_flashes ?? [];
 <div class="fixed bottom-5 right-5 z-50 space-y-2.5" id="toasts"></div>
 
 <!-- ============================================================
-     FLOATING INSTALL WIDGET — appears when the SaaS is installable
+     FLOATING INSTALL WIDGET — appears when the SaaS is installable.
+     Positioning + visuals are hand-written CSS (NOT Tailwind utilities)
+     so the widget renders correctly even if the precompiled stylesheet
+     is out of date. Entrance uses Alpine's built-in (inline) transition.
      ============================================================ -->
-<div x-data="installFloat()" x-init="init()" x-cloak
-     class="fixed z-[55] left-3 right-3 bottom-3 sm:left-5 sm:right-auto sm:bottom-5 sm:w-[368px] pointer-events-none">
-  <div x-show="show"
-       x-transition:enter="transition ease-[cubic-bezier(.16,1,.3,1)] duration-500"
-       x-transition:enter-start="opacity-0 translate-y-6 scale-[.96]"
-       x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-       x-transition:leave="transition ease-in duration-200"
-       x-transition:leave-start="opacity-100 translate-y-0"
-       x-transition:leave-end="opacity-0 translate-y-4"
-       class="pointer-events-auto relative rounded-2xl overflow-hidden shadow-2xl"
-       style="background:linear-gradient(160deg,rgba(20,30,48,.92),rgba(11,17,32,.94));backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.1);box-shadow:0 24px 60px -20px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.04);">
-    <!-- top brand sheen -->
-    <div class="absolute inset-x-0 top-0 h-px" style="background:linear-gradient(90deg,transparent,rgba(242,54,69,.7),transparent);"></div>
-    <div class="absolute -top-16 -left-10 w-40 h-40 rounded-full pointer-events-none" style="background:radial-gradient(circle,rgba(242,54,69,.25),transparent 65%);"></div>
+<style>
+  #kpwa-float{ position:fixed; z-index:60; left:12px; right:12px;
+    bottom:calc(14px + env(safe-area-inset-bottom)); pointer-events:none; }
+  #kpwa-float .kpwa-card{ pointer-events:auto; position:relative; overflow:hidden;
+    border-radius:20px; padding:16px;
+    background:linear-gradient(160deg,rgba(22,32,52,.95),rgba(11,17,32,.97));
+    -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px);
+    border:1px solid rgba(255,255,255,.11);
+    box-shadow:0 26px 64px -22px rgba(0,0,0,.78), 0 0 0 1px rgba(255,255,255,.04); }
+  #kpwa-float .kpwa-sheen{ position:absolute; left:0; right:0; top:0; height:1px;
+    background:linear-gradient(90deg,transparent,rgba(242,54,69,.75),transparent); }
+  #kpwa-float .kpwa-glow{ position:absolute; top:-64px; left:-40px; width:160px; height:160px;
+    border-radius:50%; pointer-events:none;
+    background:radial-gradient(circle,rgba(242,54,69,.28),transparent 65%); }
+  #kpwa-float .kpwa-close{ position:absolute; top:10px; right:10px; width:28px; height:28px;
+    display:grid; place-items:center; border-radius:9px; color:rgba(255,255,255,.45);
+    background:transparent; border:0; cursor:pointer; transition:.15s; z-index:2; }
+  #kpwa-float .kpwa-close:hover{ color:#fff; background:rgba(255,255,255,.09); }
+  #kpwa-float .kpwa-head{ display:flex; align-items:flex-start; gap:14px; }
+  #kpwa-float .kpwa-iconwrap{ position:relative; flex:0 0 auto; }
+  #kpwa-float .kpwa-iconglow{ position:absolute; inset:0; border-radius:16px;
+    background:var(--grad); opacity:.45; filter:blur(10px); animation:kpwaPulse 2.4s ease-in-out infinite; }
+  #kpwa-float .kpwa-icon{ position:relative; width:48px; height:48px; border-radius:16px;
+    background:var(--grad); display:grid; place-items:center; color:#fff; font-weight:800;
+    font-size:21px; box-shadow:0 10px 24px -10px rgba(242,54,69,.7); box-shadow:0 0 0 1px rgba(255,255,255,.15) inset; }
+  @keyframes kpwaPulse{ 0%,100%{ opacity:.35 } 50%{ opacity:.6 } }
+  #kpwa-float .kpwa-title{ display:flex; align-items:center; gap:7px; font-size:14.5px;
+    font-weight:700; color:#fff; line-height:1.15; }
+  #kpwa-float .kpwa-badge{ font-size:9.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+    padding:2px 6px; border-radius:6px; color:#FF5C72;
+    background:rgba(242,54,69,.14); border:1px solid rgba(242,54,69,.3); }
+  #kpwa-float .kpwa-sub{ font-size:12.5px; color:rgba(255,255,255,.56); line-height:1.4; margin-top:4px; padding-right:18px; }
+  #kpwa-float .kpwa-actions{ display:flex; align-items:center; gap:8px; margin-top:14px; }
+  #kpwa-float .kpwa-install{ flex:1; display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    height:44px; border-radius:13px; border:0; cursor:pointer; color:#fff; font-weight:700; font-size:14px;
+    background:var(--grad); box-shadow:0 12px 28px -12px rgba(242,54,69,.7); transition:filter .15s, transform .1s; }
+  #kpwa-float .kpwa-install:hover{ filter:brightness(1.08); }
+  #kpwa-float .kpwa-install:active{ transform:translateY(1px); }
+  #kpwa-float .kpwa-install:disabled{ opacity:.6; cursor:wait; }
+  #kpwa-float .kpwa-later{ height:44px; padding:0 14px; border-radius:13px; border:0; cursor:pointer;
+    color:rgba(255,255,255,.55); font-weight:600; font-size:13px; background:transparent; transition:.15s; }
+  #kpwa-float .kpwa-later:hover{ color:#fff; background:rgba(255,255,255,.07); }
+  #kpwa-float .kpwa-ios{ margin-top:13px; padding-top:13px; border-top:1px solid rgba(255,255,255,.08); }
+  #kpwa-float .kpwa-ios p{ font-size:11px; font-weight:600; color:rgba(255,255,255,.7);
+    margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+  #kpwa-float .kpwa-ios ol{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:9px; }
+  #kpwa-float .kpwa-ios li{ display:flex; align-items:center; gap:10px; font-size:12.5px; color:rgba(255,255,255,.62); }
+  #kpwa-float .kpwa-ios li b{ color:rgba(255,255,255,.88); }
+  #kpwa-float .kpwa-step{ flex:0 0 auto; width:20px; height:20px; border-radius:50%; background:var(--grad);
+    display:grid; place-items:center; color:#fff; font-size:10px; font-weight:700; }
+  @media (min-width:640px){ #kpwa-float{ left:20px; right:auto; bottom:20px; width:374px; } }
+</style>
+<div id="kpwa-float" x-data="installFloat()" x-init="init()" x-cloak>
+  <div x-show="show" x-transition.opacity.scale.duration.450ms class="kpwa-card">
+    <div class="kpwa-sheen"></div>
+    <div class="kpwa-glow"></div>
+    <button type="button" class="kpwa-close" @click="dismiss()" aria-label="Cerrar"><i data-lucide="x" style="width:16px;height:16px"></i></button>
 
-    <!-- close -->
-    <button type="button" @click="dismiss()" aria-label="Cerrar"
-            class="absolute top-2.5 right-2.5 w-7 h-7 grid place-items-center rounded-lg text-white/40 hover:text-white hover:bg-white/[0.08] transition z-10">
-      <i data-lucide="x" class="w-4 h-4"></i>
-    </button>
-
-    <div class="relative p-4 sm:p-[18px]">
-      <div class="flex items-start gap-3.5">
-        <!-- animated app icon -->
-        <div class="relative shrink-0">
-          <span class="absolute inset-0 rounded-2xl grad-bg opacity-50 blur-md animate-pulse"></span>
-          <div class="relative w-12 h-12 rounded-2xl grad-bg grid place-items-center font-black text-white text-xl shadow-lg ring-1 ring-white/15">K</div>
-        </div>
-        <div class="min-w-0 pr-6">
-          <p class="text-[14.5px] font-bold text-white leading-tight flex items-center gap-1.5">
-            Instala la app de Kyros
-            <span class="text-[9.5px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-brand/15 text-brand border border-brand/25">PWA</span>
-          </p>
-          <p class="text-[12.5px] text-white/55 leading-snug mt-1">
-            Acceso directo, pantalla completa y uso offline. Sin tienda de apps.
-          </p>
-        </div>
+    <div class="kpwa-head">
+      <div class="kpwa-iconwrap">
+        <span class="kpwa-iconglow"></span>
+        <div class="kpwa-icon">K</div>
       </div>
-
-      <!-- actions -->
-      <div class="mt-3.5 flex items-center gap-2">
-        <button type="button" @click="install()" :disabled="busy"
-                class="flex-1 inline-flex items-center justify-center gap-2 h-10 rounded-xl grad-bg text-white text-[13.5px] font-bold shadow-lg transition hover:brightness-110 active:translate-y-px disabled:opacity-60 disabled:cursor-wait">
-          <i :data-lucide="isIOS ? 'share' : 'download'" class="w-4 h-4"></i>
-          <span x-text="busy ? 'Instalando…' : (isIOS ? 'Cómo instalar' : 'Instalar ahora')"></span>
-        </button>
-        <button type="button" @click="dismiss()"
-                class="h-10 px-3.5 rounded-xl text-white/55 hover:text-white hover:bg-white/[0.07] text-[13px] font-semibold transition">
-          Ahora no
-        </button>
+      <div style="min-width:0">
+        <div class="kpwa-title">Instala la app de Kyros <span class="kpwa-badge">PWA</span></div>
+        <div class="kpwa-sub">Acceso directo, pantalla completa y uso offline. Sin tienda de apps.</div>
       </div>
+    </div>
 
-      <!-- iOS instructions (expand on tap) -->
-      <div x-show="expanded" x-cloak x-collapse class="mt-3 pt-3 border-t border-white/[0.08]">
-        <p class="text-[11px] font-semibold text-white/70 mb-2.5 flex items-center gap-1.5"><i data-lucide="apple" class="w-3.5 h-3.5"></i> En iPhone / iPad con Safari</p>
-        <ol class="space-y-2 text-[12.5px] text-white/60">
-          <li class="flex items-center gap-2.5"><span class="w-5 h-5 shrink-0 rounded-full grad-bg grid place-items-center text-white text-[10px] font-bold">1</span> Toca <b class="text-white/85">Compartir</b> <i data-lucide="share" class="w-3 h-3 inline align-middle"></i></li>
-          <li class="flex items-center gap-2.5"><span class="w-5 h-5 shrink-0 rounded-full grad-bg grid place-items-center text-white text-[10px] font-bold">2</span> <b class="text-white/85">Añadir a pantalla de inicio</b></li>
-          <li class="flex items-center gap-2.5"><span class="w-5 h-5 shrink-0 rounded-full grad-bg grid place-items-center text-white text-[10px] font-bold">3</span> Confirma con <b class="text-white/85">Añadir</b></li>
-        </ol>
-      </div>
+    <div class="kpwa-actions">
+      <button type="button" class="kpwa-install" @click="install()" :disabled="busy">
+        <i :data-lucide="isIOS ? 'share' : 'download'" style="width:17px;height:17px"></i>
+        <span x-text="busy ? 'Instalando…' : (isIOS ? 'Cómo instalar' : 'Instalar ahora')"></span>
+      </button>
+      <button type="button" class="kpwa-later" @click="dismiss()">Ahora no</button>
+    </div>
+
+    <div class="kpwa-ios" x-show="expanded" x-collapse x-cloak>
+      <p><i data-lucide="apple" style="width:14px;height:14px"></i> En iPhone / iPad con Safari</p>
+      <ol>
+        <li><span class="kpwa-step">1</span> Toca <b>Compartir</b> <i data-lucide="share" style="width:12px;height:12px;display:inline"></i></li>
+        <li><span class="kpwa-step">2</span> <b>Añadir a pantalla de inicio</b></li>
+        <li><span class="kpwa-step">3</span> Confirma con <b>Añadir</b></li>
+      </ol>
     </div>
   </div>
 </div>

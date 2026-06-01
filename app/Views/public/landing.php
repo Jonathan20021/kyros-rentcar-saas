@@ -1549,13 +1549,13 @@ $demoOffers = $demoOffers ?? [];
 <!-- ==============================================================
      INSTALL PWA
      ============================================================== -->
-<section id="instalar" class="bg-[#0B1120] pb-24 sm:pb-32" x-data="installCard()" x-init="init()">
+<section id="instalar" class="bg-[#0B1120] pb-24 sm:pb-32" style="scroll-margin-top:84px;" x-data="installCard()" x-init="init()">
   <div class="max-w-6xl mx-auto px-5 sm:px-6">
     <div class="surface overflow-hidden reveal-s relative" style="border-radius:1.6rem;">
       <div class="absolute inset-0 grid-dark opacity-[0.18] pointer-events-none"></div>
       <div class="absolute -top-24 -right-24 w-80 h-80 rounded-full pointer-events-none" style="background:radial-gradient(circle,rgba(242,54,69,.22),transparent 65%);"></div>
 
-      <div class="relative grid lg:grid-cols-2 gap-10 lg:gap-6 p-7 sm:p-12 lg:p-16 items-center">
+      <div class="relative grid lg:grid-cols-2 gap-9 lg:gap-6 p-6 sm:p-12 lg:p-16 items-center">
         <!-- Copy + actions -->
         <div>
           <p class="eyebrow text-brand mb-3 inline-flex items-center gap-2">
@@ -1590,15 +1590,17 @@ $demoOffers = $demoOffers ?? [];
             </div>
 
             <!-- Install button (Android / desktop Chrome-Edge) + iOS trigger -->
-            <div x-show="!installed" x-cloak class="flex flex-col sm:flex-row gap-3">
+            <div x-show="!installed" x-cloak class="flex flex-col sm:flex-row gap-2.5 max-w-md">
               <button type="button" @click="install()" :disabled="busy"
-                      class="k-cta k-cta-light magnetic group disabled:opacity-60 disabled:cursor-wait">
+                      class="k-btn k-btn-grad disabled:opacity-60 disabled:cursor-wait"
+                      style="flex:1; height:52px; border-radius:14px; font-size:15px;">
+                <i :data-lucide="isIOS ? 'share' : 'download'" style="width:18px;height:18px"></i>
                 <span x-text="busy ? 'Instalando…' : (isIOS ? 'Cómo instalar' : 'Instalar app')"></span>
-                <span class="k-cta-arrow"><i :data-lucide="isIOS ? 'share' : 'download'" class="w-4 h-4"></i></span>
               </button>
-              <a href="<?= url('/login#demo') ?>" class="k-cta k-cta-ghost group">
+              <a href="<?= url('/login#demo') ?>" class="k-btn k-btn-glass"
+                 style="flex:1; height:52px; border-radius:14px; font-size:15px;">
+                <i data-lucide="play" style="width:17px;height:17px"></i>
                 <span>Probar demo · 5h</span>
-                <span class="k-cta-arrow"><i data-lucide="play" class="w-4 h-4"></i></span>
               </a>
             </div>
 
@@ -1685,8 +1687,8 @@ $demoOffers = $demoOffers ?? [];
                 </div>
               </div>
             </div>
-            <!-- floating install badge -->
-            <div class="absolute -left-4 sm:-left-8 top-1/3 glass px-3.5 py-2.5 rounded-xl flex items-center gap-2 shadow-xl">
+            <!-- floating install badge (hidden on phones to avoid clipping) -->
+            <div class="hidden sm:flex absolute -left-8 top-1/3 glass px-3.5 py-2.5 rounded-xl items-center gap-2 shadow-xl">
               <span class="w-8 h-8 rounded-lg grad-bg grid place-items-center text-white"><i data-lucide="download" class="w-4 h-4"></i></span>
               <div>
                 <p class="text-[10px] text-white/45 leading-none">Instalar</p>
