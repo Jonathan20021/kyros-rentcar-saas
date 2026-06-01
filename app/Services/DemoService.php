@@ -43,8 +43,10 @@ class DemoService
                 'slug'              => $slug,
                 'email'             => strtolower($email),
                 'phone'             => null,
-                'address'           => 'Demo · Santo Domingo',
-                'description'       => 'Demo de Kyros Rent Car generado por licencia ' . $license['code'] . '.',
+                'address'           => 'Santo Domingo, RD',
+                // Public-facing tagline (shown on the storefront hero/footer/meta). The
+                // demo's license code lives in `demo_license_code`, not here.
+                'description'       => 'Flota premium inspeccionada, entrega coordinada y reservas en minutos.',
                 'primary_color'     => '#F23645',
                 'secondary_color'   => '#1C2433',
                 'currency'          => 'DOP',

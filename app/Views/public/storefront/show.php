@@ -77,7 +77,7 @@ $spotlightJs = array_map(fn($v) => [
         <span style="color:var(--lux-brand-text)">Conduce la experiencia.</span>
       </h1>
       <p class="mt-7 max-w-xl text-lg sm:text-xl leading-relaxed text-[var(--lux-muted)]">
-        <?= e($tenant['description'] ?? 'Flota moderna e inspeccionada, reservas rápidas y atención personalizada para cada viaje.') ?>
+        <?= e(trim((string)($tenant['description'] ?? '')) ?: 'Flota moderna e inspeccionada, reservas rápidas y atención personalizada para cada viaje.') ?>
       </p>
       <div class="mt-9 flex flex-col sm:flex-row sm:flex-wrap gap-3">
         <a href="#flota" class="lux-btn lux-btn-brand text-[15px] px-7 py-4">Reservar un vehículo <i data-lucide="arrow-right" class="h-4 w-4"></i></a>

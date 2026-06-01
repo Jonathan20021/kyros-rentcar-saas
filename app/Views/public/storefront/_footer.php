@@ -24,7 +24,7 @@ $methods = [
           <?php endif; ?>
           <span class="font-display font-extrabold tracking-[-.03em] text-white text-xl"><?= e($tenant['name']) ?></span>
         </div>
-        <p class="max-w-md text-[15px] leading-relaxed text-[var(--lux-muted)]"><?= e($tenant['description'] ?? 'Renta de vehículos con reserva rápida, flota inspeccionada y asistencia directa.') ?></p>
+        <p class="max-w-md text-[15px] leading-relaxed text-[var(--lux-muted)]"><?= e(trim((string)($tenant['description'] ?? '')) ?: 'Renta de vehículos con reserva rápida, flota inspeccionada y asistencia directa.') ?></p>
         <div class="mt-7 flex flex-wrap items-center gap-3">
           <a href="<?= e($base) ?>#flota" class="lux-btn lux-btn-light">Explorar flota <i data-lucide="arrow-up-right" class="h-4 w-4"></i></a>
           <?php if (!empty($tenant['whatsapp'])): ?>
