@@ -181,6 +181,116 @@ $flashes = $_flashes ?? [];
 </footer>
 
 <div class="fixed bottom-5 right-5 z-50 space-y-2.5" id="toasts"></div>
+
+<!-- ============================================================
+     FLOATING INSTALL WIDGET — appears when the SaaS is installable
+     ============================================================ -->
+<div x-data="installFloat()" x-init="init()" x-cloak
+     class="fixed z-[55] left-3 right-3 bottom-3 sm:left-5 sm:right-auto sm:bottom-5 sm:w-[368px] pointer-events-none">
+  <div x-show="show"
+       x-transition:enter="transition ease-[cubic-bezier(.16,1,.3,1)] duration-500"
+       x-transition:enter-start="opacity-0 translate-y-6 scale-[.96]"
+       x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+       x-transition:leave="transition ease-in duration-200"
+       x-transition:leave-start="opacity-100 translate-y-0"
+       x-transition:leave-end="opacity-0 translate-y-4"
+       class="pointer-events-auto relative rounded-2xl overflow-hidden shadow-2xl"
+       style="background:linear-gradient(160deg,rgba(20,30,48,.92),rgba(11,17,32,.94));backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.1);box-shadow:0 24px 60px -20px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.04);">
+    <!-- top brand sheen -->
+    <div class="absolute inset-x-0 top-0 h-px" style="background:linear-gradient(90deg,transparent,rgba(242,54,69,.7),transparent);"></div>
+    <div class="absolute -top-16 -left-10 w-40 h-40 rounded-full pointer-events-none" style="background:radial-gradient(circle,rgba(242,54,69,.25),transparent 65%);"></div>
+
+    <!-- close -->
+    <button type="button" @click="dismiss()" aria-label="Cerrar"
+            class="absolute top-2.5 right-2.5 w-7 h-7 grid place-items-center rounded-lg text-white/40 hover:text-white hover:bg-white/[0.08] transition z-10">
+      <i data-lucide="x" class="w-4 h-4"></i>
+    </button>
+
+    <div class="relative p-4 sm:p-[18px]">
+      <div class="flex items-start gap-3.5">
+        <!-- animated app icon -->
+        <div class="relative shrink-0">
+          <span class="absolute inset-0 rounded-2xl grad-bg opacity-50 blur-md animate-pulse"></span>
+          <div class="relative w-12 h-12 rounded-2xl grad-bg grid place-items-center font-black text-white text-xl shadow-lg ring-1 ring-white/15">K</div>
+        </div>
+        <div class="min-w-0 pr-6">
+          <p class="text-[14.5px] font-bold text-white leading-tight flex items-center gap-1.5">
+            Instala la app de Kyros
+            <span class="text-[9.5px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-brand/15 text-brand border border-brand/25">PWA</span>
+          </p>
+          <p class="text-[12.5px] text-white/55 leading-snug mt-1">
+            Acceso directo, pantalla completa y uso offline. Sin tienda de apps.
+          </p>
+        </div>
+      </div>
+
+      <!-- actions -->
+      <div class="mt-3.5 flex items-center gap-2">
+        <button type="button" @click="install()" :disabled="busy"
+                class="flex-1 inline-flex items-center justify-center gap-2 h-10 rounded-xl grad-bg text-white text-[13.5px] font-bold shadow-lg transition hover:brightness-110 active:translate-y-px disabled:opacity-60 disabled:cursor-wait">
+          <i :data-lucide="isIOS ? 'share' : 'download'" class="w-4 h-4"></i>
+          <span x-text="busy ? 'Instalando…' : (isIOS ? 'Cómo instalar' : 'Instalar ahora')"></span>
+        </button>
+        <button type="button" @click="dismiss()"
+                class="h-10 px-3.5 rounded-xl text-white/55 hover:text-white hover:bg-white/[0.07] text-[13px] font-semibold transition">
+          Ahora no
+        </button>
+      </div>
+
+      <!-- iOS instructions (expand on tap) -->
+      <div x-show="expanded" x-cloak x-collapse class="mt-3 pt-3 border-t border-white/[0.08]">
+        <p class="text-[11px] font-semibold text-white/70 mb-2.5 flex items-center gap-1.5"><i data-lucide="apple" class="w-3.5 h-3.5"></i> En iPhone / iPad con Safari</p>
+        <ol class="space-y-2 text-[12.5px] text-white/60">
+          <li class="flex items-center gap-2.5"><span class="w-5 h-5 shrink-0 rounded-full grad-bg grid place-items-center text-white text-[10px] font-bold">1</span> Toca <b class="text-white/85">Compartir</b> <i data-lucide="share" class="w-3 h-3 inline align-middle"></i></li>
+          <li class="flex items-center gap-2.5"><span class="w-5 h-5 shrink-0 rounded-full grad-bg grid place-items-center text-white text-[10px] font-bold">2</span> <b class="text-white/85">Añadir a pantalla de inicio</b></li>
+          <li class="flex items-center gap-2.5"><span class="w-5 h-5 shrink-0 rounded-full grad-bg grid place-items-center text-white text-[10px] font-bold">3</span> Confirma con <b class="text-white/85">Añadir</b></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('alpine:init', function(){
+  window.Alpine.data('installFloat', function(){
+    return {
+      show:false, expanded:false, isIOS:false, busy:false, dismissed:false,
+      init: function(){
+        try { this.dismissed = localStorage.getItem('kyros_install_dismissed') === '1'; } catch(e){}
+        var p = window.KyrosPWA || {};
+        this.isIOS = !!p.isIOSInstallable;
+        var self = this;
+        var reveal = function(){
+          var pwa = window.KyrosPWA || {};
+          if (self.dismissed || pwa.isStandalone) return;
+          self.isIOS = !!pwa.isIOSInstallable;
+          if (pwa.canInstall || pwa.isIOSInstallable){
+            setTimeout(function(){ if(!self.dismissed) self.show = true; }, 1400);
+          }
+        };
+        reveal();
+        window.addEventListener('kyros:installable', reveal);
+        window.addEventListener('kyros:installed', function(){ self.show = false; });
+      },
+      dismiss: function(){
+        this.show = false; this.expanded = false; this.dismissed = true;
+        try { localStorage.setItem('kyros_install_dismissed', '1'); } catch(e){}
+      },
+      install: function(){
+        var p = window.KyrosPWA;
+        if (this.isIOS){ this.expanded = !this.expanded; return; }
+        if (!p || !p.canInstall){ this.expanded = !!(p && p.isIOSInstallable); return; }
+        var self = this; this.busy = true;
+        p.promptInstall().then(function(r){
+          self.busy = false;
+          if (r === 'accepted') self.show = false;
+        });
+      }
+    };
+  });
+});
+</script>
+
 <script>
   const flashes=[<?php foreach ($flashes as $type=>$messages): foreach ((array)$messages as $m): ?>{type:<?= json_encode($type) ?>,message:<?= json_encode($m) ?>},<?php endforeach; endforeach; ?>];
   const dot={success:'bg-emerald-400',error:'bg-red-400',warning:'bg-amber-400',info:'bg-white/60'};
