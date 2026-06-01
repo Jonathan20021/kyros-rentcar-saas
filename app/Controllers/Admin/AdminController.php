@@ -38,6 +38,8 @@ abstract class AdminController extends Controller
             $this->redirect('/login');
         }
         $data['tenant'] = $tenant;
+        // Make money()/money_compact() format in this tenant's currency everywhere.
+        \App\Services\LocaleService::setCurrentCurrency($tenant['currency'] ?? null);
         $data['notifications'] = Notification::forTenant($tid, 8);
         $data['notifications_unread'] = Notification::unreadCount($tid);
         $this->view($view, $data, 'app');

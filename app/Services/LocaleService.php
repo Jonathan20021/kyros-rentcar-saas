@@ -1,6 +1,10 @@
 <?php
 namespace App\Services;
 
+use App\Core\Auth;
+use App\Core\Config;
+use App\Core\Database;
+
 /**
  * LocaleService — single source of truth for country-specific behavior.
  *
@@ -18,6 +22,93 @@ namespace App\Services;
 class LocaleService
 {
     public const COUNTRIES = ['DO', 'CO'];
+
+    /**
+     * Currency registry — code => [symbol, name (es), decimals].
+     * Prices are stored as plain numbers and interpreted in the tenant's
+     * currency; switching currency re-labels/re-formats, it does NOT convert
+     * amounts (no FX rates). Zero-decimal currencies (JPY, CLP, COP, …) drop
+     * the decimal places automatically.
+     */
+    public const CURRENCIES = [
+        'DOP' => ['RD$',  'Peso dominicano',        2],
+        'USD' => ['US$',  'Dólar estadounidense',   2],
+        'EUR' => ['€',    'Euro',                   2],
+        'COP' => ['$',    'Peso colombiano',        0],
+        'MXN' => ['$',    'Peso mexicano',          2],
+        'ARS' => ['$',    'Peso argentino',         2],
+        'CLP' => ['$',    'Peso chileno',           0],
+        'PEN' => ['S/',   'Sol peruano',            2],
+        'BRL' => ['R$',   'Real brasileño',         2],
+        'GTQ' => ['Q',    'Quetzal guatemalteco',   2],
+        'CRC' => ['₡',    'Colón costarricense',    2],
+        'PAB' => ['B/.',  'Balboa panameño',        2],
+        'UYU' => ['$U',   'Peso uruguayo',          2],
+        'PYG' => ['₲',    'Guaraní paraguayo',      0],
+        'BOB' => ['Bs',   'Boliviano',              2],
+        'VES' => ['Bs.',  'Bolívar venezolano',     2],
+        'HNL' => ['L',    'Lempira hondureño',      2],
+        'NIO' => ['C$',   'Córdoba nicaragüense',   2],
+        'CUP' => ['$',    'Peso cubano',            2],
+        'HTG' => ['G',    'Gourde haitiano',        2],
+        'JMD' => ['J$',   'Dólar jamaiquino',       2],
+        'TTD' => ['TT$',  'Dólar de Trinidad',      2],
+        'XCD' => ['EC$',  'Dólar del Caribe Este',  2],
+        'BBD' => ['Bds$', 'Dólar de Barbados',      2],
+        'BSD' => ['B$',   'Dólar bahameño',         2],
+        'BZD' => ['BZ$',  'Dólar beliceño',         2],
+        'AWG' => ['ƒ',    'Florín arubeño',         2],
+        'ANG' => ['ƒ',    'Florín antillano',       2],
+        'KYD' => ['CI$',  'Dólar de Caimán',        2],
+        'GYD' => ['G$',   'Dólar guyanés',          2],
+        'SRD' => ['$',    'Dólar surinamés',        2],
+        'GBP' => ['£',    'Libra esterlina',        2],
+        'CAD' => ['C$',   'Dólar canadiense',       2],
+        'CHF' => ['CHF',  'Franco suizo',           2],
+        'AUD' => ['A$',   'Dólar australiano',      2],
+        'NZD' => ['NZ$',  'Dólar neozelandés',      2],
+        'JPY' => ['¥',    'Yen japonés',            0],
+        'CNY' => ['¥',    'Yuan chino',             2],
+        'HKD' => ['HK$',  'Dólar de Hong Kong',     2],
+        'SGD' => ['S$',   'Dólar de Singapur',      2],
+        'KRW' => ['₩',    'Won surcoreano',         0],
+        'INR' => ['₹',    'Rupia india',            2],
+        'IDR' => ['Rp',   'Rupia indonesia',        0],
+        'MYR' => ['RM',   'Ringgit malayo',         2],
+        'PHP' => ['₱',    'Peso filipino',          2],
+        'THB' => ['฿',    'Baht tailandés',         2],
+        'TWD' => ['NT$',  'Dólar taiwanés',         2],
+        'VND' => ['₫',    'Dong vietnamita',        0],
+        'AED' => ['د.إ',  'Dírham (EAU)',           2],
+        'SAR' => ['﷼',    'Riyal saudí',            2],
+        'QAR' => ['﷼',    'Riyal catarí',           2],
+        'ILS' => ['₪',    'Séquel israelí',         2],
+        'TRY' => ['₺',    'Lira turca',             2],
+        'EGP' => ['£',    'Libra egipcia',          2],
+        'MAD' => ['DH',   'Dírham marroquí',        2],
+        'ZAR' => ['R',    'Rand sudafricano',       2],
+        'NGN' => ['₦',    'Naira nigeriana',        2],
+        'XAF' => ['FCFA', 'Franco CFA (BEAC)',      0],
+        'XOF' => ['CFA',  'Franco CFA (BCEAO)',     0],
+        'RUB' => ['₽',    'Rublo ruso',             2],
+        'UAH' => ['₴',    'Grivna ucraniana',       2],
+        'PLN' => ['zł',   'Esloti polaco',          2],
+        'CZK' => ['Kč',   'Corona checa',           2],
+        'HUF' => ['Ft',   'Florín húngaro',         2],
+        'RON' => ['lei',  'Leu rumano',             2],
+        'SEK' => ['kr',   'Corona sueca',           2],
+        'NOK' => ['kr',   'Corona noruega',         2],
+        'DKK' => ['kr',   'Corona danesa',          2],
+        'ISK' => ['kr',   'Corona islandesa',       0],
+    ];
+
+    /** Codes surfaced first in the picker (region-relevant + majors). */
+    public const POPULAR_CURRENCIES = ['DOP', 'USD', 'EUR', 'COP', 'MXN', 'ARS', 'CLP', 'PEN', 'BRL', 'GTQ', 'CRC', 'PAB'];
+
+    /** Per-request active currency for the global money() helper (see currentCurrency()). */
+    protected static ?string $currentCurrency = null;
+    /** Cached currency of the authenticated tenant (lazy fallback). */
+    protected static ?string $authCurrency = null;
 
     /** Defaults for a tenant when they pick a country in settings. */
     public static function defaultsFor(string $country): array
@@ -92,24 +183,89 @@ class LocaleService
         ];
     }
 
+    /** Registry row for a currency, falling back to a generic 2-decimal entry. */
+    public static function currencyMeta(string $currency): array
+    {
+        $code = strtoupper(trim($currency));
+        if (isset(self::CURRENCIES[$code])) {
+            [$symbol, $name, $decimals] = self::CURRENCIES[$code];
+            return ['code' => $code, 'symbol' => $symbol, 'name' => $name, 'decimals' => $decimals];
+        }
+        return ['code' => $code ?: 'USD', 'symbol' => ($code ?: 'USD') . ' ', 'name' => $code, 'decimals' => 2];
+    }
+
     /** Currency symbol — kept short for chips/cards. */
     public static function currencySymbol(string $currency): string
     {
-        return match (strtoupper($currency)) {
-            'COP' => '$',
-            'DOP' => 'RD$',
-            'USD' => 'US$',
-            default => $currency . ' ',
-        };
+        return self::currencyMeta($currency)['symbol'];
     }
 
-    /** Format a number as money in the tenant's currency. */
+    /** Number of decimal places a currency shows (0 for JPY/CLP/COP/…). */
+    public static function currencyDecimals(string $currency): int
+    {
+        return self::currencyMeta($currency)['decimals'];
+    }
+
+    /** Human currency name (es). */
+    public static function currencyName(string $currency): string
+    {
+        return self::currencyMeta($currency)['name'];
+    }
+
+    /** Format a number as money in the given currency (no FX conversion). */
     public static function money(float $amount, string $currency = 'DOP'): string
     {
-        $symbol = self::currencySymbol($currency);
-        // COP rounds to whole pesos; DOP/USD show 2 decimals
-        $decimals = strtoupper($currency) === 'COP' ? 0 : 2;
-        return $symbol . ' ' . number_format($amount, $decimals, '.', ',');
+        $meta = self::currencyMeta($currency);
+        return $meta['symbol'] . ' ' . number_format($amount, $meta['decimals'], '.', ',');
+    }
+
+    /**
+     * Options for a currency <select>/combobox: popular codes first, then the
+     * rest alphabetically by code. Each row: [code, name, symbol, decimals, group].
+     */
+    public static function currencyOptions(): array
+    {
+        $rows = [];
+        foreach (self::POPULAR_CURRENCIES as $code) {
+            if (!isset(self::CURRENCIES[$code])) continue;
+            [$symbol, $name, $dec] = self::CURRENCIES[$code];
+            $rows[] = ['code' => $code, 'name' => $name, 'symbol' => $symbol, 'decimals' => $dec, 'group' => 'Frecuentes'];
+        }
+        $rest = array_diff(array_keys(self::CURRENCIES), self::POPULAR_CURRENCIES);
+        sort($rest);
+        foreach ($rest as $code) {
+            [$symbol, $name, $dec] = self::CURRENCIES[$code];
+            $rows[] = ['code' => $code, 'name' => $name, 'symbol' => $symbol, 'decimals' => $dec, 'group' => 'Todas las monedas'];
+        }
+        return $rows;
+    }
+
+    /** Explicitly set the active currency for the global money() helper this request. */
+    public static function setCurrentCurrency(?string $currency): void
+    {
+        $code = strtoupper(trim((string) $currency));
+        self::$currentCurrency = $code !== '' ? $code : null;
+    }
+
+    /**
+     * The active currency for global money()/money_compact(). Resolution order:
+     *   1. an explicitly set currency (admin views, storefront tenant),
+     *   2. the authenticated tenant's currency (covers PDFs/receipts that bypass
+     *      renderAdmin),
+     *   3. the platform default from config.
+     */
+    public static function currentCurrency(): string
+    {
+        if (self::$currentCurrency !== null) return self::$currentCurrency;
+        $tid = Auth::tenantId();
+        if ($tid) {
+            if (self::$authCurrency === null) {
+                $cur = Database::scalar("SELECT currency FROM tenants WHERE id = :id", ['id' => $tid]);
+                self::$authCurrency = $cur ? strtoupper((string) $cur) : '';
+            }
+            if (self::$authCurrency !== '') return self::$authCurrency;
+        }
+        return strtoupper((string) Config::get('app.currency', 'DOP'));
     }
 
     /** Phone country code + sample mask (for placeholders). */

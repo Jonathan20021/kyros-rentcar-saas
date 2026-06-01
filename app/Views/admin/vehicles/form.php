@@ -8,6 +8,10 @@ if ($isEdit && !empty($vehicle['features'])) {
 }
 function vval($vehicle, $k, $d=''){ return e($vehicle[$k] ?? $d); }
 $inputCls = 'fld';
+// Rental prices are entered in the tenant's configured currency (Ajustes → Facturación).
+$curCode = strtoupper($tenant['currency'] ?? 'DOP');
+$curSym  = \App\Services\LocaleService::currencySymbol($curCode);
+$curName = \App\Services\LocaleService::currencyName($curCode);
 ?>
 <div class="max-w-4xl mx-auto">
   <h1 class="font-display text-2xl font-bold text-navy dark:text-white mb-1"><?= $isEdit ? 'Editar vehiculo' : 'Nuevo vehiculo' ?></h1>
@@ -92,13 +96,32 @@ $inputCls = 'fld';
 
     <!-- Pricing -->
     <div class="card p-6">
-      <h2 class="font-semibold mb-4 flex items-center gap-2"><i data-lucide="banknote" class="w-4 h-4 text-brand"></i> Precios</h2>
+      <div class="flex items-start justify-between gap-3 mb-1">
+        <h2 class="font-semibold flex items-center gap-2"><i data-lucide="banknote" class="w-4 h-4 text-brand"></i> Precios</h2>
+        <a href="<?= url('/admin/settings') ?>#billing" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-brand/10 text-brand text-[12px] font-semibold whitespace-nowrap" title="Cambiar moneda en Ajustes → Facturación">
+          <i data-lucide="coins" class="w-3.5 h-3.5"></i> <?= e($curCode) ?> · <?= e($curSym) ?>
+        </a>
+      </div>
+      <p class="text-xs text-slate-400 mb-4">Los precios de renta se ingresan y se cobran en <strong class="text-slate-500"><?= e($curName) ?> (<?= e($curCode) ?>)</strong>. Cámbiala en <a href="<?= url('/admin/settings') ?>#billing" class="text-brand hover:underline">Ajustes → Facturación</a>.</p>
+      <?php
+        $priceFields = [
+          ['daily_price','Precio diario *','0', true],
+          ['weekly_price','Precio semanal','', false],
+          ['monthly_price','Precio mensual','', false],
+          ['deposit_amount','Depósito','0', false],
+          ['insurance_price','Seguro / día','0', false],
+        ];
+      ?>
       <div class="grid sm:grid-cols-3 gap-4">
-        <div><label class="block text-sm font-medium mb-1.5">Precio diario *</label><input type="number" step="0.01" name="daily_price" required value="<?= vval($vehicle,'daily_price','0') ?>" class="<?= $inputCls ?>"></div>
-        <div><label class="block text-sm font-medium mb-1.5">Precio semanal</label><input type="number" step="0.01" name="weekly_price" value="<?= vval($vehicle,'weekly_price') ?>" class="<?= $inputCls ?>"></div>
-        <div><label class="block text-sm font-medium mb-1.5">Precio mensual</label><input type="number" step="0.01" name="monthly_price" value="<?= vval($vehicle,'monthly_price') ?>" class="<?= $inputCls ?>"></div>
-        <div><label class="block text-sm font-medium mb-1.5">Deposito</label><input type="number" step="0.01" name="deposit_amount" value="<?= vval($vehicle,'deposit_amount','0') ?>" class="<?= $inputCls ?>"></div>
-        <div><label class="block text-sm font-medium mb-1.5">Seguro / dia</label><input type="number" step="0.01" name="insurance_price" value="<?= vval($vehicle,'insurance_price','0') ?>" class="<?= $inputCls ?>"></div>
+        <?php foreach ($priceFields as [$pname,$plabel,$pdef,$preq]): ?>
+        <div>
+          <label class="block text-sm font-medium mb-1.5"><?= $plabel ?></label>
+          <div class="flex items-stretch rounded-[.7rem] border hairline overflow-hidden focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/15 transition">
+            <span class="grid place-items-center px-3 text-sm font-semibold text-slate-500 dark:text-slate-300 bg-paper border-r hairline tnum whitespace-nowrap"><?= e($curSym) ?></span>
+            <input type="number" step="0.01" min="0" name="<?= $pname ?>" <?= $preq?'required':'' ?> value="<?= vval($vehicle,$pname,$pdef) ?>" class="flex-1 min-w-0 h-[42px] px-3 text-sm outline-none bg-transparent tnum text-navy dark:text-white">
+          </div>
+        </div>
+        <?php endforeach; ?>
       </div>
     </div>
 

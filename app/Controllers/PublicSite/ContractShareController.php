@@ -32,6 +32,8 @@ class ContractShareController extends Controller
 
         // Pull related rows — every query scoped by tenant_id.
         $tenant   = Tenant::find($tid, null);
+        // Public route (no auth) — set currency so money() formats in the tenant's currency.
+        \App\Services\LocaleService::setCurrentCurrency($tenant['currency'] ?? null);
         $vehicle  = Vehicle::find((int) $contract['vehicle_id'], $tid);
         $customer = Customer::find((int) $contract['customer_id'], $tid);
 
@@ -77,6 +79,7 @@ class ContractShareController extends Controller
         }
         $tid = (int) $contract['tenant_id'];
         $contract['tenant']   = Tenant::find($tid, null);
+        \App\Services\LocaleService::setCurrentCurrency($contract['tenant']['currency'] ?? null);
         $contract['vehicle']  = Vehicle::find((int) $contract['vehicle_id'], $tid);
         $contract['customer'] = Customer::find((int) $contract['customer_id'], $tid);
 

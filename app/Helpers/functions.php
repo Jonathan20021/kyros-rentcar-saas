@@ -90,9 +90,24 @@ if (!function_exists('can')) {
 if (!function_exists('money')) {
     function money($amount): string
     {
-        $symbol = Config::get('app.currency_symbol', 'RD$');
-        return $symbol . ' ' . number_format((float) $amount, 2);
+        // Tenant-aware: formats in the active tenant's currency (symbol + decimals).
+        return \App\Services\LocaleService::money((float) $amount, \App\Services\LocaleService::currentCurrency());
     }
+}
+
+if (!function_exists('currency_code')) {
+    /** Active currency code (e.g. DOP, USD) for the current tenant context. */
+    function currency_code(): string { return \App\Services\LocaleService::currentCurrency(); }
+}
+
+if (!function_exists('currency_symbol')) {
+    /** Active currency symbol (e.g. RD$, US$, €). */
+    function currency_symbol(): string { return \App\Services\LocaleService::currencySymbol(currency_code()); }
+}
+
+if (!function_exists('currency_decimals')) {
+    /** Decimal places the active currency shows (0 for JPY/CLP/COP/…). */
+    function currency_decimals(): int { return \App\Services\LocaleService::currencyDecimals(currency_code()); }
 }
 
 // ---------------------------------------------------------------------
@@ -190,7 +205,7 @@ if (!function_exists('money_compact')) {
      */
     function money_compact($amount): string
     {
-        $symbol = Config::get('app.currency_symbol', 'RD$');
+        $symbol = \App\Services\LocaleService::currencySymbol(\App\Services\LocaleService::currentCurrency());
         $n      = (float) $amount;
         $abs    = abs($n);
         $sign   = $n < 0 ? '-' : '';

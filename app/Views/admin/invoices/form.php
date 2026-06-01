@@ -4,7 +4,7 @@ $initial = $prefill
   : [['description'=>'','quantity'=>1,'unit_price'=>0]];
 ?>
 <div class="max-w-3xl mx-auto" x-data='invForm(<?= json_encode([
-  "tax"=>(float)$taxRate, "symbol"=>\App\Core\Config::get("app.currency_symbol","RD$"), "rows"=>$initial
+  "tax"=>(float)$taxRate, "symbol"=>\App\Services\LocaleService::currencySymbol($tenant["currency"] ?? "DOP"), "decimals"=>\App\Services\LocaleService::currencyDecimals($tenant["currency"] ?? "DOP"), "rows"=>$initial
 ], JSON_UNESCAPED_UNICODE) ?>)'>
   <h1 class="font-display text-2xl font-bold text-navy mb-1">Nueva factura</h1>
   <p class="text-sm text-slate-500 mb-6">Emite una factura con uno o varios conceptos.</p>
@@ -61,9 +61,9 @@ $initial = $prefill
 <?php \App\Core\View::push('scripts', '<script>
 function invForm(cfg){
   return {
-    tax:cfg.tax, symbol:cfg.symbol, rows:cfg.rows, discount:0, subtotal:0, taxAmount:0, total:0,
+    tax:cfg.tax, symbol:cfg.symbol, decimals:(cfg.decimals??2), rows:cfg.rows, discount:0, subtotal:0, taxAmount:0, total:0,
     init(){ this.calc(); },
-    fmt(n){ return this.symbol+" "+Number(n||0).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}); },
+    fmt(n){ return this.symbol+" "+Number(n||0).toLocaleString("en-US",{minimumFractionDigits:this.decimals,maximumFractionDigits:this.decimals}); },
     add(){ this.rows.push({description:"",quantity:1,unit_price:0}); },
     remove(i){ this.rows.splice(i,1); this.calc(); },
     calc(){ var s=0; this.rows.forEach(r=>s+=(r.quantity||0)*(r.unit_price||0)); this.subtotal=s; var base=Math.max(0,s-(this.discount||0)); this.taxAmount=base*(this.tax/100); this.total=base+this.taxAmount; }

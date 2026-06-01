@@ -13,7 +13,8 @@ $publicPromos = $publicPromos ?? [];
     "daily"=>(float)$vehicle["daily_price"],
     "tax"=>(float)$tenant["tax_rate"],
     "deposit"=>(float)$vehicle["deposit_amount"],
-    "symbol"=>\App\Core\Config::get("app.currency_symbol","RD$"),
+    "symbol"=>\App\Services\LocaleService::currencySymbol($tenant["currency"] ?? "DOP"),
+    "decimals"=>\App\Services\LocaleService::currencyDecimals($tenant["currency"] ?? "DOP"),
     "extras"=>$extrasJs,
     "start"=>$rangeStart,"end"=>$rangeEnd
   ], JSON_UNESCAPED_UNICODE) ?>)'>
@@ -32,7 +33,7 @@ $publicPromos = $publicPromos ?? [];
   <div class="lux-surface rounded-2xl p-4 mb-6 flex flex-wrap items-center gap-3" style="border-style:dashed;border-color:color-mix(in srgb,var(--brand) 40%,transparent)">
     <span class="inline-flex items-center gap-1.5 text-sm font-semibold text-white"><i data-lucide="ticket-percent" class="w-4 h-4" style="color:var(--lux-brand-text)"></i>Promociones disponibles:</span>
     <?php foreach ($publicPromos as $pp):
-      $label = $pp['discount_type']==='percent' ? rtrim(rtrim(number_format((float)$pp['discount_value'],2),'0'),'.').'% off' : 'RD$ '.number_format((float)$pp['discount_value'],2).' off';
+      $label = $pp['discount_type']==='percent' ? rtrim(rtrim(number_format((float)$pp['discount_value'],2),'0'),'.').'% off' : money((float)$pp['discount_value']).' off';
     ?>
     <button type="button" @click="applyPromoCode('<?= e($pp['code']) ?>')"
             class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1a1a1a] hover:bg-[#222] border border-[#363636] transition">
@@ -111,7 +112,7 @@ $publicPromos = $publicPromos ?? [];
         </div>
         <div class="space-y-2.5 text-sm mt-4">
           <div class="flex justify-between text-[var(--lux-muted)]"><span>Días</span><span class="font-medium text-white" x-text="days"></span></div>
-          <div class="flex justify-between text-[var(--lux-muted)]"><span x-text="symbol + ' ' + daily.toFixed(2) + ' × ' + days + ' días'"></span><span class="font-medium text-white" x-text="fmt(subtotal)"></span></div>
+          <div class="flex justify-between text-[var(--lux-muted)]"><span x-text="fmt(daily) + ' × ' + days + ' días'"></span><span class="font-medium text-white" x-text="fmt(subtotal)"></span></div>
           <div class="flex justify-between text-[var(--lux-muted)]" x-show="extrasTotal>0"><span>Extras</span><span class="font-medium text-white" x-text="fmt(extrasTotal)"></span></div>
           <div class="flex justify-between text-emerald-400 font-medium" x-show="discount>0">
             <span class="flex items-center gap-1"><i data-lucide="ticket-percent" class="w-3.5 h-3.5"></i>Descuento (<span x-text="promoApplied"></span>)</span>
@@ -152,12 +153,12 @@ $publicPromos = $publicPromos ?? [];
 <?php View::push('scripts', '<script>
 function reserveForm(cfg){
   return {
-    daily: cfg.daily, tax: cfg.tax, deposit: cfg.deposit, symbol: cfg.symbol,
+    daily: cfg.daily, tax: cfg.tax, deposit: cfg.deposit, symbol: cfg.symbol, decimals: cfg.decimals,
     extrasDefs: cfg.extras, chosen: [], start: cfg.start || "", end: cfg.end || "",
     days: 1, subtotal: 0, extrasTotal: 0, taxAmount: 0, total: 0,
     promoCode: "", promoApplied: "", promoMsg: "", promoOk: false, promoType: "", promoValue: 0, discount: 0,
     init(){ this.recalc(); },
-    fmt(n){ return this.symbol + " " + Number(n).toFixed(2); },
+    fmt(n){ return this.symbol + " " + Number(n).toLocaleString("en-US", {minimumFractionDigits:this.decimals, maximumFractionDigits:this.decimals}); },
     toggleExtra(id){
       const i = this.chosen.indexOf(id);
       if(i>=0) this.chosen.splice(i,1); else this.chosen.push(id);

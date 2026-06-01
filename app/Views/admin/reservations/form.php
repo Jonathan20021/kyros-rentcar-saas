@@ -4,7 +4,7 @@ $vehJs = array_map(fn($v)=>['id'=>(int)$v['id'],'label'=>$v['brand'].' '.$v['mod
 $exJs  = array_map(fn($e)=>['id'=>(int)$e['id'],'name'=>$e['name'],'price'=>(float)$e['price'],'ct'=>$e['charge_type']], $extras);
 ?>
 <div class="max-w-5xl mx-auto" x-data='resForm(<?= json_encode([
-  "tax"=>(float)$tenant["tax_rate"],"symbol"=>\App\Core\Config::get("app.currency_symbol","RD$"),
+  "tax"=>(float)$tenant["tax_rate"],"symbol"=>\App\Services\LocaleService::currencySymbol($tenant["currency"] ?? "DOP"),"decimals"=>\App\Services\LocaleService::currencyDecimals($tenant["currency"] ?? "DOP"),
   "vehicles"=>$vehJs,"extras"=>$exJs,"availUrl"=>url("/admin/reservations/availability"),"preVehicle"=>(int)($preVehicle ?? 0)
 ], JSON_UNESCAPED_UNICODE) ?>)' x-init="if(preVehicle){ vehicleId=preVehicle; onVehicle(); }">
   <h1 class="font-display text-2xl font-bold text-navy mb-1">Nueva reserva</h1>
@@ -90,7 +90,7 @@ $exJs  = array_map(fn($e)=>['id'=>(int)$e['id'],'name'=>$e['name'],'price'=>(flo
         <h2 class="font-semibold text-navy mb-4">Resumen</h2>
         <div class="space-y-2.5 text-sm">
           <div class="flex justify-between text-slate-500"><span>Días</span><span class="font-semibold text-navy tnum" x-text="days"></span></div>
-          <div class="flex justify-between text-slate-500"><span x-text="symbol+' '+rate.toFixed(0)+' × '+days"></span><span class="font-semibold text-navy tnum" x-text="fmt(subtotal)"></span></div>
+          <div class="flex justify-between text-slate-500"><span x-text="fmt(rate)+' × '+days"></span><span class="font-semibold text-navy tnum" x-text="fmt(subtotal)"></span></div>
           <div class="flex justify-between text-slate-500" x-show="discount>0"><span>Descuento</span><span class="font-semibold text-brand tnum" x-text="'-'+fmt(discount)"></span></div>
           <div class="flex justify-between text-slate-500" x-show="extrasTotal>0"><span>Extras</span><span class="font-semibold text-navy tnum" x-text="fmt(extrasTotal)"></span></div>
           <div class="flex justify-between text-slate-500"><span x-text="'Impuesto ('+tax+'%)'"></span><span class="font-semibold text-navy tnum" x-text="fmt(taxAmount)"></span></div>
@@ -107,10 +107,10 @@ $exJs  = array_map(fn($e)=>['id'=>(int)$e['id'],'name'=>$e['name'],'price'=>(flo
 <?php View::push('scripts', '<script>
 function resForm(cfg){
   return {
-    tax:cfg.tax, symbol:cfg.symbol, vehicles:cfg.vehicles, extrasDefs:cfg.extras, availUrl:cfg.availUrl, preVehicle:cfg.preVehicle||0,
+    tax:cfg.tax, symbol:cfg.symbol, decimals:(cfg.decimals??2), vehicles:cfg.vehicles, extrasDefs:cfg.extras, availUrl:cfg.availUrl, preVehicle:cfg.preVehicle||0,
     newClient:false, vehicleId:"", start:"", end:"", chosen:[], rateOverride:null, discount:0, avail:null,
     days:1, rate:0, deposit:0, subtotal:0, extrasTotal:0, taxAmount:0, total:0,
-    fmt(n){ return this.symbol+" "+Number(n||0).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}); },
+    fmt(n){ return this.symbol+" "+Number(n||0).toLocaleString("en-US",{minimumFractionDigits:this.decimals,maximumFractionDigits:this.decimals}); },
     onVehicle(){ var v=this.vehicles.find(x=>x.id===this.vehicleId); if(v){ this.deposit=v.deposit; if(!this.rateOverride) this.rate=v.price; } this.recalc(); this.check(); },
     toggleExtra(id){ var i=this.chosen.indexOf(id); if(i>=0)this.chosen.splice(i,1); else this.chosen.push(id); this.recalc(); },
     recalc(){

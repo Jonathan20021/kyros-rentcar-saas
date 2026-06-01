@@ -4,6 +4,7 @@ use App\Core\View;
 echo View::renderPartial('public/storefront/_nav', ['tenant' => $tenant]);
 
 $primary = $tenant['primary_color'];
+$curSym  = \App\Services\LocaleService::currencySymbol($tenant['currency'] ?? 'DOP');
 $cover   = $tenant['cover_image'] ?? null;
 $hMin = $histogram['min']; $hMax = $histogram['max']; $bars = $histogram['bars'];
 $loVal = $filters['price_min'] ?: $hMin;
@@ -478,7 +479,7 @@ $spotlightJs = array_map(fn($v) => [
 function priceRange(min,max,lo,hi){
   return {
     min, max, lo: Math.max(min, lo||min), hi: Math.min(max, hi||max),
-    money(v){ return "'.addslashes(\App\Core\Config::get('app.currency_symbol','RD$')).' " + Math.round(v); },
+    money(v){ return "'.addslashes($curSym).' " + Math.round(v); },
     clamp(){ if(this.lo<this.min)this.lo=this.min; if(this.hi>this.max)this.hi=this.max; this.lo=Math.min(this.lo,this.hi); this.hi=Math.max(this.lo,this.hi); },
     pct(v){ return this.max === this.min ? 0 : ((v - this.min) / (this.max - this.min)) * 100; },
     fillStyle(){ return { left: this.pct(this.lo) + "%", width: (this.pct(this.hi) - this.pct(this.lo)) + "%" }; },

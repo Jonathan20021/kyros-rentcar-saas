@@ -38,6 +38,13 @@ class SettingController extends AdminController
         if (!in_array($country, LocaleService::COUNTRIES, true)) $country = 'DO';
         $defaults = LocaleService::defaultsFor($country);
 
+        // Currency must be a known ISO code from the registry; otherwise snap to
+        // the country default so money() always has a valid currency to format.
+        $currency = strtoupper(trim((string) $request->str('currency')));
+        if (!isset(LocaleService::CURRENCIES[$currency])) {
+            $currency = $defaults['currency'];
+        }
+
         $payload = [
             'name'            => $data['name'],
             'legal_name'      => $request->str('legal_name') ?: null,
@@ -50,7 +57,7 @@ class SettingController extends AdminController
             'primary_color'   => $request->str('primary_color', '#4F46E5'),
             'secondary_color' => $request->str('secondary_color', '#06B6D4'),
             'country'         => $country,
-            'currency'        => $request->str('currency') ?: $defaults['currency'],
+            'currency'        => $currency,
             'tax_rate'        => $request->float('tax_rate') ?: $defaults['tax_rate'],
             'tax_label'       => $request->str('tax_label') ?: $defaults['tax_label'],
             'tax_id_label'    => $request->str('tax_id_label') ?: $defaults['tax_id_label'],

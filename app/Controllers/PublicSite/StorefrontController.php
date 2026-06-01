@@ -26,6 +26,9 @@ class StorefrontController extends Controller
         if (!$tenant || in_array($tenant['status'], ['suspended','inactive'], true)) {
             $this->abort(404, 'Esta rent car no esta disponible.');
         }
+        // Storefront has no auth context — set the tenant currency explicitly so
+        // money() on the public pages formats in the rent car's currency.
+        \App\Services\LocaleService::setCurrentCurrency($tenant['currency'] ?? null);
         return $tenant;
     }
 
@@ -160,7 +163,7 @@ class StorefrontController extends Controller
             'discount'   => $discount,
             'message'    => sprintf('Aplicado: %s', $promo['discount_type'] === 'percent'
                 ? rtrim(rtrim(number_format((float)$promo['discount_value'],2),'0'),'.').'% de descuento'
-                : 'RD$ ' . number_format($discount, 2) . ' de descuento'),
+                : money($discount) . ' de descuento'),
         ]);
     }
 
